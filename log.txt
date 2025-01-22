@@ -1,0 +1,88 @@
+19/01/2025, 20:17:53 - JOIN - Usuário(s): 5527996388671@c.us - Grupo: 555198944215-1589223340@g.us
+19/01/2025, 20:18:33 - LEAVE - Usuário(s): 554192689692@c.us - Grupo: 120363393625373667@g.us
+19/01/2025, 20:26:03 - JOIN - Usuário(s): 555384759506@c.us - Grupo: 120363046050208748@g.us
+19/01/2025, 20:29:25 - JOIN - Usuário(s): 5511982858238@c.us - Grupo: 120363159058061036@g.us
+21/01/2025, 19:44:30 - LEAVE - Usuário(s): 554192689692@c.us - Grupo: 120363390785865742@g.us
+21/01/2025, 19:49:55 - JOIN - Usuário(s): 554699186358@c.us - Grupo: 120363202586105085@g.us
+21/01/2025, 19:55:44 - JOIN - Usuário(s): 554192689692@c.us - Grupo: 120363390785865742@g.us
+21/01/2025, 19:57:00 - LEAVE - Usuário(s): 554192689692@c.us - Grupo: 120363390785865742@g.us
+21/01/2025, 19:59:13 - LEAVE - Usuário(s): 556193673232@c.us - Grupo: 120363302467989783@g.us
+21/01/2025, 19:59:38 - JOIN - Usuário(s): 554192689692@c.us - Grupo: 120363390785865742@g.us
+21/01/2025, 19:59:51 - LEAVE - Usuário(s): 554192689692@c.us - Grupo: 120363390785865742@g.us
+21/01/2025, 20:01:26 - JOIN - Usuário(s): 554192689692@c.us - Grupo: 120363390785865742@g.us
+21/01/2025, 20:01:37 - LEAVE - Usuário(s): 554192689692@c.us - Grupo: 120363390785865742@g.us
+21/01/2025, 20:02:53 - JOIN - Usuário(s): 554191493031@c.us - Grupo: 120363390785865742@g.us
+21/01/2025, 20:03:07 - LEAVE - Usuário(s): 554191493031@c.us - Grupo: 120363390785865742@g.us
+21/01/2025, 20:48:33 - JOIN - Usuário(s): 558185329901@c.us - Grupo: 120363284529141982@g.us
+21/01/2025, 20:49:13 - LEAVE - Usuário(s): 554192689692@c.us - Grupo: 120363374791525770@g.us
+21/01/2025, 20:50:42 - JOIN - Usuário(s): 554192689692@c.us - Grupo: 120363374791525770@g.us
+21/01/2025, 20:51:11 - LEAVE - Usuário(s): 554192689692@c.us - Grupo: 120363374791525770@g.us
+21/01/2025, 20:52:48 - JOIN - Usuário(s): 554192689692@c.us - Grupo: 120363374791525770@g.us
+21/01/2025, 20:54:03 - LEAVE - Usuário(s): 554192689692@c.us - Grupo: 120363374791525770@g.us
+21/01/2025, 20:54:58 - JOIN - Usuário(s): 554192689692@c.us - Grupo: 120363374791525770@g.us
+21/01/2025, 20:56:11 - LEAVE - Usuário(s): 554192689692@c.us - Grupo: 120363374791525770@g.us
+21/01/2025, 20:57:17 - JOIN - Usuário(s): 554192689692@c.us - Grupo: 120363374791525770@g.us
+21/01/2025, 20:58:41 - LEAVE - Usuário(s): 554192689692@c.us - Grupo: 120363374791525770@g.us
+21/01/2025, 21:00:35 - JOIN - Usuário(s): 5517982201188@c.us - Grupo: 120363271203966866@g.us
+21/01/2025, 21:04:26 - JOIN - Usuário(s): 554192689692@c.us - Grupo: 120363374791525770@g.us
+21/01/2025, 21:07:09 - LEAVE - Usuário(s): 554192689692@c.us - Grupo: 120363374791525770@g.us
+21/01/2025, 21:09:42 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: Grupo não identificado
+21/01/2025, 21:10:24 - JOIN - Usuário(s): 3199676586 - Grupo: Grupo não identificado
+21/01/2025, 21:13:28 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: Grupo não identificado
+21/01/2025, 21:16:14 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: Grupo não identificado
+21/01/2025, 21:17:46 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: Grupo não identificado
+21/01/2025, 21:18:36 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: Grupo não identificado
+21/01/2025, 21:18:51 - JOIN - Usuário(s): 8695526507 - Grupo: Grupo não identificado
+21/01/2025, 21:20:10 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: Grupo não identificado
+21/01/2025, 21:22:12 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: Grupo não identificado
+21/01/2025, 21:23:58 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: Grupo não identificado
+21/01/2025, 21:26:05 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: Grupo não identificado
+21/01/2025, 21:27:02 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: Grupo não identificado
+21/01/2025, 21:29:22 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: Grupo não identificado
+21/01/2025, 21:30:36 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: Grupo não identificado
+21/01/2025, 21:31:50 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: Grupo não identificado
+21/01/2025, 21:33:10 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: Grupo não identificado
+21/01/2025, 21:35:23 - JOIN - Usuário(s): 4797902248 - Grupo: Grupo não identificado
+21/01/2025, 21:36:04 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: Grupo não identificado
+21/01/2025, 21:37:16 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: Grupo não identificado
+21/01/2025, 21:40:40 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: Grupo não identificado
+21/01/2025, 21:41:00 - LEAVE - Usuário(s): Alexandre G2 C515 - Grupo: Grupo não identificado
+21/01/2025, 21:41:47 - JOIN - Usuário(s): 4898322594 - Grupo: Grupo não identificado
+21/01/2025, 21:44:52 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: Grupo não identificado
+21/01/2025, 21:48:54 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: Grupo não identificado
+21/01/2025, 21:49:59 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: Grupo não identificado
+21/01/2025, 21:51:06 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: Grupo não identificado
+21/01/2025, 21:52:52 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: Grupo não identificado
+21/01/2025, 21:54:10 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: Grupo não identificado
+21/01/2025, 21:56:33 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: Grupo não identificado
+21/01/2025, 21:57:51 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: Grupo não identificado
+21/01/2025, 21:59:20 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: Grupo não identificado
+21/01/2025, 22:00:36 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: Grupo não identificado
+21/01/2025, 22:01:53 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste
+21/01/2025, 22:03:14 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste
+21/01/2025, 22:04:30 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
+21/01/2025, 22:07:36 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste
+21/01/2025, 22:08:56 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
+21/01/2025, 22:10:00 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
+21/01/2025, 22:11:03 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
+21/01/2025, 22:12:58 - JOIN - Usuário(s): 4484626186 - Grupo: Não é um grupo
+21/01/2025, 22:13:31 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: Não é um grupo
+21/01/2025, 22:15:09 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: Não é um grupo
+21/01/2025, 22:15:18 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: Não é um grupo
+21/01/2025, 22:16:34 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
+21/01/2025, 22:16:47 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
+21/01/2025, 22:20:21 - JOIN - Usuário(s): 11915050404 - Grupo: Rifas Premium I.B
+21/01/2025, 22:24:10 - JOIN - Usuário(s): 6296692185 - Grupo: Poseidon Ofertas #4
+21/01/2025, 22:24:33 - JOIN - Usuário(s): 7191086862 - Grupo: ⚔️ Amigo das Facas ⚔️
+21/01/2025, 22:25:34 - JOIN - Usuário(s): 6196487222 - Grupo: Super Promoções Ferlin 9
+21/01/2025, 22:25:59 - JOIN - Usuário(s): 6792408193 - Grupo: ⚔️⚔️🍀💎Mk Facas, Cutelos & Importados Rifas💎🍀 ⚔️⚔️
+21/01/2025, 22:28:13 - JOIN - Usuário(s): 8994444959 - Grupo: ⚔️ Amigo das Facas ⚔️
+22/01/2025, 01:19:47 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
+22/01/2025, 01:20:01 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
+22/01/2025, 03:04:29 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
+22/01/2025, 03:07:53 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
+22/01/2025, 03:07:53 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
+22/01/2025, 03:09:02 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
+22/01/2025, 03:10:01 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
+22/01/2025, 03:10:12 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
+22/01/2025, 03:12:12 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
