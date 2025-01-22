@@ -86,3 +86,4 @@
 22/01/2025, 03:10:01 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
 22/01/2025, 03:10:12 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
 22/01/2025, 03:12:12 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
+22/01/2025, 03:27:46 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
