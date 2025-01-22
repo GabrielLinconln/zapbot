@@ -117,7 +117,18 @@ async function getGroupName(client, groupId) {
 
 async function logEventToFile(eventType, user, group) {
   try {
-    const timestamp = new Date().toLocaleString();
+    // Cria a data no fuso horário de Brasília
+    const date = new Date();
+    const timestamp = new Intl.DateTimeFormat('pt-BR', {
+      timeZone: 'America/Sao_Paulo',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    }).format(date);
     
     // Formata o usuário se necessário
     let formattedUser = user;
