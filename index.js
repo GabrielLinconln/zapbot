@@ -13,25 +13,34 @@ const CREDENTIALS_PATH = path.join(__dirname, 'credentials.json');
 async function appendToSheet(timestamp, eventType, user, group) {
   try {
     console.log('\nIniciando registro na planilha...');
+    console.log('Dados a registrar:', { timestamp, eventType, user, group });
+    
+    // Validação dos dados
+    if (!timestamp || !eventType || !user || !group) {
+      throw new Error('Dados incompletos para registro na planilha');
+    }
     
     // Lê as credenciais do arquivo
-    const credentials = JSON.parse(fs.readFileSync(CREDENTIALS_PATH, 'utf8'));
+    let credentials;
+    try {
+      credentials = JSON.parse(fs.readFileSync(CREDENTIALS_PATH, 'utf8'));
+    } catch (error) {
+      throw new Error(`Erro ao ler credenciais: ${error.message}`);
+    }
     
     const auth = new google.auth.GoogleAuth({
-      credentials: credentials, // Usa as credenciais do arquivo
+      credentials: credentials,
       scopes: ['https://www.googleapis.com/auth/spreadsheets'],
     });
 
     const sheets = google.sheets({ version: 'v4', auth });
     
-    // Dados a serem registrados
     const values = [
       [timestamp, user, group, eventType === 'JOIN' ? 'X' : '', eventType === 'LEAVE' ? 'X' : '']
     ];
 
     console.log('Tentando registrar valores:', values);
 
-    // Tenta registrar diretamente
     const result = await sheets.spreadsheets.values.append({
       spreadsheetId: SPREADSHEET_ID,
       range: 'Registros!A:E',
@@ -41,24 +50,27 @@ async function appendToSheet(timestamp, eventType, user, group) {
       }
     });
 
-    console.log('Resposta da API:', {
+    console.log('Registro na planilha concluído:', {
       status: result.status,
       updatedRange: result.data?.updates?.updatedRange,
       updatedRows: result.data?.updates?.updatedRows
     });
 
+    return true;
   } catch (error) {
     console.error('\nERRO AO REGISTRAR NA PLANILHA');
-    console.error('Erro completo:', error);
+    console.error('Tipo do erro:', error.name);
+    console.error('Mensagem:', error.message);
+    console.error('Stack:', error.stack);
     
-    // Tenta imprimir mais detalhes do erro
     if (error.response) {
-      console.error('Resposta do erro:', {
+      console.error('Resposta da API:', {
         status: error.response.status,
-        statusText: error.response.statusText,
         data: error.response.data
       });
     }
+    
+    throw error; // Propaga o erro para tratamento adequado
   }
 }
 
@@ -115,11 +127,10 @@ async function getGroupName(client, groupId) {
   }
 }
 
-async function logEventToFile(eventType, user, group) {
+async function logEventToFile(eventType, user, group, providedTimestamp = null) {
   try {
-    // Cria a data no fuso horário de Brasília
-    const date = new Date();
-    const timestamp = new Intl.DateTimeFormat('pt-BR', {
+    // Usa o timestamp fornecido ou cria um novo
+    const timestamp = providedTimestamp || new Intl.DateTimeFormat('pt-BR', {
       timeZone: 'America/Sao_Paulo',
       day: '2-digit',
       month: '2-digit',
@@ -128,7 +139,7 @@ async function logEventToFile(eventType, user, group) {
       minute: '2-digit',
       second: '2-digit',
       hour12: false
-    }).format(date);
+    }).format(new Date());
     
     // Formata o usuário se necessário
     let formattedUser = user;
@@ -143,8 +154,15 @@ async function logEventToFile(eventType, user, group) {
     
     // Registra na planilha
     await appendToSheet(timestamp, eventType, formattedUser, group);
+    console.log('[LOG] Evento registrado com sucesso na planilha');
   } catch (error) {
     console.error('Erro ao registrar evento:', error);
+    try {
+      const errorEntry = `${new Date().toISOString()} - ERRO CRÍTICO - ${error.message}\n`;
+      fs.appendFileSync(LOG_FILE, errorEntry, 'utf8');
+    } catch (fsError) {
+      console.error('Erro fatal ao registrar no arquivo de log:', fsError);
+    }
   }
 }
 
@@ -229,8 +247,16 @@ client.on('group_leave', async (notification) => {
     console.log('\nNOVO EVENTO DE SAÍDA DO GRUPO');
     console.log('Notification raw:', JSON.stringify(notification, null, 2));
     
-    // Obtém o nome do grupo
-    const groupName = await getGroupName(client, notification.chatId);
+    // Obtém o chat e o nome do grupo
+    const chat = await client.getChatById(notification.chatId);
+    console.log('Chat obtido:', {
+      id: chat.id,
+      name: chat.name,
+      isGroup: chat.isGroup
+    });
+
+    // Obtém o nome do grupo diretamente do chat
+    const groupName = chat.name || 'Grupo não identificado';
     
     // Obtém os nomes dos contatos
     const userNames = await Promise.all(
@@ -238,9 +264,53 @@ client.on('group_leave', async (notification) => {
     );
     
     const userIdentifiers = userNames.join(', ');
-    await logEventToFile('LEAVE', userIdentifiers, groupName);
+    
+    // Cria um único timestamp para todo o evento
+    const timestamp = new Intl.DateTimeFormat('pt-BR', {
+      timeZone: 'America/Sao_Paulo',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    }).format(new Date());
+    
+    // Registra o evento com o timestamp fixo
+    await logEventToFile('LEAVE', userIdentifiers, groupName, timestamp);
+    
+    console.log('Saída registrada com sucesso:', {
+      timestamp,
+      users: userIdentifiers,
+      group: groupName
+    });
   } catch (error) {
     console.error('Erro ao processar saída do grupo:', error);
+    console.error('Stack:', error.stack);
+    
+    // Tenta registrar mesmo com erro
+    try {
+      const timestamp = new Intl.DateTimeFormat('pt-BR', {
+        timeZone: 'America/Sao_Paulo',
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      }).format(new Date());
+      
+      await logEventToFile(
+        'LEAVE',
+        notification.recipientIds.join(', '),
+        notification.chatId,
+        timestamp
+      );
+    } catch (fallbackError) {
+      console.error('Erro ao tentar registro de fallback:', fallbackError);
+    }
   }
 });
 
