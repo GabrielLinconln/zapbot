@@ -1,0 +1,26 @@
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+startCommand = "node index.js"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+healthcheckTimeout = 300
+terminationGracePeriodSeconds = 90
+
+[deploy.envs]
+DEPLOY_ENV = "production"
+
+[service]
+name = "whatsapp-bot"
+internal_port = "3000"
+auto_deploy = true
+
+[service.envs]
+NODE_ENV = "production"
+PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = "true"
+PUPPETEER_EXECUTABLE_PATH = "/usr/bin/chromium"
+
+[nixpacks]
+nodejs-version = "16" 
