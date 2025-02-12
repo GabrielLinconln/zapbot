@@ -1,14 +1,164 @@
+require('dotenv').config();
 const { Client } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const fs = require('fs');
 const path = require('path');
 const { google } = require('googleapis');
+const { createClient } = require('@supabase/supabase-js');
 
 const LOG_FILE = path.join(__dirname, 'log.txt');
 
 // Adicionar configuração do Google Sheets
 const SPREADSHEET_ID = process.env.SPREADSHEET_ID || '1U7SzPTc2t8SIIcAubigz3oNMUEboDU8oxT5I0KkODq0';
 const CREDENTIALS_PATH = path.join(__dirname, 'credentials.json');
+
+// Inicialização do cliente Supabase
+console.log('\n=== Verificando configuração do Supabase ===');
+const supabaseUrl = process.env.SUPABASE_URL?.trim();
+const supabaseKey = process.env.SUPABASE_KEY?.trim();
+
+console.log('URL configurada:', supabaseUrl);
+console.log('Key configurada:', supabaseKey ? 'Presente (começa com: ' + supabaseKey.substring(0, 10) + '...)' : 'Ausente');
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('Erro: Credenciais do Supabase não encontradas no .env');
+  process.exit(1);
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false,
+    detectSessionInUrl: false
+  },
+  global: {
+    headers: {
+      'Authorization': `Bearer ${supabaseKey}`
+    }
+  }
+});
+
+// Teste de conexão inicial
+async function testSupabaseConnection() {
+  try {
+    console.log('Testando conexão com Supabase...');
+    
+    // Tenta criar uma tabela de teste
+    const testTableName = 'test_connection_' + Math.random().toString(36).substring(7);
+    const { error: createError } = await supabase.rpc('exec_sql', {
+      query: `
+        CREATE TABLE IF NOT EXISTS "${testTableName}" (
+          id SERIAL PRIMARY KEY,
+          test_column TEXT
+        );
+      `
+    });
+
+    if (createError) {
+      throw new Error(`Erro ao criar tabela de teste: ${createError.message}`);
+    }
+
+    console.log('Conexão com Supabase estabelecida com sucesso!');
+    
+    // Limpa a tabela de teste
+    await supabase.rpc('exec_sql', {
+      query: `DROP TABLE IF EXISTS "${testTableName}";`
+    });
+  } catch (error) {
+    console.error('Erro ao conectar com Supabase:');
+    console.error('Mensagem:', error.message);
+    if (error.response) {
+      console.error('Detalhes da resposta:', error.response);
+    }
+    process.exit(1);
+  }
+}
+
+// Executa o teste de conexão
+testSupabaseConnection();
+
+// Função para sanitizar o nome da tabela
+function sanitizeTableName(groupName) {
+  return groupName
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '_') // Substitui caracteres não alfanuméricos por _
+    .replace(/_{2,}/g, '_')     // Remove underscores duplicados
+    .replace(/^_|_$/g, '')      // Remove underscores no início e fim
+    .substring(0, 50);          // Limita o tamanho do nome
+}
+
+// Função para registrar eventos no Supabase
+async function recordEventSupabase(timestamp, eventType, user, group) {
+  try {
+    const tableName = `group_${sanitizeTableName(group)}`;
+    console.log('\n=== Iniciando registro no Supabase ===');
+    console.log('Tabela:', tableName);
+    console.log('Dados:', { timestamp, eventType, user, group });
+    
+    // Verifica se a tabela existe e cria se necessário
+    const { error: checkError } = await supabase
+      .from(tableName)
+      .select('id')
+      .limit(1);
+
+    if (checkError && checkError.code === '42P01') {
+      console.log('Tabela não existe, criando...');
+      const createTableQuery = `
+        CREATE TABLE IF NOT EXISTS "${tableName}" (
+          id SERIAL PRIMARY KEY,
+          timestamp TIMESTAMP WITH TIME ZONE,
+          event_type VARCHAR(10),
+          user_id VARCHAR(255),
+          group_name TEXT,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        );
+      `;
+
+      const { error: createError } = await supabase.rpc('exec_sql', {
+        query: createTableQuery
+      });
+
+      if (createError) {
+        console.error('Erro ao criar tabela:', createError);
+        throw new Error(`Erro ao criar tabela: ${createError.message}`);
+      }
+      console.log('Tabela criada com sucesso!');
+    }
+
+    // Insere o registro na tabela
+    console.log('Inserindo registro...');
+    const { error: insertError } = await supabase
+      .from(tableName)
+      .insert([
+        {
+          timestamp: new Date(timestamp),
+          event_type: eventType,
+          user_id: user,
+          group_name: group
+        }
+      ]);
+
+    if (insertError) {
+      console.error('Erro ao inserir:', insertError);
+      throw insertError;
+    }
+
+    console.log('Registro inserido com sucesso!');
+    console.log('=== Fim do registro no Supabase ===\n');
+    return true;
+  } catch (error) {
+    console.error('\nERRO AO REGISTRAR NO SUPABASE:');
+    console.error('Tipo:', error.name);
+    console.error('Mensagem:', error.message);
+    console.error('Stack:', error.stack);
+    if (error.response) {
+      console.error('Resposta:', error.response);
+    }
+    // Em caso de erro no Supabase, tenta registrar no Google Sheets como fallback
+    console.log('Tentando fallback para Google Sheets...');
+    return appendToSheet(timestamp, eventType, user, group);
+  }
+}
 
 async function appendToSheet(timestamp, eventType, user, group) {
   try {
@@ -76,27 +226,45 @@ async function appendToSheet(timestamp, eventType, user, group) {
 
 async function getContactName(client, userId) {
   try {
+    console.log('Obtendo nome do contato:', userId);
     const contact = await client.getContactById(userId);
+    console.log('Contato obtido:', {
+      id: contact.id,
+      name: contact.name,
+      pushname: contact.pushname,
+      shortName: contact.shortName,
+      verifiedName: contact.verifiedName
+    });
+    
     // Tenta obter o nome do contato de várias formas possíveis
     const name = contact.name || 
                 contact.pushname || 
                 contact.shortName || 
                 contact.verifiedName;
     
-    if (name) return name;
+    if (name) {
+      console.log('Nome encontrado:', name);
+      return name;
+    }
     
     // Se não encontrou nome, formata o número
-    return userId
+    const formattedNumber = userId
       .replace(/@c\.us/g, '')
       .replace(/^55/, '')
       .replace(/(\d{2})(\d{2})(\d{4,5})(\d{4})/, '$2 $3-$4');
+    
+    console.log('Nome não encontrado, usando número formatado:', formattedNumber);
+    return formattedNumber;
   } catch (error) {
     console.error('Erro ao obter nome do contato:', error);
-    // Formata o número se derro
-    return userId
+    // Formata o número em caso de erro
+    const formattedNumber = userId
       .replace(/@c\.us/g, '')
       .replace(/^55/, '')
       .replace(/(\d{2})(\d{2})(\d{4,5})(\d{4})/, '$2 $3-$4');
+    
+    console.log('Usando número formatado devido a erro:', formattedNumber);
+    return formattedNumber;
   }
 }
 
@@ -129,7 +297,6 @@ async function getGroupName(client, groupId) {
 
 async function logEventToFile(eventType, user, group, providedTimestamp = null) {
   try {
-    // Usa o timestamp fornecido ou cria um novo
     const timestamp = providedTimestamp || new Intl.DateTimeFormat('pt-BR', {
       timeZone: 'America/Sao_Paulo',
       day: '2-digit',
@@ -141,20 +308,24 @@ async function logEventToFile(eventType, user, group, providedTimestamp = null) 
       hour12: false
     }).format(new Date());
     
-    // Formata o usuário se necessário
     let formattedUser = user;
     if (user.includes('@c.us')) {
       formattedUser = await getContactName(client, user);
     }
     
-    // Registra no arquivo
+    // Registra no arquivo de log
     const logEntry = `${timestamp} - ${eventType} - Usuário(s): ${formattedUser} - Grupo: ${group}\n`;
     fs.appendFileSync(LOG_FILE, logEntry, 'utf8');
     console.log(`[LOG] Evento registrado no arquivo: ${logEntry.trim()}`);
     
-    // Registra na planilha
-    await appendToSheet(timestamp, eventType, formattedUser, group);
-    console.log('[LOG] Evento registrado com sucesso na planilha');
+    // Tenta registrar no Supabase primeiro
+    try {
+      await recordEventSupabase(timestamp, eventType, formattedUser, group);
+    } catch (supabaseError) {
+      console.error('Erro ao registrar no Supabase:', supabaseError);
+      // Se falhar no Supabase, tenta registrar no Google Sheets
+      await appendToSheet(timestamp, eventType, formattedUser, group);
+    }
   } catch (error) {
     console.error('Erro ao registrar evento:', error);
     try {
@@ -228,15 +399,43 @@ client.on('group_join', async (notification) => {
     console.log('Notification raw:', JSON.stringify(notification, null, 2));
     
     // Obtém o nome do grupo
-    const groupName = await getGroupName(client, notification.chatId);
+    let groupName;
+    try {
+      console.log('Tentando obter chat...');
+      const chat = await client.getChatById(notification.chatId);
+      console.log('Chat obtido:', {
+        id: chat.id,
+        name: chat.name,
+        isGroup: chat.isGroup
+      });
+      groupName = chat.name || 'Grupo não identificado';
+      console.log('Nome do grupo:', groupName);
+    } catch (chatError) {
+      console.error('Erro ao obter chat:', chatError);
+      groupName = 'Grupo não identificado';
+    }
     
     // Obtém os nomes dos contatos
+    console.log('Obtendo nomes dos contatos...');
     const userNames = await Promise.all(
-      notification.recipientIds.map(userId => getContactName(client, userId))
+      notification.recipientIds.map(async (userId) => {
+        try {
+          return await getContactName(client, userId);
+        } catch (error) {
+          console.error('Erro ao obter nome do contato:', error);
+          return userId;
+        }
+      })
     );
     
     const userIdentifiers = userNames.join(', ');
+    console.log('Usuários:', userIdentifiers);
+    
+    // Registra o evento
+    console.log('Registrando evento...');
     await logEventToFile('JOIN', userIdentifiers, groupName);
+    
+    console.log('Evento de entrada processado com sucesso');
   } catch (error) {
     console.error('Erro ao processar entrada no grupo:', error);
   }
@@ -247,66 +446,55 @@ client.on('group_leave', async (notification) => {
     console.log('\nNOVO EVENTO DE SAÍDA DO GRUPO');
     console.log('Notification raw:', JSON.stringify(notification, null, 2));
     
-    // Obtém o chat e o nome do grupo
-    const chat = await client.getChatById(notification.chatId);
-    console.log('Chat obtido:', {
-      id: chat.id,
-      name: chat.name,
-      isGroup: chat.isGroup
-    });
-
-    // Obtém o nome do grupo diretamente do chat
-    const groupName = chat.name || 'Grupo não identificado';
+    // Obtém o nome do grupo
+    let groupName;
+    try {
+      console.log('Tentando obter chat...');
+      const chat = await client.getChatById(notification.chatId);
+      console.log('Chat obtido:', {
+        id: chat.id,
+        name: chat.name,
+        isGroup: chat.isGroup
+      });
+      groupName = chat.name || 'Grupo não identificado';
+      console.log('Nome do grupo:', groupName);
+    } catch (chatError) {
+      console.error('Erro ao obter chat:', chatError);
+      groupName = 'Grupo não identificado';
+    }
     
     // Obtém os nomes dos contatos
+    console.log('Obtendo nomes dos contatos...');
     const userNames = await Promise.all(
-      notification.recipientIds.map(userId => getContactName(client, userId))
+      notification.recipientIds.map(async (userId) => {
+        try {
+          return await getContactName(client, userId);
+        } catch (error) {
+          console.error('Erro ao obter nome do contato:', error);
+          return userId;
+        }
+      })
     );
     
     const userIdentifiers = userNames.join(', ');
+    console.log('Usuários:', userIdentifiers);
     
-    // Cria um único timestamp para todo o evento
-    const timestamp = new Intl.DateTimeFormat('pt-BR', {
-      timeZone: 'America/Sao_Paulo',
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false
-    }).format(new Date());
+    // Registra o evento
+    console.log('Registrando evento...');
+    await logEventToFile('LEAVE', userIdentifiers, groupName);
     
-    // Registra o evento com o timestamp fixo
-    await logEventToFile('LEAVE', userIdentifiers, groupName, timestamp);
-    
-    console.log('Saída registrada com sucesso:', {
-      timestamp,
-      users: userIdentifiers,
-      group: groupName
-    });
+    console.log('Evento de saída processado com sucesso');
   } catch (error) {
     console.error('Erro ao processar saída do grupo:', error);
     console.error('Stack:', error.stack);
     
     // Tenta registrar mesmo com erro
     try {
-      const timestamp = new Intl.DateTimeFormat('pt-BR', {
-        timeZone: 'America/Sao_Paulo',
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false
-      }).format(new Date());
-      
+      console.log('Tentando registro de fallback...');
       await logEventToFile(
         'LEAVE',
         notification.recipientIds.join(', '),
-        notification.chatId,
-        timestamp
+        notification.chatId
       );
     } catch (fallbackError) {
       console.error('Erro ao tentar registro de fallback:', fallbackError);

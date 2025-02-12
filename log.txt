@@ -79,11 +79,59 @@
 21/01/2025, 22:28:13 - JOIN - Usuário(s): 8994444959 - Grupo: ⚔️ Amigo das Facas ⚔️
 22/01/2025, 01:19:47 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
 22/01/2025, 01:20:01 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
-22/01/2025, 03:04:29 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
-22/01/2025, 03:07:53 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
-22/01/2025, 03:07:53 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
-22/01/2025, 03:09:02 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
-22/01/2025, 03:10:01 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
-22/01/2025, 03:10:12 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
-22/01/2025, 03:12:12 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
-22/01/2025, 03:27:46 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
+22/01/2025, 01:34:19 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
+22/01/2025, 01:34:37 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
+08/02/2025, 20:02:24 - LEAVE - Usuário(s): Linconln - Grupo: testeee
+08/02/2025, 20:02:57 - JOIN - Usuário(s): Linconln - Grupo: testeee
+08/02/2025, 20:03:13 - LEAVE - Usuário(s): Linconln - Grupo: testeee
+08/02/2025, 20:05:14 - JOIN - Usuário(s): Linconln - Grupo: testeee
+08/02/2025, 20:05:23 - LEAVE - Usuário(s): Linconln - Grupo: testeee
+08/02/2025, 20:06:57 - JOIN - Usuário(s): Linconln - Grupo: testeee
+08/02/2025, 20:07:06 - LEAVE - Usuário(s): Linconln - Grupo: testeee
+08/02/2025, 20:08:55 - JOIN - Usuário(s): Linconln - Grupo: testeee
+08/02/2025, 20:09:09 - LEAVE - Usuário(s): Linconln - Grupo: testeee
+08/02/2025, 20:09:27 - JOIN - Usuário(s): Linconln - Grupo: testeee
+08/02/2025, 20:09:36 - LEAVE - Usuário(s): Linconln - Grupo: testeee
+08/02/2025, 20:42:58 - LEAVE - Usuário(s): Eva - Grupo: Facas Centenárias • Rifas G1
+12/02/2025, 12:55:30 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste
+12/02/2025, 12:57:40 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste
+12/02/2025, 12:58:29 - JOIN - Usuário(s): 4598058640 - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+12/02/2025, 13:08:19 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste
+12/02/2025, 13:08:38 - JOIN - Usuário(s): 5599330378 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+12/02/2025, 13:08:52 - JOIN - Usuário(s): 13996577883 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+12/02/2025, 13:09:25 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste
+12/02/2025, 13:11:09 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: grupo teste 1
+12/02/2025, 13:11:44 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: grupo teste 1
+12/02/2025, 13:12:43 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: grupo teste 1
+12/02/2025, 13:16:50 - JOIN - Usuário(s): 14997996428 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+12/02/2025, 13:16:50 - JOIN - Usuário(s): 6798833228 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+12/02/2025, 13:17:17 - JOIN - Usuário(s): 3187241756 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+12/02/2025, 13:19:43 - JOIN - Usuário(s): 6292559256 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+12/02/2025, 13:20:46 - JOIN - Usuário(s): 8398087436 - Grupo: Rifa Monte Rey Cutelaria VIP #1
+12/02/2025, 13:21:12 - JOIN - Usuário(s): 11958446571 - Grupo: Virtumaq Rifa 
+12/02/2025, 13:21:12 - JOIN - Usuário(s): 8288269131 - Grupo: Virtumaq Rifa 
+12/02/2025, 13:36:56 - JOIN - Usuário(s): 7398551612 - Grupo: Rifas Alma Campeira 🔪🔥
+12/02/2025, 13:38:27 - JOIN - Usuário(s): 8698282992 - Grupo: Virtumaq Rifa 
+12/02/2025, 13:40:46 - JOIN - Usuário(s): 21964730365 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+12/02/2025, 13:49:43 - JOIN - Usuário(s): 5180600757 - Grupo: Rifas Premium I.B
+12/02/2025, 13:51:10 - JOIN - Usuário(s): 6598104165 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+12/02/2025, 13:58:05 - JOIN - Usuário(s): 5496960221 - Grupo: Super Promoções Ferlin 9
+12/02/2025, 14:05:40 - JOIN - Usuário(s): 19991576479 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+12/02/2025, 14:18:43 - JOIN - Usuário(s): 9391158201 - Grupo: Virtumaq Rifa 
+12/02/2025, 14:19:40 - JOIN - Usuário(s): 6799457381 - Grupo: Ellegance Facas Rifas
+12/02/2025, 14:20:59 - JOIN - Usuário(s): 6796529062 - Grupo: ⚔️ Amigo das Facas ⚔️
+12/02/2025, 14:23:13 - JOIN - Usuário(s): 21964211017 - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+12/02/2025, 14:24:02 - JOIN - Usuário(s): 4988374117 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+12/02/2025, 14:24:05 - JOIN - Usuário(s): 11986427852 - Grupo: Super Promoções Ferlin 9
+12/02/2025, 14:27:59 - JOIN - Usuário(s): 8199246681 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+12/02/2025, 14:28:42 - JOIN - Usuário(s): 6392211836 - Grupo: Ellegance Facas Rifas
+12/02/2025, 14:30:27 - JOIN - Usuário(s): 5499327847 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+12/02/2025, 14:34:01 - JOIN - Usuário(s): 11981595575 - Grupo: Máquina de Gestão •11/02 [06]
+12/02/2025, 14:44:03 - JOIN - Usuário(s): 4598487993 - Grupo: ⚔️⚔️🍀💎Mk Facas, Cutelos & Importados Rifas💎🍀 ⚔️⚔️
+12/02/2025, 14:45:16 - JOIN - Usuário(s): 21981652756 - Grupo: MyGroupMetrics / Suporte
+12/02/2025, 14:46:03 - JOIN - Usuário(s): 9295246016 - Grupo: Facas Centenárias • Rifas G1
+12/02/2025, 14:47:17 - JOIN - Usuário(s): 9182717831 - Grupo: ⚔️ Amigo das Facas ⚔️
+12/02/2025, 14:48:49 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste
+12/02/2025, 14:49:18 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste
+12/02/2025, 14:49:44 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste
+12/02/2025, 14:51:12 - JOIN - Usuário(s): 6584490180 - Grupo: Facas Centenárias • Rifas G1
