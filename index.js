@@ -348,21 +348,36 @@ const client = new Client({
       '--disable-accelerated-2d-canvas',
       '--no-first-run',
       '--no-zygote',
-      '--single-process', // <- este não funciona no Windows
-      '--disable-gpu'
+      '--disable-gpu',
+      '--disable-extensions',
+      '--disable-software-rasterizer',
+      '--ignore-certificate-errors',
+      '--allow-running-insecure-content'
     ],
-    headless: true
+    headless: 'new',
+    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium',
+    timeout: 0
   },
-  qrMaxRetries: 5,
+  qrMaxRetries: 10,
   authTimeoutMs: 0,
-  restartOnAuthFail: true
+  restartOnAuthFail: true,
+  takeoverOnConflict: true,
+  takeoverTimeoutMs: 0
 });
+
+// Adicionar logs para debug de inicialização
+console.log('\n=== INICIANDO CLIENTE WHATSAPP ===');
+console.log('Data/Hora:', new Date().toLocaleString());
+console.log('Ambiente:', DEPLOY_ENV);
+console.log('Diretório de trabalho:', process.cwd());
+console.log('Puppeteer executable:', process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium');
 
 client.on('qr', async (qr) => {
   console.log('\n=== NOVO QR CODE GERADO ===');
+  console.log('Data/Hora:', new Date().toLocaleString());
   console.log('Ambiente:', DEPLOY_ENV);
   
-  // Sempre gerar URLs do QR code
+  // Sempre gerar URLs do QR code primeiro
   const qrUrls = [
     `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qr)}`,
     `https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=${encodeURIComponent(qr)}`
@@ -373,26 +388,31 @@ client.on('qr', async (qr) => {
     console.log(`[${index + 1}] ${url}`);
   });
 
-  // Gerar QR code no terminal em qualquer ambiente
-  try {
-    console.log('\nQR Code em ASCII:');
-    qrcode.generate(qr, { small: true });
-  } catch (error) {
-    console.error('Erro ao gerar QR code no terminal:', error);
-  }
+  // Gerar QR code no terminal
+  console.log('\nQR Code em ASCII:');
+  qrcode.generate(qr, { small: true });
   
-  // Salvar o QR code em texto
-  try {
-    const qrLogPath = path.join(__dirname, 'qr-code.txt');
-    fs.writeFileSync(qrLogPath, qr);
-    console.log('\nQR Code em texto salvo em:', qrLogPath);
-    console.log('Conteúdo do QR code:', qr);
-  } catch (error) {
-    console.error('Erro ao salvar QR code em arquivo:', error);
-  }
+  // Imprimir o QR code como texto também
+  console.log('\nQR Code como texto (para backup):');
+  console.log(qr);
   
   console.log('\nAguardando leitura do QR Code...');
   console.log('Você tem 60 segundos para escanear antes de um novo QR code ser gerado.');
+});
+
+// Adicionar mais eventos para debug
+client.on('loading_screen', (percent, message) => {
+  console.log('CARREGANDO:', percent, '%', message);
+});
+
+client.on('authenticated', () => {
+  console.log('\n=== AUTENTICAÇÃO BEM-SUCEDIDA ===');
+  console.log('Data/Hora:', new Date().toLocaleString());
+});
+
+client.on('auth_failure', (msg) => {
+  console.error('\n=== FALHA NA AUTENTICAÇÃO ===');
+  console.error('Mensagem:', msg);
 });
 
 client.on('ready', async () => {

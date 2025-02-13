@@ -44,7 +44,12 @@ RUN apt-get update && apt-get install -y \
     wget \
     libgbm1 \
     libgbm-dev \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /usr/share/fonts/truetype/noto \
+    && wget -q https://noto-website.storage.googleapis.com/pkgs/NotoColorEmoji-unhinted.zip \
+    && unzip NotoColorEmoji-unhinted.zip -d /usr/share/fonts/truetype/noto \
+    && rm NotoColorEmoji-unhinted.zip \
+    && fc-cache -fv
 
 # Configurar variáveis de ambiente
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
@@ -72,10 +77,11 @@ COPY . .
 
 # Garantir permissões de escrita para todos os arquivos
 RUN chmod -R 777 /app && \
-    chown -R node:node /app
+    chown -R node:node /app && \
+    chmod -R 777 /usr/bin/chromium
 
 # Mudar para usuário não-root
 USER node
 
-# Iniciar a aplicação
-CMD ["node", "index.js"] 
+# Iniciar a aplicação com mais logs
+CMD ["sh", "-c", "node index.js 2>&1 | tee -a /app/logs/app.log"] 
