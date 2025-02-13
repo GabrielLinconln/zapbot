@@ -352,11 +352,16 @@ const client = new Client({
       '--disable-extensions',
       '--disable-software-rasterizer',
       '--ignore-certificate-errors',
-      '--allow-running-insecure-content'
+      '--allow-running-insecure-content',
+      '--window-size=1280,720'
     ],
     headless: 'new',
-    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium',
-    timeout: 0
+    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium-browser',
+    timeout: 0,
+    defaultViewport: {
+      width: 1280,
+      height: 720
+    }
   },
   qrMaxRetries: 10,
   authTimeoutMs: 0,
@@ -370,7 +375,17 @@ console.log('\n=== INICIANDO CLIENTE WHATSAPP ===');
 console.log('Data/Hora:', new Date().toLocaleString());
 console.log('Ambiente:', DEPLOY_ENV);
 console.log('Diretório de trabalho:', process.cwd());
-console.log('Puppeteer executable:', process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium');
+console.log('Puppeteer executable:', process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium-browser');
+
+// Verificar se o executável do Chromium existe
+try {
+  const chromiumPath = process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium-browser';
+  fs.accessSync(chromiumPath, fs.constants.X_OK);
+  console.log('Chromium encontrado em:', chromiumPath);
+} catch (error) {
+  console.error('ERRO: Chromium não encontrado ou sem permissão de execução');
+  console.error('Detalhes:', error);
+}
 
 client.on('qr', async (qr) => {
   console.log('\n=== NOVO QR CODE GERADO ===');
