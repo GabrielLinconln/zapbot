@@ -581,4 +581,68 @@ client.on('group_leave', async (notification) => {
   }
 });
 
+// Adicionar evento do QR code
+client.on('qr', async (qr) => {
+  console.log('\n=== NOVO QR CODE GERADO ===');
+  console.log('Data/Hora:', new Date().toLocaleString());
+  console.log('Ambiente:', DEPLOY_ENV);
+  
+  // Gerar URLs do QR code
+  const qrUrls = [
+    `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qr)}`,
+    `https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=${encodeURIComponent(qr)}`
+  ];
+  
+  // Imprimir URLs
+  console.log('\nQR Code disponível nas seguintes URLs:');
+  qrUrls.forEach((url, index) => {
+    console.log(`[${index + 1}] ${url}`);
+  });
+
+  // Gerar QR code no terminal
+  try {
+    console.log('\nQR Code em ASCII:');
+    qrcode.generate(qr, { small: true });
+  } catch (error) {
+    console.error('Erro ao gerar QR code em ASCII:', error);
+  }
+  
+  // Imprimir o QR code como texto
+  console.log('\nQR Code como texto (para backup):');
+  console.log(qr);
+  
+  // Salvar QR code em arquivo
+  try {
+    const qrLogPath = path.join(__dirname, 'qr-code.txt');
+    fs.writeFileSync(qrLogPath, qr);
+    console.log('\nQR Code salvo em:', qrLogPath);
+  } catch (error) {
+    console.error('Erro ao salvar QR code em arquivo:', error);
+  }
+  
+  console.log('\nAguardando leitura do QR Code...');
+  console.log('Você tem 60 segundos para escanear antes de um novo QR code ser gerado.');
+});
+
+// Adicionar eventos de autenticação
+client.on('loading_screen', (percent, message) => {
+  console.log('\n=== CARREGANDO ===');
+  console.log('Progresso:', percent, '%');
+  console.log('Mensagem:', message);
+});
+
+client.on('authenticated', () => {
+  console.log('\n=== AUTENTICAÇÃO BEM-SUCEDIDA ===');
+  console.log('Data/Hora:', new Date().toLocaleString());
+});
+
+client.on('auth_failure', (msg) => {
+  console.error('\n=== FALHA NA AUTENTICAÇÃO ===');
+  console.error('Data/Hora:', new Date().toLocaleString());
+  console.error('Mensagem:', msg);
+  
+  // Tentar reconectar em caso de falha
+  handleConnectionError(new Error('Falha na autenticação: ' + msg));
+});
+
 client.initialize();
