@@ -360,48 +360,50 @@ const client = new Client({
 
 client.on('qr', async (qr) => {
   console.log('\n=== NOVO QR CODE GERADO ===');
+  console.log('Ambiente:', DEPLOY_ENV);
   
-  // Gera QR code no terminal se estiver em ambiente local
-  if (DEPLOY_ENV === 'local') {
-    qrcode.generate(qr, { small: false });
-  }
-  
-  // Salva o QR code como imagem
-  try {
-    const qrImage = await require('qrcode').toFile(QR_FILE, qr);
-    console.log('QR Code salvo em:', QR_FILE);
-  } catch (error) {
-    console.error('Erro ao salvar QR code como imagem:', error);
-  }
-  
-  // Gera URLs para visualização do QR code
+  // Sempre gerar URLs do QR code
   const qrUrls = [
     `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qr)}`,
-    `https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=${encodeURIComponent(qr)}`,
+    `https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=${encodeURIComponent(qr)}`
   ];
   
   console.log('\nQR Code disponível nas seguintes URLs:');
   qrUrls.forEach((url, index) => {
     console.log(`[${index + 1}] ${url}`);
   });
+
+  // Gerar QR code no terminal em qualquer ambiente
+  try {
+    console.log('\nQR Code em ASCII:');
+    qrcode.generate(qr, { small: true });
+  } catch (error) {
+    console.error('Erro ao gerar QR code no terminal:', error);
+  }
   
-  // Salva o QR code em texto para backup
-  const qrLogPath = path.join(__dirname, 'qr-code.txt');
-  fs.writeFileSync(qrLogPath, qr);
-  console.log('\nQR Code em texto salvo em:', qrLogPath);
+  // Salvar o QR code em texto
+  try {
+    const qrLogPath = path.join(__dirname, 'qr-code.txt');
+    fs.writeFileSync(qrLogPath, qr);
+    console.log('\nQR Code em texto salvo em:', qrLogPath);
+    console.log('Conteúdo do QR code:', qr);
+  } catch (error) {
+    console.error('Erro ao salvar QR code em arquivo:', error);
+  }
   
-  // Notifica sobre o status
   console.log('\nAguardando leitura do QR Code...');
   console.log('Você tem 60 segundos para escanear antes de um novo QR code ser gerado.');
 });
 
 client.on('ready', async () => {
-  console.log('Cliente WhatsApp conectado.');
+  console.log('\n=== CLIENTE WHATSAPP CONECTADO ===');
+  console.log('Data/Hora:', new Date().toLocaleString());
+  console.log('Ambiente:', DEPLOY_ENV);
   
   // Lista todos os chats para debug
   try {
     const chats = await client.getChats();
-    console.log('\nChats disponíveis:');
+    console.log('\nGrupos disponíveis:');
     chats.forEach(chat => {
       if (chat.isGroup) {
         console.log({

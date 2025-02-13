@@ -135,4 +135,7 @@
 12/02/2025, 14:49:18 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste
 12/02/2025, 14:49:44 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste
 12/02/2025, 14:51:12 - JOIN - Usuário(s): 6584490180 - Grupo: Facas Centenárias • Rifas G1
+<<<<<<< HEAD
 12/02/2025, 14:55:20 - JOIN - Usuário(s): 27992234679 - Grupo: Virtumaq Rifa 
+=======
+>>>>>>> 9816afa1cf7586095b404f895f8a43fcd70e4993

@@ -58,7 +58,8 @@ WORKDIR /app
 
 # Criar diretórios necessários com permissões corretas
 RUN mkdir -p /app/.wwebjs_auth /app/.wwebjs_cache /app/logs && \
-    chmod -R 777 /app
+    chmod -R 777 /app && \
+    chown -R node:node /app
 
 # Copiar package.json e package-lock.json
 COPY package*.json ./
@@ -69,8 +70,12 @@ RUN npm install
 # Copiar o resto dos arquivos
 COPY . .
 
-# Garantir permissões de escrita
-RUN chmod -R 777 /app/logs
+# Garantir permissões de escrita para todos os arquivos
+RUN chmod -R 777 /app && \
+    chown -R node:node /app
+
+# Mudar para usuário não-root
+USER node
 
 # Iniciar a aplicação
 CMD ["node", "index.js"] 
