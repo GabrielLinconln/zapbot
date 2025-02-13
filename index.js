@@ -353,15 +353,19 @@ const client = new Client({
       '--disable-software-rasterizer',
       '--ignore-certificate-errors',
       '--allow-running-insecure-content',
-      '--window-size=1280,720'
+      '--window-size=1280,720',
+      '--disable-web-security',
+      '--allow-file-access-from-files',
+      '--disable-features=IsolateOrigins,site-per-process'
     ],
     headless: 'new',
-    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium-browser',
+    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome-stable',
     timeout: 0,
     defaultViewport: {
       width: 1280,
       height: 720
-    }
+    },
+    ignoreHTTPSErrors: true
   },
   qrMaxRetries: 10,
   authTimeoutMs: 0,
@@ -375,15 +379,15 @@ console.log('\n=== INICIANDO CLIENTE WHATSAPP ===');
 console.log('Data/Hora:', new Date().toLocaleString());
 console.log('Ambiente:', DEPLOY_ENV);
 console.log('Diretório de trabalho:', process.cwd());
-console.log('Puppeteer executable:', process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium-browser');
+console.log('Chrome executable:', process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome-stable');
 
-// Verificar se o executável do Chromium existe
+// Verificar se o executável do Chrome existe
 try {
-  const chromiumPath = process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium-browser';
-  fs.accessSync(chromiumPath, fs.constants.X_OK);
-  console.log('Chromium encontrado em:', chromiumPath);
+  const chromePath = process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome-stable';
+  fs.accessSync(chromePath, fs.constants.X_OK);
+  console.log('Google Chrome encontrado em:', chromePath);
 } catch (error) {
-  console.error('ERRO: Chromium não encontrado ou sem permissão de execução');
+  console.error('ERRO: Google Chrome não encontrado ou sem permissão de execução');
   console.error('Detalhes:', error);
 }
 
