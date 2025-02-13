@@ -356,23 +356,44 @@ const client = new Client({
       '--window-size=1280,720',
       '--disable-web-security',
       '--allow-file-access-from-files',
-      '--disable-features=IsolateOrigins,site-per-process'
+      '--disable-features=IsolateOrigins,site-per-process',
+      '--disable-blink-features=AutomationControlled'
     ],
     headless: 'new',
     executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome-stable',
-    timeout: 0,
+    timeout: 120000,
     defaultViewport: {
       width: 1280,
       height: 720
     },
-    ignoreHTTPSErrors: true
+    ignoreHTTPSErrors: true,
+    protocolTimeout: 120000
   },
   qrMaxRetries: 10,
-  authTimeoutMs: 0,
+  authTimeoutMs: 120000,
   restartOnAuthFail: true,
   takeoverOnConflict: true,
-  takeoverTimeoutMs: 0
+  takeoverTimeoutMs: 120000,
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
 });
+
+// Função para tentar reconectar em caso de erro
+async function handleConnectionError(error) {
+  console.error('\n=== ERRO DE CONEXÃO ===');
+  console.error('Tipo:', error.name);
+  console.error('Mensagem:', error.message);
+  console.error('Stack:', error.stack);
+  
+  try {
+    console.log('\nTentando reconectar...');
+    await client.destroy();
+    await client.initialize();
+  } catch (reconnectError) {
+    console.error('Erro ao tentar reconectar:', reconnectError);
+    // Aguarda 1 minuto antes de tentar novamente
+    setTimeout(() => handleConnectionError(reconnectError), 60000);
+  }
+}
 
 // Adicionar logs para debug de inicialização
 console.log('\n=== INICIANDO CLIENTE WHATSAPP ===');
@@ -391,47 +412,10 @@ try {
   console.error('Detalhes:', error);
 }
 
-client.on('qr', async (qr) => {
-  console.log('\n=== NOVO QR CODE GERADO ===');
-  console.log('Data/Hora:', new Date().toLocaleString());
-  console.log('Ambiente:', DEPLOY_ENV);
-  
-  // Sempre gerar URLs do QR code primeiro
-  const qrUrls = [
-    `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qr)}`,
-    `https://chart.googleapis.com/chart?cht=qr&chs=300x300&chl=${encodeURIComponent(qr)}`
-  ];
-  
-  console.log('\nQR Code disponível nas seguintes URLs:');
-  qrUrls.forEach((url, index) => {
-    console.log(`[${index + 1}] ${url}`);
-  });
-
-  // Gerar QR code no terminal
-  console.log('\nQR Code em ASCII:');
-  qrcode.generate(qr, { small: true });
-  
-  // Imprimir o QR code como texto também
-  console.log('\nQR Code como texto (para backup):');
-  console.log(qr);
-  
-  console.log('\nAguardando leitura do QR Code...');
-  console.log('Você tem 60 segundos para escanear antes de um novo QR code ser gerado.');
-});
-
-// Adicionar mais eventos para debug
-client.on('loading_screen', (percent, message) => {
-  console.log('CARREGANDO:', percent, '%', message);
-});
-
-client.on('authenticated', () => {
-  console.log('\n=== AUTENTICAÇÃO BEM-SUCEDIDA ===');
-  console.log('Data/Hora:', new Date().toLocaleString());
-});
-
-client.on('auth_failure', (msg) => {
-  console.error('\n=== FALHA NA AUTENTICAÇÃO ===');
-  console.error('Mensagem:', msg);
+client.on('disconnected', (reason) => {
+  console.log('\n=== CLIENTE DESCONECTADO ===');
+  console.log('Motivo:', reason);
+  handleConnectionError(new Error('Cliente desconectado: ' + reason));
 });
 
 client.on('ready', async () => {
@@ -439,55 +423,75 @@ client.on('ready', async () => {
   console.log('Data/Hora:', new Date().toLocaleString());
   console.log('Ambiente:', DEPLOY_ENV);
   
-  // Lista todos os chats para debug
-  try {
-    const chats = await client.getChats();
-    console.log('\nGrupos disponíveis:');
-    chats.forEach(chat => {
-      if (chat.isGroup) {
-        console.log({
-          id: chat.id,
-          name: chat.name,
-          participants: chat.participants?.length || 0
-        });
+  // Lista todos os chats para debug com retry
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      console.log(`\nTentativa ${attempt} de listar chats...`);
+      const chats = await client.getChats();
+      console.log('\nGrupos disponíveis:');
+      let groupCount = 0;
+      
+      chats.forEach(chat => {
+        if (chat.isGroup) {
+          groupCount++;
+          console.log({
+            id: chat.id,
+            name: chat.name,
+            participants: chat.participants?.length || 0
+          });
+        }
+      });
+      
+      console.log(`Total de grupos encontrados: ${groupCount}`);
+      break; // Se chegou aqui, deu certo
+    } catch (error) {
+      console.error(`Erro na tentativa ${attempt} de listar chats:`, error);
+      if (attempt === 3) {
+        console.error('Falha em todas as tentativas de listar chats');
+      } else {
+        await new Promise(resolve => setTimeout(resolve, 5000)); // Espera 5 segundos antes da próxima tentativa
       }
-    });
-  } catch (error) {
-    console.error('Erro ao listar chats:', error);
+    }
   }
 });
 
+// Melhorar o tratamento de eventos de grupo
 client.on('group_join', async (notification) => {
   try {
-    console.log('\nNOVO EVENTO DE ENTRADA NO GRUPO');
+    console.log('\n=== NOVO EVENTO DE ENTRADA NO GRUPO ===');
+    console.log('Data/Hora:', new Date().toLocaleString());
     console.log('Notification raw:', JSON.stringify(notification, null, 2));
     
-    // Obtém o nome do grupo
+    // Obtém o nome do grupo com retry
     let groupName;
-    try {
-      console.log('Tentando obter chat...');
-      const chat = await client.getChatById(notification.chatId);
-      console.log('Chat obtido:', {
-        id: chat.id,
-        name: chat.name,
-        isGroup: chat.isGroup
-      });
-      groupName = chat.name || 'Grupo não identificado';
-      console.log('Nome do grupo:', groupName);
-    } catch (chatError) {
-      console.error('Erro ao obter chat:', chatError);
-      groupName = 'Grupo não identificado';
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        console.log(`Tentativa ${attempt} de obter chat...`);
+        const chat = await client.getChatById(notification.chatId);
+        groupName = chat.name || 'Grupo não identificado';
+        console.log('Nome do grupo:', groupName);
+        break;
+      } catch (error) {
+        console.error(`Erro na tentativa ${attempt} de obter chat:`, error);
+        if (attempt === 3) {
+          groupName = 'Grupo não identificado';
+        } else {
+          await new Promise(resolve => setTimeout(resolve, 3000));
+        }
+      }
     }
     
-    // Obtém os nomes dos contatos
-    console.log('Obtendo nomes dos contatos...');
+    // Obtém os nomes dos contatos com retry
     const userNames = await Promise.all(
       notification.recipientIds.map(async (userId) => {
-        try {
-          return await getContactName(client, userId);
-        } catch (error) {
-          console.error('Erro ao obter nome do contato:', error);
-          return userId;
+        for (let attempt = 1; attempt <= 3; attempt++) {
+          try {
+            return await getContactName(client, userId);
+          } catch (error) {
+            console.error(`Erro na tentativa ${attempt} de obter nome do contato:`, error);
+            if (attempt === 3) return userId;
+            await new Promise(resolve => setTimeout(resolve, 2000));
+          }
         }
       })
     );
@@ -495,11 +499,22 @@ client.on('group_join', async (notification) => {
     const userIdentifiers = userNames.join(', ');
     console.log('Usuários:', userIdentifiers);
     
-    // Registra o evento
-    console.log('Registrando evento...');
-    await logEventToFile('JOIN', userIdentifiers, groupName);
-    
-    console.log('Evento de entrada processado com sucesso');
+    // Registra o evento com retry
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        console.log(`Tentativa ${attempt} de registrar evento...`);
+        await logEventToFile('JOIN', userIdentifiers, groupName);
+        console.log('Evento de entrada registrado com sucesso');
+        break;
+      } catch (error) {
+        console.error(`Erro na tentativa ${attempt} de registrar evento:`, error);
+        if (attempt === 3) {
+          console.error('Falha em todas as tentativas de registrar evento');
+        } else {
+          await new Promise(resolve => setTimeout(resolve, 3000));
+        }
+      }
+    }
   } catch (error) {
     console.error('Erro ao processar entrada no grupo:', error);
   }
