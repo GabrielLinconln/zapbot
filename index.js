@@ -134,9 +134,8 @@ async function recordEventSupabase(timestamp, eventType, user, group) {
     
     console.log('Timestamp formatado:', formattedTimestamp);
 
-    // Primeiro, criar ou atualizar a estrutura da tabela
+    // Criar tabela com estrutura simplificada
     const setupTableQuery = `
-      -- Criar tabela base se não existir
       CREATE TABLE IF NOT EXISTS "${tableName}" (
         id serial PRIMARY KEY,
         timestamp timestamptz NOT NULL,
@@ -144,35 +143,8 @@ async function recordEventSupabase(timestamp, eventType, user, group) {
         user_id varchar(255) NOT NULL,
         group_name text NOT NULL,
         created_at timestamptz NOT NULL DEFAULT now(),
-        event_key text
+        event_key text NOT NULL DEFAULT 'legacy'
       );
-
-      -- Adicionar coluna event_key se não existir
-      DO $$
-      BEGIN
-        IF NOT EXISTS (
-          SELECT 1 FROM information_schema.columns 
-          WHERE table_name = '${tableName}' 
-          AND column_name = 'event_key'
-        ) THEN
-          ALTER TABLE "${tableName}" ADD COLUMN event_key text;
-        END IF;
-      END $$;
-
-      -- Garantir que event_key seja NOT NULL
-      ALTER TABLE "${tableName}" ALTER COLUMN event_key SET NOT NULL;
-
-      -- Adicionar índice único se não existir
-      DO $$
-      BEGIN
-        IF NOT EXISTS (
-          SELECT 1 FROM pg_indexes 
-          WHERE tablename = '${tableName}' 
-          AND indexname = '${tableName}_event_key_idx'
-        ) THEN
-          CREATE UNIQUE INDEX ${tableName}_event_key_idx ON "${tableName}" (event_key);
-        END IF;
-      END $$;
     `;
 
     const { error: setupError } = await supabase.rpc('exec_sql', { 
@@ -180,37 +152,14 @@ async function recordEventSupabase(timestamp, eventType, user, group) {
     });
 
     if (setupError) {
-      console.error('Erro ao configurar tabela:', setupError);
+      console.error('Erro ao criar tabela:', setupError);
       throw setupError;
     }
 
     // Gerar event_key único
     const eventKey = `${tableName}_${user.replace(/[^a-zA-Z0-9]/g, '_')}_${eventType}_${formattedTimestamp}`;
 
-    // Verificar se já existe registro similar (dentro de 30 segundos)
-    const checkQuery = `
-      SELECT COUNT(*) 
-      FROM "${tableName}" 
-      WHERE user_id = '${user.replace(/'/g, "''")}'
-      AND event_type = '${eventType}'
-      AND ABS(EXTRACT(EPOCH FROM (timestamp - '${formattedTimestamp}'::timestamptz))) <= 30;
-    `;
-
-    const { data: checkResult, error: checkError } = await supabase.rpc('exec_sql', { 
-      query: checkQuery 
-    });
-
-    if (checkError) {
-      console.error('Erro ao verificar duplicatas:', checkError);
-      throw checkError;
-    }
-
-    if (checkResult && checkResult[0]?.count > 0) {
-      console.log('Evento similar encontrado nos últimos 30 segundos, ignorando...');
-      return false;
-    }
-
-    // Inserir o registro
+    // Inserir o registro com uma única query
     const insertQuery = `
       INSERT INTO "${tableName}" (
         timestamp,
@@ -250,6 +199,27 @@ async function recordEventSupabase(timestamp, eventType, user, group) {
     console.error('Erro ao registrar no Supabase:', error);
     if (error.details) console.error('Detalhes:', error.details);
     if (error.hint) console.error('Dica:', error.hint);
+    
+    // Tentar criar índice único se não existir
+    try {
+      const createIndexQuery = `
+        DO $$
+        BEGIN
+          IF NOT EXISTS (
+            SELECT 1 FROM pg_indexes 
+            WHERE tablename = '${tableName}' 
+            AND indexname = '${tableName}_event_key_idx'
+          ) THEN
+            CREATE UNIQUE INDEX ${tableName}_event_key_idx ON "${tableName}" (event_key);
+          END IF;
+        END $$;
+      `;
+      
+      await supabase.rpc('exec_sql', { query: createIndexQuery });
+    } catch (indexError) {
+      console.error('Erro ao criar índice:', indexError);
+    }
+    
     throw error;
   }
 }
@@ -362,6 +332,11 @@ async function getContactName(client, userId) {
   }
 }
 
+// Sistema de Logs e Registro de Eventos
+// - Logs locais são salvos em log.txt para referência e debug
+// - Eventos são registrados no Supabase com timestamp preciso
+// - Cada evento tem uma chave única para evitar duplicatas
+// - Sistema robusto para lidar com múltiplos grupos simultaneamente
 async function logEventToFile(eventType, user, group, providedTimestamp = null) {
   try {
     const timestamp = providedTimestamp || new Date().toLocaleString('pt-BR', {
