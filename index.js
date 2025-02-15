@@ -134,8 +134,11 @@ async function recordEventSupabase(timestamp, eventType, user, group) {
     
     console.log('Timestamp formatado:', formattedTimestamp);
 
-    // Criar tabela com estrutura simplificada
+    // Criar tabela e índice em uma única transação
     const setupTableQuery = `
+      BEGIN;
+      
+      -- Criar tabela se não existir
       CREATE TABLE IF NOT EXISTS "${tableName}" (
         id serial PRIMARY KEY,
         timestamp timestamptz NOT NULL,
@@ -145,6 +148,20 @@ async function recordEventSupabase(timestamp, eventType, user, group) {
         created_at timestamptz NOT NULL DEFAULT now(),
         event_key text NOT NULL DEFAULT 'legacy'
       );
+
+      -- Criar índice único
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM pg_indexes 
+          WHERE tablename = '${tableName}' 
+          AND indexname = '${tableName}_event_key_idx'
+        ) THEN
+          CREATE UNIQUE INDEX ${tableName}_event_key_idx ON "${tableName}" (event_key);
+        END IF;
+      END $$;
+
+      COMMIT;
     `;
 
     const { error: setupError } = await supabase.rpc('exec_sql', { 
@@ -152,14 +169,14 @@ async function recordEventSupabase(timestamp, eventType, user, group) {
     });
 
     if (setupError) {
-      console.error('Erro ao criar tabela:', setupError);
+      console.error('Erro ao configurar tabela:', setupError);
       throw setupError;
     }
 
     // Gerar event_key único
     const eventKey = `${tableName}_${user.replace(/[^a-zA-Z0-9]/g, '_')}_${eventType}_${formattedTimestamp}`;
 
-    // Inserir o registro com uma única query
+    // Tentar inserir o registro
     const insertQuery = `
       INSERT INTO "${tableName}" (
         timestamp,
@@ -174,7 +191,8 @@ async function recordEventSupabase(timestamp, eventType, user, group) {
         '${group.replace(/'/g, "''")}',
         '${eventKey}'
       )
-      ON CONFLICT (event_key) DO NOTHING
+      ON CONFLICT ON CONSTRAINT ${tableName}_event_key_idx 
+      DO NOTHING
       RETURNING id, timestamp, event_type, user_id, group_name;
     `;
 
@@ -183,8 +201,35 @@ async function recordEventSupabase(timestamp, eventType, user, group) {
     });
 
     if (insertError) {
-      console.error('Erro ao inserir registro:', insertError);
-      throw insertError;
+      // Se falhar com ON CONFLICT, tentar inserção simples
+      console.log('Tentando inserção alternativa...');
+      const simpleInsertQuery = `
+        INSERT INTO "${tableName}" (
+          timestamp,
+          event_type,
+          user_id,
+          group_name,
+          event_key
+        ) VALUES (
+          '${formattedTimestamp}'::timestamptz,
+          '${eventType}',
+          '${user.replace(/'/g, "''")}',
+          '${group.replace(/'/g, "''")}',
+          '${eventKey}'
+        )
+        RETURNING id, timestamp, event_type, user_id, group_name;
+      `;
+
+      const { data: simpleResult, error: simpleError } = await supabase.rpc('exec_sql', {
+        query: simpleInsertQuery
+      });
+
+      if (simpleError) {
+        console.error('Erro na inserção alternativa:', simpleError);
+        throw simpleError;
+      }
+
+      insertResult = simpleResult;
     }
 
     if (!insertResult || insertResult.length === 0) {
@@ -199,27 +244,6 @@ async function recordEventSupabase(timestamp, eventType, user, group) {
     console.error('Erro ao registrar no Supabase:', error);
     if (error.details) console.error('Detalhes:', error.details);
     if (error.hint) console.error('Dica:', error.hint);
-    
-    // Tentar criar índice único se não existir
-    try {
-      const createIndexQuery = `
-        DO $$
-        BEGIN
-          IF NOT EXISTS (
-            SELECT 1 FROM pg_indexes 
-            WHERE tablename = '${tableName}' 
-            AND indexname = '${tableName}_event_key_idx'
-          ) THEN
-            CREATE UNIQUE INDEX ${tableName}_event_key_idx ON "${tableName}" (event_key);
-          END IF;
-        END $$;
-      `;
-      
-      await supabase.rpc('exec_sql', { query: createIndexQuery });
-    } catch (indexError) {
-      console.error('Erro ao criar índice:', indexError);
-    }
-    
     throw error;
   }
 }
