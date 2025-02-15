@@ -122,6 +122,11 @@ async function recordEventSupabase(timestamp, eventType, user, group) {
   console.log('Dados a registrar:', { timestamp, eventType, user, group });
   
   try {
+    // Validar dados de entrada
+    if (!timestamp || !eventType || !user || !group) {
+      throw new Error('Dados incompletos para registro');
+    }
+
     // Garantir que o timestamp seja válido
     let formattedTimestamp;
     if (timestamp instanceof Date) {
@@ -132,6 +137,12 @@ async function recordEventSupabase(timestamp, eventType, user, group) {
       formattedTimestamp = formatDateForSupabase(timestamp);
     }
     
+    // Validar timestamp formatado
+    if (!Date.parse(formattedTimestamp)) {
+      console.error('Timestamp inválido:', formattedTimestamp);
+      formattedTimestamp = new Date().toISOString();
+    }
+    
     console.log('Timestamp formatado:', formattedTimestamp);
 
     // Criar tabela se não existir
@@ -139,7 +150,7 @@ async function recordEventSupabase(timestamp, eventType, user, group) {
       CREATE TABLE IF NOT EXISTS "${tableName}" (
         id serial PRIMARY KEY,
         timestamp timestamptz NOT NULL,
-        event_type varchar(10) NOT NULL,
+        event_type varchar(10) NOT NULL CHECK (event_type IN ('JOIN', 'LEAVE')),
         user_id varchar(255) NOT NULL,
         group_name text NOT NULL,
         created_at timestamptz NOT NULL DEFAULT now(),
@@ -157,10 +168,24 @@ async function recordEventSupabase(timestamp, eventType, user, group) {
       throw createError;
     }
 
-    // Gerar event_key único
-    const eventKey = `${tableName}_${user.replace(/[^a-zA-Z0-9]/g, '_')}_${eventType}_${formattedTimestamp}`;
+    // Sanitizar dados para o event_key
+    const sanitizedUser = user.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 50);
+    const sanitizedTimestamp = formattedTimestamp.replace(/[^0-9]/g, '');
+    
+    // Gerar event_key único e determinístico
+    const eventKey = `${tableName}_${sanitizedUser}_${eventType}_${sanitizedTimestamp}`;
+    console.log('Event Key gerado:', eventKey);
 
-    // Tentar inserir o registro
+    // Preparar dados para inserção
+    const insertData = {
+      timestamp: formattedTimestamp,
+      event_type: eventType,
+      user_id: user.replace(/'/g, "''"),
+      group_name: group.replace(/'/g, "''"),
+      event_key: eventKey
+    };
+
+    // Query de inserção com validações
     const insertQuery = `
       INSERT INTO "${tableName}" (
         timestamp,
@@ -169,24 +194,32 @@ async function recordEventSupabase(timestamp, eventType, user, group) {
         group_name,
         event_key
       ) VALUES (
-        '${formattedTimestamp}'::timestamptz,
-        '${eventType}',
-        '${user.replace(/'/g, "''")}',
-        '${group.replace(/'/g, "''")}',
-        '${eventKey}'
+        $1::timestamptz,
+        $2,
+        $3,
+        $4,
+        $5
       )
       ON CONFLICT ON CONSTRAINT ${tableName}_event_key_unique 
       DO NOTHING
       RETURNING id, timestamp, event_type, user_id, group_name;
     `;
 
+    // Tentar inserção com prepared statement
     const { data: insertResult, error: insertError } = await supabase.rpc('exec_sql', {
-      query: insertQuery
+      query: insertQuery,
+      params: [
+        insertData.timestamp,
+        insertData.event_type,
+        insertData.user_id,
+        insertData.group_name,
+        insertData.event_key
+      ]
     });
 
     if (insertError) {
-      // Se falhar com ON CONFLICT, tentar inserção simples
       console.log('Tentando inserção alternativa...');
+      // Fallback para inserção simples se prepared statement falhar
       const simpleInsertQuery = `
         INSERT INTO "${tableName}" (
           timestamp,
@@ -195,11 +228,11 @@ async function recordEventSupabase(timestamp, eventType, user, group) {
           group_name,
           event_key
         ) VALUES (
-          '${formattedTimestamp}'::timestamptz,
-          '${eventType}',
-          '${user.replace(/'/g, "''")}',
-          '${group.replace(/'/g, "''")}',
-          '${eventKey}'
+          '${insertData.timestamp}'::timestamptz,
+          '${insertData.event_type}',
+          '${insertData.user_id}',
+          '${insertData.group_name}',
+          '${insertData.event_key}'
         )
         RETURNING id, timestamp, event_type, user_id, group_name;
       `;
