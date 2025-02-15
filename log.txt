@@ -139,3 +139,576 @@
 12/02/2025, 14:55:20 - JOIN - Usuário(s): 27992234679 - Grupo: Virtumaq Rifa 
 =======
 >>>>>>> 9816afa1cf7586095b404f895f8a43fcd70e4993
+13/02/2025, 01:51:34 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: grupo teste 1
+13/02/2025, 01:51:50 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: grupo teste 1
+13/02/2025, 01:52:11 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: grupo teste 1
+13/02/2025, 01:54:46 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: grupo teste 1
+13/02/2025, 01:55:04 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: grupo teste 1
+13/02/2025, 01:55:33 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: grupo teste 1
+13/02/2025, 01:56:37 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: grupo teste 1
+13/02/2025, 01:56:50 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: grupo teste 1
+13/02/2025, 01:58:08 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: grupo teste 1
+13/02/2025, 01:58:53 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: grupo teste 1
+13/02/2025, 02:03:04 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: grupo teste 1
+13/02/2025, 02:03:22 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: grupo teste 1
+13/02/2025, 02:04:38 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: grupo teste 1
+13/02/2025, 02:04:49 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: grupo teste 1
+13/02/2025, 02:07:11 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste tabela
+13/02/2025, 02:07:41 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste tabela
+13/02/2025, 02:10:30 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste tabela
+13/02/2025, 02:12:39 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste tabela
+13/02/2025, 02:15:30 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste tabela
+13/02/2025, 02:15:54 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: grupo teste 1
+13/02/2025, 02:16:46 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste tabela
+13/02/2025, 02:16:47 - JOIN - Usuário(s): 6984627376 - Grupo: #01 NETWORKING - Ecommerce Visionários 🏆📦
+13/02/2025, 02:16:51 - JOIN - Usuário(s): 21993269881 - Grupo: #01 NETWORKING - Ecommerce Visionários 🏆📦
+13/02/2025, 02:16:52 - JOIN - Usuário(s): 3181111945 - Grupo: #01 NETWORKING - Ecommerce Visionários 🏆📦
+13/02/2025, 02:17:20 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste tabela
+13/02/2025, 02:21:36 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste tabela
+13/02/2025, 02:21:51 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste tabela
+13/02/2025, 02:25:46 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste tabela
+13/02/2025, 02:29:51 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste tabela
+13/02/2025, 02:33:15 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste tabela
+13/02/2025, 03:23:31 - JOIN - Usuário(s): 8296886500 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 05:50:21 - JOIN - Usuário(s): 7381500733 - Grupo: Super Promoções Ferlin 9
+13/02/2025, 06:59:37 - JOIN - Usuário(s): 7597080468 - Grupo: ELFO Emporio BBQ Grupo 1 Rifas Facas Premium 💎
+13/02/2025, 07:21:19 - JOIN - Usuário(s): 11982950786 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+13/02/2025, 07:22:16 - JOIN - Usuário(s): 12974017974 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+13/02/2025, 07:22:18 - JOIN - Usuário(s): 4898071324 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+13/02/2025, 07:22:22 - JOIN - Usuário(s): 6696299691 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+13/02/2025, 07:22:24 - JOIN - Usuário(s): 6792469750 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+13/02/2025, 07:22:27 - JOIN - Usuário(s): 4799548699 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+13/02/2025, 07:22:30 - JOIN - Usuário(s): 4491830977 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+13/02/2025, 07:22:34 - JOIN - Usuário(s): 6191160598 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+13/02/2025, 07:22:39 - JOIN - Usuário(s): 6191152784 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+13/02/2025, 07:22:42 - JOIN - Usuário(s): 22992052275 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+13/02/2025, 07:24:45 - JOIN - Usuário(s): 3193912339 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 07:28:28 - JOIN - Usuário(s): 7799626295 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+13/02/2025, 08:00:43 - JOIN - Usuário(s): 9991330530 - Grupo: ⚔️⚔️🍀💎Mk Facas, Cutelos & Importados Rifas💎🍀 ⚔️⚔️
+13/02/2025, 08:23:22 - JOIN - Usuário(s): 7599072104 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 08:26:51 - JOIN - Usuário(s): 7996801792 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 08:27:07 - JOIN - Usuário(s): 21969191936 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+13/02/2025, 08:27:13 - JOIN - Usuário(s): 3173016493 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+13/02/2025, 08:27:49 - JOIN - Usuário(s): Studio NewFile - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+13/02/2025, 08:37:26 - JOIN - Usuário(s): 4196445005 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+13/02/2025, 08:45:28 - JOIN - Usuário(s): 6784483253 - Grupo: Virtumaq Rifa 
+13/02/2025, 08:54:40 - JOIN - Usuário(s): 3189238909 - Grupo: ⚔️⚔️🍀💎Mk Facas, Cutelos & Importados Rifas💎🍀 ⚔️⚔️
+13/02/2025, 08:54:52 - JOIN - Usuário(s): 9992260756 - Grupo: ⚔️⚔️🍀💎Mk Facas, Cutelos & Importados Rifas💎🍀 ⚔️⚔️
+13/02/2025, 08:58:27 - JOIN - Usuário(s): 18981884030 - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+13/02/2025, 09:01:57 - JOIN - Usuário(s): 4497543485 - Grupo: Rifas Alma Campeira 🔪🔥
+13/02/2025, 09:13:36 - JOIN - Usuário(s): 19997611575 - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+13/02/2025, 09:16:04 - JOIN - Usuário(s): 9691378071 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+13/02/2025, 09:16:19 - LEAVE - Usuário(s): Leandro Soares - Grupo: Facas Centenárias • Rifas G1
+13/02/2025, 09:17:41 - LEAVE - Usuário(s): Leandro Soares - Grupo: Facas Centenárias • Rifas G2
+13/02/2025, 09:18:00 - JOIN - Usuário(s): 6493347770 - Grupo: Super Promoções Ferlin 9
+13/02/2025, 09:26:07 - JOIN - Usuário(s): 5198944215 - Grupo: EDU - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 09:33:34 - JOIN - Usuário(s): 3186442377 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 09:39:36 - JOIN - Usuário(s): Cristiano Ferreira - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+13/02/2025, 09:41:59 - JOIN - Usuário(s): 6193710010 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 09:43:24 - JOIN - Usuário(s): 5185380397 - Grupo: SDZL - A ÚLTIMA TENTATIVA! #10
+13/02/2025, 10:01:34 - JOIN - Usuário(s): 5199898918 - Grupo: Virtumaq Rifa 
+13/02/2025, 10:02:01 - JOIN - Usuário(s): 16996707717 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 10:20:21 - JOIN - Usuário(s): 8492237030 - Grupo: Rifas Premium I.B
+13/02/2025, 10:22:19 - JOIN - Usuário(s): 5381117534 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+13/02/2025, 10:23:54 - JOIN - Usuário(s): 6194228853 - Grupo: Virtumaq Rifa 
+13/02/2025, 10:29:41 - JOIN - Usuário(s): 9991836990 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 10:31:12 - JOIN - Usuário(s): 17991975301 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 10:33:19 - JOIN - Usuário(s): 11962591940 - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+13/02/2025, 10:33:24 - JOIN - Usuário(s): 8287737478 - Grupo: Leilão Black • IB
+13/02/2025, 10:33:43 - JOIN - Usuário(s): 6596641216 - Grupo: Leilão Black • IB
+13/02/2025, 10:40:09 - JOIN - Usuário(s): 5181016918 - Grupo: Rifas Premium I.B
+13/02/2025, 11:00:58 - JOIN - Usuário(s): 19971198471 - Grupo: Leilão Black • IB
+13/02/2025, 11:01:15 - JOIN - Usuário(s): 7591435904 - Grupo: Leilão Black • IB
+13/02/2025, 11:04:24 - JOIN - Usuário(s): 3288261902 - Grupo: PROMO 75🧜🏼‍♀️💘🛍️
+13/02/2025, 11:10:37 - JOIN - Usuário(s): 3496635949 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+13/02/2025, 11:11:04 - JOIN - Usuário(s): 22999692615 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 11:21:43 - JOIN - Usuário(s): 8388907815 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 11:27:54 - JOIN - Usuário(s): 8599406510 - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+13/02/2025, 11:28:21 - JOIN - Usuário(s): 4199741271 - Grupo: Facas Centenárias • Rifas G1
+13/02/2025, 11:32:13 - JOIN - Usuário(s): 19984381983 - Grupo: Vinícius Lopes | Flow Flux
+13/02/2025, 11:44:04 - JOIN - Usuário(s): 5196123591 - Grupo: Super Promoções Ferlin 9
+13/02/2025, 11:50:38 - JOIN - Usuário(s): 7499782524 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 12:24:34 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: grupo teste 1
+13/02/2025, 12:25:01 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste tabela
+13/02/2025, 12:26:07 - JOIN - Usuário(s): 8591836968 - Grupo: ⚔️⚔️🍀💎Mk Facas, Cutelos & Importados Rifas💎🍀 ⚔️⚔️
+13/02/2025, 12:27:18 - LEAVE - Usuário(s): Everaldo Auto Tintas Sorriso - Grupo: Rifa Monte Rey Cutelaria VIP #1
+13/02/2025, 12:28:16 - JOIN - Usuário(s): 11967947078 - Grupo: Comunidade ZapGPT | @omarcusdev
+13/02/2025, 12:28:25 - JOIN - Usuário(s): 8386176728 - Grupo: Facas Centenárias • Rifas G1
+13/02/2025, 12:28:45 - JOIN - Usuário(s): 5484181074 - Grupo: Rifas Premium I.B
+13/02/2025, 12:28:51 - JOIN - Usuário(s): 8587200909 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 12:28:59 - JOIN - Usuário(s): 11999905980 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 12:31:56 - JOIN - Usuário(s): 11940294280 - Grupo: PROMO 75🧜🏼‍♀️💘🛍️
+13/02/2025, 12:36:13 - LEAVE - Usuário(s): Rodrigo - Grupo: Facas Centenárias • Rifas G1
+13/02/2025, 12:36:51 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste tabela
+13/02/2025, 12:36:51 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste tabela
+13/02/2025, 12:36:51 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste tabela
+13/02/2025, 12:44:33 - JOIN - Usuário(s): 3184848784 - Grupo: Acervo deebs.ai
+13/02/2025, 12:46:47 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste tabela
+13/02/2025, 12:51:37 - JOIN - Usuário(s): 4498470785 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+13/02/2025, 12:53:40 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste tabela
+13/02/2025, 12:55:37 - JOIN - Usuário(s): 8585327134 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 13:02:26 - JOIN - Usuário(s): 8596475519 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 13:11:14 - LEAVE - Usuário(s): Eloi - Grupo: Facas Centenárias • Rifas G1
+13/02/2025, 13:13:22 - JOIN - Usuário(s): 3892144000 - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+13/02/2025, 13:15:54 - JOIN - Usuário(s): 17996690312 - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+13/02/2025, 13:18:09 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste tabela
+13/02/2025, 13:19:55 - JOIN - Usuário(s): Kauana - Grupo: Vinícius Lopes | Flow Flux
+13/02/2025, 13:22:55 - JOIN - Usuário(s): 8481753548 - Grupo: TênisLinks 70🔗
+13/02/2025, 13:25:06 - JOIN - Usuário(s): 9291598011 - Grupo: ELFO Emporio BBQ Grupo 1 Rifas Facas Premium 💎
+13/02/2025, 13:29:33 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste tabela
+13/02/2025, 13:30:18 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste tabela
+13/02/2025, 13:34:16 - JOIN - Usuário(s): 7196206879 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 13:34:41 - JOIN - Usuário(s): 6792267266 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 13:35:44 - JOIN - Usuário(s): 7196206879 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+13/02/2025, 13:42:23 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste tabela
+13/02/2025, 13:44:46 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste tabela
+13/02/2025, 13:46:37 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste tabela
+13/02/2025, 13:47:09 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste tabela
+13/02/2025, 13:47:12 - JOIN - Usuário(s): 15997528624 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 13:47:46 - JOIN - Usuário(s): 4797248616 - Grupo: ⚔️ Amigo das Facas ⚔️
+13/02/2025, 13:54:32 - JOIN - Usuário(s): 9584101256 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 13:54:44 - JOIN - Usuário(s): 8198879879 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 13:55:04 - JOIN - Usuário(s): 9192643574 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 14:02:25 - JOIN - Usuário(s): 11985773354 - Grupo: #01 NETWORKING - Ecommerce Visionários 🏆📦
+13/02/2025, 14:18:13 - JOIN - Usuário(s): 27999300381 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+13/02/2025, 14:25:07 - JOIN - Usuário(s): 11914007939 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+13/02/2025, 14:25:37 - JOIN - Usuário(s): 3173507120 - Grupo: Rifas Premium I.B
+13/02/2025, 14:27:21 - JOIN - Usuário(s): 8386652763 - Grupo: Virtumaq Rifa 
+13/02/2025, 14:28:14 - LEAVE - Usuário(s): Matheus - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 14:40:03 - JOIN - Usuário(s): 6892161809 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 14:42:11 - JOIN - Usuário(s): 21970295255 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 14:45:17 - JOIN - Usuário(s): 27981142417 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 14:49:42 - JOIN - Usuário(s): 3898359861 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 14:52:55 - JOIN - Usuário(s): 3172388457 - Grupo: ⚔️⚔️🍀💎Mk Facas, Cutelos & Importados Rifas💎🍀 ⚔️⚔️
+13/02/2025, 15:00:17 - JOIN - Usuário(s): 8791950476 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 15:00:46 - JOIN - Usuário(s): 8183652911 - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+13/02/2025, 15:02:33 - LEAVE - Usuário(s): Ageildes - Grupo: Leilão Black • IB
+13/02/2025, 15:07:36 - JOIN - Usuário(s): The Blade Art’s - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+13/02/2025, 15:16:58 - JOIN - Usuário(s): 22998904303 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 15:23:26 - JOIN - Usuário(s): 3173655988 - Grupo: Ellegance Facas Rifas
+13/02/2025, 15:29:20 - JOIN - Usuário(s): 7191405304 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+13/02/2025, 15:35:48 - JOIN - Usuário(s): 13974152698 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+13/02/2025, 15:43:59 - JOIN - Usuário(s): 8197991667 - Grupo: Facas Centenárias • Rifas G1
+13/02/2025, 15:44:02 - JOIN - Usuário(s): 6186315854 - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+13/02/2025, 15:47:08 - LEAVE - Usuário(s): Oi - Grupo: Facas Centenárias • Rifas G1
+13/02/2025, 15:48:50 - JOIN - Usuário(s): 3598831208 - Grupo: Vinícius Lopes | Flow Flux
+13/02/2025, 15:50:02 - JOIN - Usuário(s): 6899616964 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+13/02/2025, 15:53:18 - JOIN - Usuário(s): 11967933452 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+13/02/2025, 15:53:20 - JOIN - Usuário(s): 6192474724 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+13/02/2025, 15:53:22 - JOIN - Usuário(s): 27998954790 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+13/02/2025, 15:53:30 - JOIN - Usuário(s): 19984276155 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+13/02/2025, 15:53:37 - JOIN - Usuário(s): 21982274170 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+13/02/2025, 15:53:45 - JOIN - Usuário(s): 4896689831 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+13/02/2025, 15:53:50 - JOIN - Usuário(s): 3198366986 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+13/02/2025, 15:53:54 - JOIN - Usuário(s): 4399594887 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+13/02/2025, 15:53:58 - JOIN - Usuário(s): 4284211635 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+13/02/2025, 15:54:04 - JOIN - Usuário(s): 4497149458 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+13/02/2025, 15:56:40 - JOIN - Usuário(s): 21975711879 - Grupo: ELFO Emporio BBQ Grupo 1 Rifas Facas Premium 💎
+13/02/2025, 15:58:11 - JOIN - Usuário(s): dudue0605 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+13/02/2025, 15:58:20 - JOIN - Usuário(s): 6191369723 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 16:00:05 - JOIN - Usuário(s): 6596969955 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 16:00:46 - JOIN - Usuário(s): 6599458805 - Grupo: Facas Centenárias • Rifas G1
+13/02/2025, 16:06:56 - JOIN - Usuário(s): 14996085092 - Grupo: #17 Semana Tech Business
+13/02/2025, 16:06:56 - JOIN - Usuário(s): 7192436254 - Grupo: Rifas Premium I.B
+13/02/2025, 16:15:28 - JOIN - Usuário(s): 3798376124 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+13/02/2025, 16:17:53 - JOIN - Usuário(s): 6282371590 - Grupo: Ellegance Facas Rifas
+13/02/2025, 16:35:43 - JOIN - Usuário(s): 12981518536 - Grupo: Ellegance Facas Rifas
+13/02/2025, 16:39:28 - JOIN - Usuário(s): 5195896312 - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+13/02/2025, 16:44:32 - JOIN - Usuário(s): 5591912521 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+13/02/2025, 16:47:53 - JOIN - Usuário(s): 11947431218 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 16:48:58 - LEAVE - Usuário(s): dudue0605 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+13/02/2025, 16:51:36 - JOIN - Usuário(s): 4196092092 - Grupo: Facas Centenárias • Rifas G1
+13/02/2025, 16:55:44 - JOIN - Usuário(s): 4196092092 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 16:57:08 - JOIN - Usuário(s): 6699670870 - Grupo: Facas Centenárias • Rifas G1
+13/02/2025, 16:59:41 - LEAVE - Usuário(s): 5591912521 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+13/02/2025, 17:00:09 - JOIN - Usuário(s): 5197680515 - Grupo: Rifas Alma Campeira 🔪🔥
+13/02/2025, 17:16:55 - JOIN - Usuário(s): 11934033989 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 17:18:35 - JOIN - Usuário(s): 3195806249 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+13/02/2025, 17:23:20 - JOIN - Usuário(s): Emmos - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+13/02/2025, 17:27:38 - JOIN - Usuário(s): 9881783641 - Grupo: Virtumaq Rifa 
+13/02/2025, 17:27:59 - JOIN - Usuário(s): 5185220900 - Grupo: Leilão Black • IB
+13/02/2025, 17:28:01 - JOIN - Usuário(s): Luis Antunes - Grupo: Leilão Black • IB
+13/02/2025, 17:30:26 - JOIN - Usuário(s): 3597271954 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 17:33:49 - JOIN - Usuário(s): 7398672987 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 17:38:54 - JOIN - Usuário(s): 9183781823 - Grupo: ⚔️ Amigo das Facas ⚔️
+13/02/2025, 17:43:33 - JOIN - Usuário(s): 19971416455 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 17:44:50 - JOIN - Usuário(s): 8188213899 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 17:47:18 - JOIN - Usuário(s): 6992954535 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 17:48:59 - JOIN - Usuário(s): 9985467087 - Grupo: ELFO Emporio BBQ Grupo 1 Rifas Facas Premium 💎
+13/02/2025, 17:49:44 - JOIN - Usuário(s): 8699258744 - Grupo: Agentes de I.A. que Vendem ⚡️
+13/02/2025, 17:50:58 - JOIN - Usuário(s): 11911216255 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+13/02/2025, 17:51:28 - JOIN - Usuário(s): 21982324562 - Grupo: Máquina de Gestão •11/02 [06]
+13/02/2025, 17:54:55 - JOIN - Usuário(s): 5597216692 - Grupo: Super Promoções Ferlin 9
+13/02/2025, 18:03:59 - JOIN - Usuário(s): 6296416036 - Grupo: Rifas Premium I.B
+13/02/2025, 18:09:29 - JOIN - Usuário(s): 6899555077 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 18:10:48 - JOIN - Usuário(s): 19981362233 - Grupo: Virtumaq Rifa 
+13/02/2025, 18:13:06 - JOIN - Usuário(s): 4299215556 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+13/02/2025, 18:13:31 - JOIN - Usuário(s): 11914858514 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 18:14:04 - JOIN - Usuário(s): 27996721011 - Grupo: Super Promoções Ferlin 9
+13/02/2025, 18:15:28 - JOIN - Usuário(s): 9188341902 - Grupo: ⚔️ Amigo das Facas ⚔️
+13/02/2025, 18:24:31 - JOIN - Usuário(s): 4484575086 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 18:26:30 - JOIN - Usuário(s): 6798691969 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 18:29:07 - JOIN - Usuário(s): 4896255928 - Grupo: Rifas Alma Campeira 🔪🔥
+13/02/2025, 18:29:26 - JOIN - Usuário(s): 21984246674 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 18:31:23 - JOIN - Usuário(s): 27996536338 - Grupo: ELFO Emporio BBQ Grupo 1 Rifas Facas Premium 💎
+13/02/2025, 18:31:32 - JOIN - Usuário(s): 24992164460 - Grupo: kickboxing Diogo
+13/02/2025, 18:31:40 - JOIN - Usuário(s): 6798662990 - Grupo: ⚔️⚔️🍀💎Mk Facas, Cutelos & Importados Rifas💎🍀 ⚔️⚔️
+13/02/2025, 18:33:13 - JOIN - Usuário(s): 6791518558 - Grupo: ⚔️⚔️🍀💎Mk Facas, Cutelos & Importados Rifas💎🍀 ⚔️⚔️
+13/02/2025, 18:34:46 - JOIN - Usuário(s): 17996801200 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 18:36:54 - JOIN - Usuário(s): 11915065916 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 18:37:14 - JOIN - Usuário(s): 6784137595 - Grupo: ⚔️⚔️🍀💎Mk Facas, Cutelos & Importados Rifas💎🍀 ⚔️⚔️
+13/02/2025, 18:39:14 - JOIN - Usuário(s): 4999039590 - Grupo: Rifa Monte Rey Cutelaria VIP #1
+13/02/2025, 18:39:51 - JOIN - Usuário(s): 11992858238 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 18:40:28 - JOIN - Usuário(s): 3899199430 - Grupo: Rifas Alma Campeira 🔪🔥
+13/02/2025, 18:42:24 - JOIN - Usuário(s): 19988459626 - Grupo: Rifas Alma Campeira 🔪🔥
+13/02/2025, 18:50:41 - JOIN - Usuário(s): 11931492786 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 18:55:23 - JOIN - Usuário(s): 8192655562 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+13/02/2025, 18:56:21 - LEAVE - Usuário(s): Rodrigo Storer - Grupo: Facas Centenárias • Rifas G1
+13/02/2025, 18:58:08 - JOIN - Usuário(s): 11986138818 - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+13/02/2025, 19:01:06 - JOIN - Usuário(s): 9886016642 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 19:01:32 - JOIN - Usuário(s): 11970312572 - Grupo: Virtumaq Rifa 
+13/02/2025, 19:03:02 - JOIN - Usuário(s): 18998084511 - Grupo: ⚔️ Amigo das Facas ⚔️
+13/02/2025, 19:04:00 - JOIN - Usuário(s): 11990096834 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 19:04:06 - JOIN - Usuário(s): 6792242285 - Grupo: ⚔️⚔️🍀💎Mk Facas, Cutelos & Importados Rifas💎🍀 ⚔️⚔️
+13/02/2025, 19:04:45 - JOIN - Usuário(s): 28981128885 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 19:07:50 - JOIN - Usuário(s): 5197169006 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 19:11:03 - JOIN - Usuário(s): 11949433775 - Grupo: Rifas Alma Campeira 🔪🔥
+13/02/2025, 19:19:37 - JOIN - Usuário(s): 5599617696 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 19:22:51 - JOIN - Usuário(s): 6294542510 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 19:23:00 - JOIN - Usuário(s): 7781620106 - Grupo: Ellegance Facas Rifas
+13/02/2025, 19:23:03 - JOIN - Usuário(s): 8781413417 - Grupo: Rifas Alma Campeira 🔪🔥
+13/02/2025, 19:24:20 - JOIN - Usuário(s): 8299438018 - Grupo: ⚔️ Amigo das Facas ⚔️
+13/02/2025, 19:24:55 - LEAVE - Usuário(s): Nilson - Grupo: ELFO Emporio BBQ Grupo 1 Rifas Facas Premium 💎
+13/02/2025, 19:27:30 - JOIN - Usuário(s): 4999022985 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+13/02/2025, 19:27:32 - JOIN - Usuário(s): 22998482962 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+13/02/2025, 19:27:34 - JOIN - Usuário(s): 6183204605 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+13/02/2025, 19:27:51 - JOIN - Usuário(s): 19981527142 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+13/02/2025, 19:29:20 - JOIN - Usuário(s): 8988033506 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 19:32:39 - JOIN - Usuário(s): 11994058926 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 19:40:35 - JOIN - Usuário(s): 11971796686 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 19:41:22 - JOIN - Usuário(s): 5496823511 - Grupo: Rifas Alma Campeira 🔪🔥
+13/02/2025, 19:44:21 - JOIN - Usuário(s): 3196953742 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 19:45:07 - JOIN - Usuário(s): 3597331845 - Grupo: Virtumaq Rifa 
+13/02/2025, 19:45:13 - JOIN - Usuário(s): 11960386028 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 19:49:26 - JOIN - Usuário(s): 4884320171 - Grupo: Virtumaq Rifa 
+13/02/2025, 19:55:55 - JOIN - Usuário(s): 4699415673 - Grupo: ⚔️ Amigo das Facas ⚔️
+13/02/2025, 19:59:33 - JOIN - Usuário(s): 7781492600 - Grupo: Ellegance Facas Rifas
+13/02/2025, 20:05:10 - JOIN - Usuário(s): 6599815556 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 20:06:31 - JOIN - Usuário(s): 11997323990 - Grupo: Ellegance Facas Rifas
+13/02/2025, 20:09:49 - JOIN - Usuário(s): 6481253549 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 20:09:50 - JOIN - Usuário(s): 4884138174 - Grupo: ⚔️ Amigo das Facas ⚔️
+13/02/2025, 20:10:13 - JOIN - Usuário(s): 4391644148 - Grupo: ⚔️ Amigo das Facas ⚔️
+13/02/2025, 20:10:46 - JOIN - Usuário(s): 19998452344 - Grupo: Ellegance Facas Rifas
+13/02/2025, 20:11:21 - JOIN - Usuário(s): 4788840310 - Grupo: Virtumaq Rifa 
+13/02/2025, 20:11:49 - JOIN - Usuário(s): 3288592639 - Grupo: PROMO 75🧜🏼‍♀️💘🛍️
+13/02/2025, 20:11:54 - JOIN - Usuário(s): 8189224862 - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+13/02/2025, 20:13:23 - JOIN - Usuário(s): 9291645063 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 20:15:40 - JOIN - Usuário(s): 6292403753 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 20:16:39 - JOIN - Usuário(s): 4792404709 - Grupo: Facas Centenárias • Rifas G1
+13/02/2025, 20:18:11 - JOIN - Usuário(s): 6796867465 - Grupo: ELFO Emporio BBQ Grupo 1 Rifas Facas Premium 💎
+13/02/2025, 20:21:01 - JOIN - Usuário(s): 14982279685 - Grupo: ELFO Emporio BBQ Grupo 1 Rifas Facas Premium 💎
+13/02/2025, 20:23:12 - JOIN - Usuário(s): 5181591721 - Grupo: Rifas Alma Campeira 🔪🔥
+13/02/2025, 20:23:20 - JOIN - Usuário(s): 3398457951 - Grupo: ⚔️ Amigo das Facas ⚔️
+13/02/2025, 20:24:03 - JOIN - Usuário(s): 4999126823 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+13/02/2025, 20:28:04 - JOIN - Usuário(s): 4796123525 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 20:29:17 - JOIN - Usuário(s): Antonio - Grupo: Facas Centenárias Ofertas 1
+13/02/2025, 20:29:49 - JOIN - Usuário(s): 16996632393 - Grupo: ⚔️ Amigo das Facas ⚔️
+13/02/2025, 20:33:45 - JOIN - Usuário(s): 4884323075 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+13/02/2025, 20:33:46 - JOIN - Usuário(s): 22999025545 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+13/02/2025, 20:34:38 - JOIN - Usuário(s): 3171938112 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 20:34:58 - JOIN - Usuário(s): 7191656348 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 20:36:23 - LEAVE - Usuário(s): José Barbosa - Grupo: Facas Centenárias • Rifas G2
+13/02/2025, 20:37:19 - JOIN - Usuário(s): 4396534024 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 20:40:43 - JOIN - Usuário(s): 21980994928 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 20:40:50 - JOIN - Usuário(s): 3284907320 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 20:43:06 - JOIN - Usuário(s): 6992149049 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+13/02/2025, 20:44:45 - JOIN - Usuário(s): 11999461122 - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+13/02/2025, 20:46:31 - JOIN - Usuário(s): 9181959377 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 20:48:18 - JOIN - Usuário(s): 6599881964 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 20:51:57 - JOIN - Usuário(s): 4196500112 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 20:57:56 - JOIN - Usuário(s): 8591903797 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 20:58:51 - JOIN - Usuário(s): 19997140545 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 21:00:03 - JOIN - Usuário(s): 4196500112 - Grupo: Ellegance Facas Rifas
+13/02/2025, 21:05:06 - JOIN - Usuário(s): 9991297081 - Grupo: ⚔️⚔️🍀💎Mk Facas, Cutelos & Importados Rifas💎🍀 ⚔️⚔️
+13/02/2025, 21:07:39 - JOIN - Usuário(s): 6291745139 - Grupo: #01 NETWORKING - Ecommerce Visionários 🏆📦
+13/02/2025, 21:07:41 - JOIN - Usuário(s): 5192807172 - Grupo: #01 NETWORKING - Ecommerce Visionários 🏆📦
+13/02/2025, 21:15:20 - JOIN - Usuário(s): 19971650639 - Grupo: Ellegance Facas Rifas
+13/02/2025, 21:15:35 - JOIN - Usuário(s): 21987271882 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+13/02/2025, 21:20:20 - JOIN - Usuário(s): Alexandre GR1 C738 - Grupo: Facas Centenárias • Rifas G1
+13/02/2025, 21:25:16 - JOIN - Usuário(s): 22998380709 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 21:26:30 - JOIN - Usuário(s): 8193257006 - Grupo: Rifas Alma Campeira 🔪🔥
+13/02/2025, 21:35:40 - JOIN - Usuário(s): 11977705963 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 21:39:00 - JOIN - Usuário(s): 27996373994 - Grupo: Rifas Alma Campeira 🔪🔥
+13/02/2025, 21:40:14 - JOIN - Usuário(s): 21920107445 - Grupo: #01 NETWORKING - Ecommerce Visionários 🏆📦
+13/02/2025, 21:40:16 - JOIN - Usuário(s): 11954287706 - Grupo: #01 NETWORKING - Ecommerce Visionários 🏆📦
+13/02/2025, 21:40:18 - JOIN - Usuário(s): 17996254135 - Grupo: #01 NETWORKING - Ecommerce Visionários 🏆📦
+13/02/2025, 21:40:19 - JOIN - Usuário(s): 16991965330 - Grupo: #01 NETWORKING - Ecommerce Visionários 🏆📦
+13/02/2025, 21:42:37 - JOIN - Usuário(s): 6596621039 - Grupo: ⚔️ Amigo das Facas ⚔️
+13/02/2025, 21:44:02 - JOIN - Usuário(s): 6993592483 - Grupo: Rifas Alma Campeira 🔪🔥
+13/02/2025, 21:47:03 - JOIN - Usuário(s): 5499511932 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+13/02/2025, 21:49:50 - JOIN - Usuário(s): 5193541114 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+13/02/2025, 21:50:41 - LEAVE - Usuário(s): Marcelo Elegance Pisos - Grupo: Facas Centenárias • Rifas G1
+13/02/2025, 21:51:46 - JOIN - Usuário(s): 11960885204 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 21:52:09 - JOIN - Usuário(s): 8386638640 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 21:56:08 - JOIN - Usuário(s): 6999941344 - Grupo: ⚔️ Amigo das Facas ⚔️
+13/02/2025, 21:56:11 - JOIN - Usuário(s): 8182141996 - Grupo: Rifas Alma Campeira 🔪🔥
+13/02/2025, 21:58:55 - JOIN - Usuário(s): 8999020800 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 22:03:02 - JOIN - Usuário(s): 19997229687 - Grupo: Rifas Alma Campeira 🔪🔥
+13/02/2025, 22:03:46 - JOIN - Usuário(s): 8494304765 - Grupo: ⚔️ Amigo das Facas ⚔️
+13/02/2025, 22:11:09 - JOIN - Usuário(s): 6282021903 - Grupo: ELFO Emporio BBQ Grupo 1 Rifas Facas Premium 💎
+13/02/2025, 22:11:34 - JOIN - Usuário(s): 3182795873 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 22:13:15 - JOIN - Usuário(s): 21987556279 - Grupo: ⚔️ Amigo das Facas ⚔️
+13/02/2025, 22:15:58 - JOIN - Usuário(s): 5596103550 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 22:17:44 - JOIN - Usuário(s): 5596435180 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+13/02/2025, 22:20:53 - JOIN - Usuário(s): 3172128443 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+13/02/2025, 22:20:55 - JOIN - Usuário(s): 3196767769 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+13/02/2025, 22:22:34 - JOIN - Usuário(s): 6481552706 - Grupo: ELFO Emporio BBQ Grupo 1 Rifas Facas Premium 💎
+13/02/2025, 22:25:21 - JOIN - Usuário(s): 6199551886 - Grupo: ⚔️ Amigo das Facas ⚔️
+13/02/2025, 22:25:38 - JOIN - Usuário(s): Luiz Paulo - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+13/02/2025, 22:27:30 - JOIN - Usuário(s): 6981232678 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 22:27:35 - JOIN - Usuário(s): 9891190879 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 22:29:33 - JOIN - Usuário(s): 7499310191 - Grupo: Facas Centenárias • Rifas G1
+13/02/2025, 22:30:02 - JOIN - Usuário(s): 7499310191 - Grupo: Facas Centenárias Ofertas 5
+13/02/2025, 22:35:34 - LEAVE - Usuário(s): Orlando - Grupo: Facas Centenárias • Rifas G1
+13/02/2025, 22:36:01 - JOIN - Usuário(s): 7481459905 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 22:36:42 - JOIN - Usuário(s): 6892586877 - Grupo: ⚔️ Amigo das Facas ⚔️
+13/02/2025, 22:42:08 - JOIN - Usuário(s): 93 51668-8144 - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+13/02/2025, 22:42:09 - LEAVE - Usuário(s): 93 51668-8144 - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+13/02/2025, 22:46:01 - JOIN - Usuário(s): 9492331773 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+13/02/2025, 22:48:01 - JOIN - Usuário(s): 11974268045 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+13/02/2025, 22:49:30 - JOIN - Usuário(s): 8388570944 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+13/02/2025, 22:51:44 - JOIN - Usuário(s): 7491477107 - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+13/02/2025, 22:53:15 - JOIN - Usuário(s): 4991926465 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 22:53:56 - JOIN - Usuário(s): 21990908980 - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+13/02/2025, 22:56:45 - JOIN - Usuário(s): 8182369996 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 22:59:54 - JOIN - Usuário(s): 8189234481 - Grupo: ⚔️ Amigo das Facas ⚔️
+13/02/2025, 23:01:42 - JOIN - Usuário(s): 6792363226 - Grupo: ⚔️ Amigo das Facas ⚔️
+13/02/2025, 23:10:34 - JOIN - Usuário(s): 5496496454 - Grupo: Super Promoções Ferlin 9
+13/02/2025, 23:24:04 - JOIN - Usuário(s): 6981152995 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 23:29:04 - JOIN - Usuário(s): 9891190879 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 23:34:09 - JOIN - Usuário(s): Carlos Alberto - Grupo: ⚔️ Amigo das Facas ⚔️
+13/02/2025, 23:39:19 - JOIN - Usuário(s): Carlos Nunes GR1 C921 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 23:40:13 - JOIN - Usuário(s): 5199430189 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 23:43:07 - JOIN - Usuário(s): 3195933568 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 23:47:53 - JOIN - Usuário(s): 27996181424 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 23:50:34 - JOIN - Usuário(s): 4799819983 - Grupo: Rifas Alma Campeira 🔪🔥
+13/02/2025, 23:54:22 - JOIN - Usuário(s): 5384058594 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+13/02/2025, 23:56:34 - JOIN - Usuário(s): Carlos Nunes GR1 C921 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+13/02/2025, 23:59:49 - JOIN - Usuário(s): 3597519164 - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+14/02/2025, 00:09:21 - JOIN - Usuário(s): 11971365360 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 00:18:20 - JOIN - Usuário(s): 13988326454 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+14/02/2025, 00:28:17 - JOIN - Usuário(s): 14981589521 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 00:33:36 - JOIN - Usuário(s): 6186790121 - Grupo: Rifas Alma Campeira 🔪🔥
+14/02/2025, 00:36:50 - JOIN - Usuário(s): Marreta No Aço. - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+14/02/2025, 00:44:14 - JOIN - Usuário(s): 8788122510 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 00:55:33 - JOIN - Usuário(s): 11986710361 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 01:09:43 - JOIN - Usuário(s): 6199551886 - Grupo: Rifas Alma Campeira 🔪🔥
+14/02/2025, 01:43:02 - JOIN - Usuário(s): 21960189881 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+14/02/2025, 01:52:21 - JOIN - Usuário(s): 4398466589 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 01:53:02 - JOIN - Usuário(s): 5499511932 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+14/02/2025, 01:56:40 - JOIN - Usuário(s): 27997236816 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 02:17:30 - JOIN - Usuário(s): 4796695281 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+14/02/2025, 03:32:48 - JOIN - Usuário(s): 18991484091 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+14/02/2025, 04:50:23 - JOIN - Usuário(s): 9491495272 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 05:49:30 - JOIN - Usuário(s): 8192655562 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 05:52:04 - JOIN - Usuário(s): 3172182097 - Grupo: Super Promoções Ferlin 9
+14/02/2025, 06:31:19 - JOIN - Usuário(s): 21965628979 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+14/02/2025, 06:42:16 - JOIN - Usuário(s): marcio Rodrigues - Grupo: ⚔️ Amigo das Facas ⚔️
+14/02/2025, 06:56:06 - JOIN - Usuário(s): 5597188425 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+14/02/2025, 07:22:23 - JOIN - Usuário(s): 3799069125 - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+14/02/2025, 07:22:47 - JOIN - Usuário(s): 5195565064 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+14/02/2025, 07:25:32 - JOIN - Usuário(s): 11987745236 - Grupo: Super Promoções Ferlin 9
+14/02/2025, 07:25:58 - JOIN - Usuário(s): 5183315521 - Grupo: Rifas Alma Campeira 🔪🔥
+14/02/2025, 07:32:05 - JOIN - Usuário(s): Sandro - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+14/02/2025, 07:32:57 - JOIN - Usuário(s): 3195010650 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 07:33:21 - JOIN - Usuário(s): 3496876088 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 07:35:00 - JOIN - Usuário(s): 24999083446 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 07:38:26 - JOIN - Usuário(s): 11984216931 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 07:38:59 - JOIN - Usuário(s): 14998421391 - Grupo: SDZL - A ÚLTIMA TENTATIVA! #10
+14/02/2025, 07:40:21 - JOIN - Usuário(s): 6993385833 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+14/02/2025, 07:42:04 - JOIN - Usuário(s): 6798714457 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+14/02/2025, 07:43:23 - JOIN - Usuário(s): 11994979364 - Grupo: Super Promoções Ferlin 9
+14/02/2025, 07:47:01 - JOIN - Usuário(s): 8591538931 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+14/02/2025, 07:49:30 - JOIN - Usuário(s): 21999478946 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+14/02/2025, 07:52:34 - JOIN - Usuário(s): 6992766111 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+14/02/2025, 07:56:48 - LEAVE - Usuário(s): Maik Fernandes - Grupo: Facas Centenárias • Rifas G1
+14/02/2025, 07:58:00 - JOIN - Usuário(s): 8487846231 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+14/02/2025, 08:01:40 - JOIN - Usuário(s): 8488261660 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 08:07:00 - JOIN - Usuário(s): 6292054994 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+14/02/2025, 08:08:19 - JOIN - Usuário(s): 15997644177 - Grupo: Rifas Alma Campeira 🔪🔥
+14/02/2025, 08:09:13 - JOIN - Usuário(s): 3799320405 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+14/02/2025, 08:09:21 - JOIN - Usuário(s): 4196314399 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 08:12:22 - JOIN - Usuário(s): 3189353062 - Grupo: SDZL - A ÚLTIMA TENTATIVA! #10
+14/02/2025, 08:15:31 - JOIN - Usuário(s): 19996098402 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+14/02/2025, 08:15:42 - JOIN - Usuário(s): 4191641709 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+14/02/2025, 08:15:44 - JOIN - Usuário(s): 11952096296 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+14/02/2025, 08:18:38 - LEAVE - Usuário(s): 18997306231 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+14/02/2025, 08:29:01 - JOIN - Usuário(s): 4191833346 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 08:30:09 - JOIN - Usuário(s): 6291473177 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+14/02/2025, 08:38:32 - JOIN - Usuário(s): 8388079052 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+14/02/2025, 08:48:27 - JOIN - Usuário(s): 8791556872 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+14/02/2025, 08:50:19 - JOIN - Usuário(s): 4399800039 - Grupo: Leilão Black • IB
+14/02/2025, 08:50:49 - JOIN - Usuário(s): 14988364387 - Grupo: Leilão Black • IB
+14/02/2025, 08:52:11 - JOIN - Usuário(s): 6593489133 - Grupo: ⚔️ Amigo das Facas ⚔️
+14/02/2025, 08:57:24 - LEAVE - Usuário(s): Leandro Santos Machado - Grupo: Facas Centenárias • Rifas G1
+14/02/2025, 08:58:47 - JOIN - Usuário(s): 11955777745 - Grupo: Máquina de Gestão •11/02 [06]
+14/02/2025, 09:00:10 - JOIN - Usuário(s): 4899453468 - Grupo: Máquina de Gestão •11/02 [06]
+14/02/2025, 09:00:21 - JOIN - Usuário(s): Valmir - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+14/02/2025, 09:00:41 - JOIN - Usuário(s): 6281405459 - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+14/02/2025, 09:01:32 - JOIN - Usuário(s): 19995932966 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+14/02/2025, 09:01:41 - JOIN - Usuário(s): 17996143570 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 09:02:43 - JOIN - Usuário(s): 11913135848 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+14/02/2025, 09:04:21 - JOIN - Usuário(s): 5181305139 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+14/02/2025, 09:05:01 - JOIN - Usuário(s): 7499862829 - Grupo: Rifas Premium I.B
+14/02/2025, 09:05:18 - JOIN - Usuário(s): 6699981489 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 09:09:43 - JOIN - Usuário(s): 8186798349 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 09:13:09 - JOIN - Usuário(s): 8188157285 - Grupo: ⚔️ Amigo das Facas ⚔️
+14/02/2025, 09:16:43 - JOIN - Usuário(s): 6699861435 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+14/02/2025, 09:23:58 - JOIN - Usuário(s): 19991776656 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+14/02/2025, 09:30:22 - JOIN - Usuário(s): 8393501123 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 09:34:31 - JOIN - Usuário(s): Ricardo Motta - Grupo: Rateio Chat GPT - PRO
+14/02/2025, 09:39:09 - JOIN - Usuário(s): 9193155949 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 09:41:19 - JOIN - Usuário(s): 3892078758 - Grupo: Facas Centenárias • Rifas G1
+14/02/2025, 09:44:14 - JOIN - Usuário(s): 21969712687 - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+14/02/2025, 09:46:55 - JOIN - Usuário(s): 5198729939 - Grupo: Rifas Alma Campeira 🔪🔥
+14/02/2025, 09:47:20 - LEAVE - Usuário(s): João Vitor - Grupo: Facas Centenárias • Rifas G1
+14/02/2025, 09:54:49 - JOIN - Usuário(s): 21999970588 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 09:57:05 - JOIN - Usuário(s): 27995005417 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 09:57:45 - JOIN - Usuário(s): 8387948776 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+14/02/2025, 10:09:04 - JOIN - Usuário(s): 8896191216 - Grupo: Virtumaq Rifa 
+14/02/2025, 10:09:23 - JOIN - Usuário(s): 6699647519 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+14/02/2025, 10:10:31 - JOIN - Usuário(s): 11942888451 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 10:13:55 - JOIN - Usuário(s): 9484235600 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 10:15:53 - JOIN - Usuário(s): 3597586129 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+14/02/2025, 10:18:42 - JOIN - Usuário(s): 7186824026 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 10:20:35 - JOIN - Usuário(s): 8791729985 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 10:29:56 - JOIN - Usuário(s): 5198575284 - Grupo: Virtumaq Rifa 
+14/02/2025, 10:30:37 - JOIN - Usuário(s): 14997668470 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+14/02/2025, 10:35:02 - JOIN - Usuário(s): 4796088047 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+14/02/2025, 10:35:13 - JOIN - Usuário(s): 8298070087 - Grupo: ⚔️ Amigo das Facas ⚔️
+14/02/2025, 10:38:16 - JOIN - Usuário(s): 16992497903 - Grupo: Virtumaq Rifa 
+14/02/2025, 10:39:14 - JOIN - Usuário(s): 4396628282 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+14/02/2025, 10:39:21 - JOIN - Usuário(s): 11984903572 - Grupo: ⚔️ Amigo das Facas ⚔️
+14/02/2025, 10:41:32 - JOIN - Usuário(s): 5193293001 - Grupo: Rifas Alma Campeira 🔪🔥
+14/02/2025, 10:41:54 - JOIN - Usuário(s): 7581981026 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+14/02/2025, 10:46:05 - JOIN - Usuário(s): Mr - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+14/02/2025, 10:52:42 - JOIN - Usuário(s): 7196407566 - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+14/02/2025, 10:53:04 - JOIN - Usuário(s): 21999924860 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 10:59:58 - JOIN - Usuário(s): 4797406049 - Grupo: Super Promoções Ferlin 9
+14/02/2025, 11:00:22 - JOIN - Usuário(s): 21964670890 - Grupo: #01 NETWORKING - Ecommerce Visionários 🏆📦
+14/02/2025, 11:01:35 - JOIN - Usuário(s): 7591580175 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+14/02/2025, 11:03:58 - JOIN - Usuário(s): 21983916524 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+14/02/2025, 11:04:38 - JOIN - Usuário(s): Bruno Dias - Grupo: ⚔️ Amigo das Facas ⚔️
+14/02/2025, 11:05:04 - JOIN - Usuário(s): 4299871560 - Grupo: ⚔️ Amigo das Facas ⚔️
+14/02/2025, 11:05:17 - JOIN - Usuário(s): 6696275119 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 11:05:37 - JOIN - Usuário(s): RONIEL 66 99605-3707 - Grupo: ⚔️ Amigo das Facas ⚔️
+14/02/2025, 11:07:18 - JOIN - Usuário(s): 3488642936 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 11:09:15 - JOIN - Usuário(s): 6299869906 - Grupo: Ellegance Facas Rifas
+14/02/2025, 11:11:04 - JOIN - Usuário(s): 11980900208 - Grupo: Super Promoções Ferlin 9
+14/02/2025, 11:17:25 - JOIN - Usuário(s): 9185630680 - Grupo: ELFO Emporio BBQ Grupo 1 Rifas Facas Premium 💎
+14/02/2025, 11:18:55 - JOIN - Usuário(s): 14998331746 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+14/02/2025, 11:18:57 - JOIN - Usuário(s): 4498418892 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+14/02/2025, 11:18:59 - JOIN - Usuário(s): 27999789069 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 11:19:00 - JOIN - Usuário(s): 21992353631 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+14/02/2025, 11:19:17 - LEAVE - Usuário(s): 4498418892 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+14/02/2025, 11:19:24 - JOIN - Usuário(s): 4896655154 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+14/02/2025, 11:19:27 - JOIN - Usuário(s): 3499672716 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+14/02/2025, 11:19:29 - JOIN - Usuário(s): 21981873525 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+14/02/2025, 11:19:31 - JOIN - Usuário(s): 11933017359 - Grupo: GRUPO RIFAS MOUNTAIN TABLE WOOD 🌲🪵
+14/02/2025, 11:20:39 - JOIN - Usuário(s): 7391304902 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+14/02/2025, 11:26:26 - JOIN - Usuário(s): 8498473460 - Grupo: Virtumaq Rifa 
+14/02/2025, 11:28:16 - JOIN - Usuário(s): 11982066999 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+14/02/2025, 11:28:20 - JOIN - Usuário(s): 5184119187 - Grupo: Super Promoções Ferlin 9
+14/02/2025, 11:29:53 - JOIN - Usuário(s): 11982066999 - Grupo: Rifas Alma Campeira 🔪🔥
+14/02/2025, 11:35:40 - JOIN - Usuário(s): 3284298701 - Grupo: Rifas Alma Campeira 🔪🔥
+14/02/2025, 11:41:40 - JOIN - Usuário(s): 9888997646 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+14/02/2025, 11:42:16 - JOIN - Usuário(s): 11958656661 - Grupo: ⚔️ Amigo das Facas ⚔️
+14/02/2025, 11:42:56 - JOIN - Usuário(s): 4999445235 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 11:43:28 - JOIN - Usuário(s): 6198457558 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 11:44:14 - JOIN - Usuário(s): 9991723350 - Grupo: ⚔️⚔️🍀💎Mk Facas, Cutelos & Importados Rifas💎🍀 ⚔️⚔️
+14/02/2025, 11:48:14 - JOIN - Usuário(s): 9191968975 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+14/02/2025, 11:56:09 - JOIN - Usuário(s): dê9393 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 11:57:25 - JOIN - Usuário(s): 6399951108 - Grupo: Ellegance Facas Rifas
+14/02/2025, 11:57:37 - JOIN - Usuário(s): 4899841538 - Grupo: Virtumaq Rifa 
+14/02/2025, 12:06:02 - JOIN - Usuário(s): 11986639232 - Grupo: #01 NETWORKING - Ecommerce Visionários 🏆📦
+14/02/2025, 12:06:51 - JOIN - Usuário(s): 11965206303 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+14/02/2025, 12:08:40 - JOIN - Usuário(s): 4197168231 - Grupo: Super Promoções Ferlin 9
+14/02/2025, 12:34:05 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste tabela
+14/02/2025, 12:34:35 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste tabela
+14/02/2025, 12:39:32 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste tabela
+14/02/2025, 12:41:10 - JOIN - Usuário(s): 7988519979 - Grupo: Lucão - Leilões Padre Elvis Facas Custom #2
+14/02/2025, 12:44:53 - LEAVE - Usuário(s): Linconln - Grupo: bot teste
+14/02/2025, 12:45:28 - JOIN - Usuário(s): Linconln - Grupo: bot teste
+14/02/2025, 12:49:37 - JOIN - Usuário(s): 6281379491 - Grupo: Facas Centenárias • Rifas G1
+14/02/2025, 12:59:10 - LEAVE - Usuário(s): Linconln - Grupo: bot teste
+14/02/2025, 12:59:38 - JOIN - Usuário(s): Linconln - Grupo: bot teste
+14/02/2025, 13:01:20 - LEAVE - Usuário(s): Linconln - Grupo: bot teste
+14/02/2025, 13:01:51 - JOIN - Usuário(s): Linconln - Grupo: bot teste
+14/02/2025, 13:05:55 - LEAVE - Usuário(s): Linconln - Grupo: bot teste
+14/02/2025, 13:06:16 - JOIN - Usuário(s): Linconln - Grupo: bot teste
+14/02/2025, 13:07:53 - LEAVE - Usuário(s): Linconln - Grupo: bot teste
+14/02/2025, 13:08:14 - JOIN - Usuário(s): Linconln - Grupo: bot teste
+14/02/2025, 13:10:06 - LEAVE - Usuário(s): Linconln - Grupo: bot teste
+14/02/2025, 13:10:22 - JOIN - Usuário(s): Linconln - Grupo: bot teste
+14/02/2025, 13:13:18 - LEAVE - Usuário(s): Linconln - Grupo: bot teste
+14/02/2025, 13:13:26 - JOIN - Usuário(s): Linconln - Grupo: bot teste
+14/02/2025, 13:15:06 - LEAVE - Usuário(s): ely soares Neto - Grupo: Facas Centenárias • Rifas G1
+14/02/2025, 13:18:48 - LEAVE - Usuário(s): Linconln - Grupo: bot teste
+14/02/2025, 13:19:18 - JOIN - Usuário(s): Linconln - Grupo: bot teste
+14/02/2025, 13:25:57 - LEAVE - Usuário(s): Linconln - Grupo: bot teste
+14/02/2025, 13:26:53 - LEAVE - Usuário(s): Linconln - Grupo: bot teste
+14/02/2025, 13:33:54 - LEAVE - Usuário(s): Linconln - Grupo: bot teste
+14/02/2025, 13:34:08 - JOIN - Usuário(s): Linconln - Grupo: bot teste
+14/02/2025, 13:34:20 - LEAVE - Usuário(s): Linconln - Grupo: bot teste
+14/02/2025, 13:34:30 - JOIN - Usuário(s): Linconln - Grupo: bot teste
+14/02/2025, 13:35:03 - LEAVE - Usuário(s): Linconln - Grupo: testesdtgsd
+14/02/2025, 13:35:42 - JOIN - Usuário(s): Linconln - Grupo: testesdtgsd
+14/02/2025, 13:35:56 - LEAVE - Usuário(s): Linconln - Grupo: bot teste
+14/02/2025, 13:36:21 - LEAVE - Usuário(s): Linconln - Grupo: testesdtgsd
+14/02/2025, 13:36:36 - JOIN - Usuário(s): Linconln - Grupo: testesdtgsd
+14/02/2025, 13:37:29 - JOIN - Usuário(s): Linconln - Grupo: bot teste
+14/02/2025, 13:44:20 - LEAVE - Usuário(s): Linconln - Grupo: bot teste
+14/02/2025, 13:44:42 - JOIN - Usuário(s): Linconln - Grupo: bot teste
+14/02/2025, 13:44:54 - LEAVE - Usuário(s): Linconln - Grupo: testesdtgsd
+14/02/2025, 14:08:16 - LEAVE - Usuário(s): Linconln - Grupo: bot teste
+14/02/2025, 14:08:32 - JOIN - Usuário(s): Linconln - Grupo: bot teste
+14/02/2025, 14:08:43 - JOIN - Usuário(s): Linconln - Grupo: testesdtgsd
+14/02/2025, 14:08:52 - LEAVE - Usuário(s): Linconln - Grupo: testesdtgsd
+14/02/2025, 14:09:12 - JOIN - Usuário(s): Linconln - Grupo: testesdtgsd
+14/02/2025, 14:10:05 - LEAVE - Usuário(s): Linconln - Grupo: teste 2
+14/02/2025, 14:10:33 - JOIN - Usuário(s): Linconln - Grupo: teste 2
+14/02/2025, 14:16:12 - LEAVE - Usuário(s): Linconln - Grupo: bot teste
+14/02/2025, 14:16:32 - JOIN - Usuário(s): Linconln - Grupo: bot teste
+14/02/2025, 14:16:50 - LEAVE - Usuário(s): Linconln - Grupo: teste 2
+14/02/2025, 14:17:01 - JOIN - Usuário(s): Linconln - Grupo: teste 2
+14/02/2025, 14:25:34 - LEAVE - Usuário(s): Linconln - Grupo: teste 2
+14/02/2025, 14:26:01 - JOIN - Usuário(s): Linconln - Grupo: teste 2
+14/02/2025, 14:29:46 - LEAVE - Usuário(s): Linconln - Grupo: teste 2
+14/02/2025, 14:30:05 - JOIN - Usuário(s): Linconln - Grupo: teste 2
+14/02/2025, 14:32:42 - LEAVE - Usuário(s): Linconln - Grupo: teste 2
+14/02/2025, 14:32:53 - JOIN - Usuário(s): Linconln - Grupo: teste 2
+14/02/2025, 15:41:31 - JOIN - Usuário(s): 5199138169 - Grupo: SORTEIOS D’AVILA 01 - TAPES
+14/02/2025, 15:57:33 - LEAVE - Usuário(s): Sebastião - Grupo: Facas Centenárias • Rifas G1
+14/02/2025, 17:45:53 - JOIN - Usuário(s): 5182564103 - Grupo: SORTEIOS D’AVILA 01 - TAPES
+14/02/2025, 18:36:05 - LEAVE - Usuário(s): Queiroz G1 C273 - Grupo: Facas Centenárias Ofertas 1
+14/02/2025, 19:41:57 - JOIN - Usuário(s): 6792413131 - Grupo: ⚔️ Amigo das Facas ⚔️
+14/02/2025, 19:45:47 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste supa
+14/02/2025, 19:46:32 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste supa
+14/02/2025, 19:47:16 - JOIN - Usuário(s): 8581023304 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+14/02/2025, 19:47:32 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
+14/02/2025, 19:48:23 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste 2
+14/02/2025, 19:55:43 - LEAVE - Usuário(s): Linconln - Grupo: teste supa
+14/02/2025, 19:56:20 - LEAVE - Usuário(s): Linconln - Grupo: teste 2
+14/02/2025, 19:57:12 - JOIN - Usuário(s): Linconln - Grupo: teste supa
+14/02/2025, 19:58:10 - LEAVE - Usuário(s): Linconln - Grupo: teste gabriel
+14/02/2025, 19:58:33 - JOIN - Usuário(s): Linconln - Grupo: teste gabriel
+14/02/2025, 20:05:45 - LEAVE - Usuário(s): Linconln - Grupo: teste gabriel
+14/02/2025, 20:06:28 - JOIN - Usuário(s): 7999711793 - Grupo: Facas Centenárias • Rifas G1
+14/02/2025, 20:10:05 - JOIN - Usuário(s): Linconln - Grupo: teste gabriel
+14/02/2025, 20:10:20 - LEAVE - Usuário(s): Linconln - Grupo: teste gabriel
+15/02/2025, 01:02:09 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: vai funcionar
+15/02/2025, 01:02:45 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: vai funcionar
+15/02/2025, 01:05:36 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: vai funcionar
+15/02/2025, 01:05:54 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: vai funcionar
+15/02/2025, 01:06:41 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste final
+15/02/2025, 01:07:15 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste final

@@ -45,27 +45,16 @@ async function testSupabaseConnection() {
   try {
     console.log('Testando conexão com Supabase...');
     
-    // Tenta criar uma tabela de teste
-    const testTableName = 'test_connection_' + Math.random().toString(36).substring(7);
-    const { error: createError } = await supabase.rpc('exec_sql', {
-      query: `
-        CREATE TABLE IF NOT EXISTS "${testTableName}" (
-          id SERIAL PRIMARY KEY,
-          test_column TEXT
-        );
-      `
+    // Testa a conexão com uma query simples
+    const { error } = await supabase.rpc('exec_sql', {
+      query: 'SELECT NOW();'
     });
 
-    if (createError) {
-      throw new Error(`Erro ao criar tabela de teste: ${createError.message}`);
+    if (error) {
+      throw new Error(`Erro ao testar conexão: ${error.message}`);
     }
 
     console.log('Conexão com Supabase estabelecida com sucesso!');
-    
-    // Limpa a tabela de teste
-    await supabase.rpc('exec_sql', {
-      query: `DROP TABLE IF EXISTS "${testTableName}";`
-    });
   } catch (error) {
     console.error('Erro ao conectar com Supabase:');
     console.error('Mensagem:', error.message);
@@ -79,86 +68,189 @@ async function testSupabaseConnection() {
 // Executa o teste de conexão
 testSupabaseConnection();
 
-// Função para sanitizar o nome da tabela
-function sanitizeTableName(groupName) {
-  return groupName
+// Função para obter nome do grupo com retry
+async function getGroupName(client, chatId, maxRetries = 3) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const chat = await client.getChatById(chatId);
+      return chat.name || 'Grupo não identificado';
+    } catch (error) {
+      console.error(`Tentativa ${attempt} de obter nome do grupo falhou:`, error);
+      if (attempt === maxRetries) return chatId;
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+  }
+  return chatId;
+}
+
+// Função para sanitizar nome da tabela
+function sanitizeTableName(name) {
+  return name
     .toLowerCase()
-    .replace(/[^a-z0-9]/g, '_') // Substitui caracteres não alfanuméricos por _
-    .replace(/_{2,}/g, '_')     // Remove underscores duplicados
-    .replace(/^_|_$/g, '')      // Remove underscores no início e fim
-    .substring(0, 50);          // Limita o tamanho do nome
+    .replace(/[^a-z0-9_]/g, '_')
+    .replace(/_{2,}/g, '_')
+    .replace(/^_|_$/g, '')
+    .substring(0, 50);
+}
+
+// Função para formatar data para o Supabase
+function formatDateForSupabase(dateStr) {
+  try {
+    // Se já for um objeto Date, usa direto
+    if (dateStr instanceof Date) {
+      return dateStr.toISOString();
+    }
+
+    // Converte string de data BR para formato ISO
+    const [datePart, timePart] = dateStr.split(', ');
+    const [day, month, year] = datePart.split('/');
+    const [hour, minute, second] = timePart ? timePart.split(':') : ['00', '00', '00'];
+    
+    const date = new Date(year, month - 1, day, hour, minute, second);
+    return date.toISOString();
+  } catch (error) {
+    console.error('Erro ao formatar data:', error);
+    // Em caso de erro, retorna a data atual
+    return new Date().toISOString();
+  }
 }
 
 // Função para registrar eventos no Supabase
 async function recordEventSupabase(timestamp, eventType, user, group) {
+  const tableName = `group_${sanitizeTableName(group)}`;
+  console.log('\n=== Iniciando registro no Supabase ===');
+  console.log('Dados a registrar:', { timestamp, eventType, user, group });
+  
   try {
-    const tableName = `group_${sanitizeTableName(group)}`;
-    console.log('\n=== Iniciando registro no Supabase ===');
-    console.log('Tabela:', tableName);
-    console.log('Dados:', { timestamp, eventType, user, group });
+    // Garantir que o timestamp seja válido
+    let formattedTimestamp;
+    if (timestamp instanceof Date) {
+      formattedTimestamp = timestamp.toISOString();
+    } else if (typeof timestamp === 'number') {
+      formattedTimestamp = new Date(timestamp * 1000).toISOString();
+    } else {
+      formattedTimestamp = formatDateForSupabase(timestamp);
+    }
     
-    // Verifica se a tabela existe e cria se necessário
-    const { error: checkError } = await supabase
-      .from(tableName)
-      .select('id')
-      .limit(1);
+    console.log('Timestamp formatado:', formattedTimestamp);
 
-    if (checkError && checkError.code === '42P01') {
-      console.log('Tabela não existe, criando...');
-      const createTableQuery = `
-        CREATE TABLE IF NOT EXISTS "${tableName}" (
-          id SERIAL PRIMARY KEY,
-          timestamp TIMESTAMP WITH TIME ZONE,
-          event_type VARCHAR(10),
-          user_id VARCHAR(255),
-          group_name TEXT,
-          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-        );
-      `;
+    // Primeiro, criar ou atualizar a estrutura da tabela
+    const setupTableQuery = `
+      -- Criar tabela base se não existir
+      CREATE TABLE IF NOT EXISTS "${tableName}" (
+        id serial PRIMARY KEY,
+        timestamp timestamptz NOT NULL,
+        event_type varchar(10) NOT NULL,
+        user_id varchar(255) NOT NULL,
+        group_name text NOT NULL,
+        created_at timestamptz NOT NULL DEFAULT now(),
+        event_key text
+      );
 
-      const { error: createError } = await supabase.rpc('exec_sql', {
-        query: createTableQuery
-      });
+      -- Adicionar coluna event_key se não existir
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns 
+          WHERE table_name = '${tableName}' 
+          AND column_name = 'event_key'
+        ) THEN
+          ALTER TABLE "${tableName}" ADD COLUMN event_key text;
+        END IF;
+      END $$;
 
-      if (createError) {
-        console.error('Erro ao criar tabela:', createError);
-        throw new Error(`Erro ao criar tabela: ${createError.message}`);
-      }
-      console.log('Tabela criada com sucesso!');
+      -- Garantir que event_key seja NOT NULL
+      ALTER TABLE "${tableName}" ALTER COLUMN event_key SET NOT NULL;
+
+      -- Adicionar índice único se não existir
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM pg_indexes 
+          WHERE tablename = '${tableName}' 
+          AND indexname = '${tableName}_event_key_idx'
+        ) THEN
+          CREATE UNIQUE INDEX ${tableName}_event_key_idx ON "${tableName}" (event_key);
+        END IF;
+      END $$;
+    `;
+
+    const { error: setupError } = await supabase.rpc('exec_sql', { 
+      query: setupTableQuery 
+    });
+
+    if (setupError) {
+      console.error('Erro ao configurar tabela:', setupError);
+      throw setupError;
     }
 
-    // Insere o registro na tabela
-    console.log('Inserindo registro...');
-    const { error: insertError } = await supabase
-      .from(tableName)
-      .insert([
-        {
-          timestamp: new Date(timestamp),
-          event_type: eventType,
-          user_id: user,
-          group_name: group
-        }
-      ]);
+    // Gerar event_key único
+    const eventKey = `${tableName}_${user.replace(/[^a-zA-Z0-9]/g, '_')}_${eventType}_${formattedTimestamp}`;
+
+    // Verificar se já existe registro similar (dentro de 30 segundos)
+    const checkQuery = `
+      SELECT COUNT(*) 
+      FROM "${tableName}" 
+      WHERE user_id = '${user.replace(/'/g, "''")}'
+      AND event_type = '${eventType}'
+      AND ABS(EXTRACT(EPOCH FROM (timestamp - '${formattedTimestamp}'::timestamptz))) <= 30;
+    `;
+
+    const { data: checkResult, error: checkError } = await supabase.rpc('exec_sql', { 
+      query: checkQuery 
+    });
+
+    if (checkError) {
+      console.error('Erro ao verificar duplicatas:', checkError);
+      throw checkError;
+    }
+
+    if (checkResult && checkResult[0]?.count > 0) {
+      console.log('Evento similar encontrado nos últimos 30 segundos, ignorando...');
+      return false;
+    }
+
+    // Inserir o registro
+    const insertQuery = `
+      INSERT INTO "${tableName}" (
+        timestamp,
+        event_type,
+        user_id,
+        group_name,
+        event_key
+      ) VALUES (
+        '${formattedTimestamp}'::timestamptz,
+        '${eventType}',
+        '${user.replace(/'/g, "''")}',
+        '${group.replace(/'/g, "''")}',
+        '${eventKey}'
+      )
+      ON CONFLICT (event_key) DO NOTHING
+      RETURNING id, timestamp, event_type, user_id, group_name;
+    `;
+
+    const { data: insertResult, error: insertError } = await supabase.rpc('exec_sql', {
+      query: insertQuery
+    });
 
     if (insertError) {
-      console.error('Erro ao inserir:', insertError);
+      console.error('Erro ao inserir registro:', insertError);
       throw insertError;
     }
 
+    if (!insertResult || insertResult.length === 0) {
+      console.log('Evento já registrado ou ignorado');
+      return false;
+    }
+
     console.log('Registro inserido com sucesso!');
-    console.log('=== Fim do registro no Supabase ===\n');
+    console.log('Dados:', insertResult[0]);
     return true;
   } catch (error) {
-    console.error('\nERRO AO REGISTRAR NO SUPABASE:');
-    console.error('Tipo:', error.name);
-    console.error('Mensagem:', error.message);
-    console.error('Stack:', error.stack);
-    if (error.response) {
-      console.error('Resposta:', error.response);
-    }
-    // Em caso de erro no Supabase, tenta registrar no Google Sheets como fallback
-    console.log('Tentando fallback para Google Sheets...');
-    return appendToSheet(timestamp, eventType, user, group);
+    console.error('Erro ao registrar no Supabase:', error);
+    if (error.details) console.error('Detalhes:', error.details);
+    if (error.hint) console.error('Dica:', error.hint);
+    throw error;
   }
 }
 
@@ -270,36 +362,9 @@ async function getContactName(client, userId) {
   }
 }
 
-async function getGroupName(client, groupId) {
-  try {
-    console.log('\n=== DEBUG: Obtendo nome do grupo ===');
-    console.log('ID do grupo:', groupId);
-    
-    const chat = await client.getChatById(groupId);
-    console.log('Chat obtido:', {
-      id: chat.id,
-      name: chat.name,
-      isGroup: chat.isGroup,
-      type: chat.id?.server // Verificando se é um grupo pelo server
-    });
-
-    // Se tem um nome e o ID termina com @g.us, é um grupo
-    if (chat.name && groupId.endsWith('@g.us')) {
-      console.log('Nome do grupo encontrado:', chat.name);
-      return chat.name;
-    }
-
-    console.log('Não foi possível obter o nome do grupo');
-    return 'Grupo não identificado';
-  } catch (error) {
-    console.error('Erro ao obter nome do grupo:', error);
-    return 'Grupo não identificado';
-  }
-}
-
 async function logEventToFile(eventType, user, group, providedTimestamp = null) {
   try {
-    const timestamp = providedTimestamp || new Intl.DateTimeFormat('pt-BR', {
+    const timestamp = providedTimestamp || new Date().toLocaleString('pt-BR', {
       timeZone: 'America/Sao_Paulo',
       day: '2-digit',
       month: '2-digit',
@@ -308,33 +373,35 @@ async function logEventToFile(eventType, user, group, providedTimestamp = null) 
       minute: '2-digit',
       second: '2-digit',
       hour12: false
-    }).format(new Date());
+    });
     
-    let formattedUser = user;
-    if (user.includes('@c.us')) {
-      formattedUser = await getContactName(client, user);
-    }
+    console.log('\n=== Registrando Evento ===');
+    console.log('Tipo:', eventType);
+    console.log('Usuário:', user);
+    console.log('Grupo:', group);
+    console.log('Timestamp:', timestamp);
     
-    // Registra no arquivo de log
-    const logEntry = `${timestamp} - ${eventType} - Usuário(s): ${formattedUser} - Grupo: ${group}\n`;
+    // Registrar no arquivo de log local
+    const logEntry = `${timestamp} - ${eventType} - Usuário(s): ${user} - Grupo: ${group}\n`;
     fs.appendFileSync(LOG_FILE, logEntry, 'utf8');
-    console.log(`[LOG] Evento registrado no arquivo: ${logEntry.trim()}`);
     
-    // Tenta registrar no Supabase primeiro
     try {
-      await recordEventSupabase(timestamp, eventType, formattedUser, group);
-    } catch (supabaseError) {
-      console.error('Erro ao registrar no Supabase:', supabaseError);
-      // Se falhar no Supabase, tenta registrar no Google Sheets
-      await appendToSheet(timestamp, eventType, formattedUser, group);
+      // Tentar registrar no Supabase primeiro
+      await recordEventSupabase(timestamp, eventType, user, group);
+      console.log('Evento registrado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao registrar no Supabase, tentando Google Sheets:', error);
+      await appendToSheet(timestamp, eventType, user, group);
+      console.log('Evento registrado com sucesso via fallback!');
     }
   } catch (error) {
-    console.error('Erro ao registrar evento:', error);
+    console.error('Erro crítico ao registrar evento:', error);
+    // Garantir que pelo menos o log local seja salvo
     try {
-      const errorEntry = `${new Date().toISOString()} - ERRO CRÍTICO - ${error.message}\n`;
-      fs.appendFileSync(LOG_FILE, errorEntry, 'utf8');
+      const errorLog = `${new Date().toISOString()} - ERRO - ${error.message} - ${eventType} - ${user} - ${group}\n`;
+      fs.appendFileSync(LOG_FILE, errorLog, 'utf8');
     } catch (fsError) {
-      console.error('Erro fatal ao registrar no arquivo de log:', fsError);
+      console.error('Erro fatal ao salvar log:', fsError);
     }
   }
 }
@@ -347,7 +414,6 @@ const client = new Client({
       '--disable-dev-shm-usage',
       '--disable-accelerated-2d-canvas',
       '--no-first-run',
-      '--no-zygote',
       '--disable-gpu',
       '--disable-extensions',
       '--disable-software-rasterizer',
@@ -355,12 +421,12 @@ const client = new Client({
       '--allow-running-insecure-content',
       '--window-size=1280,720',
       '--disable-web-security',
-      '--allow-file-access-from-files',
-      '--disable-features=IsolateOrigins,site-per-process',
-      '--disable-blink-features=AutomationControlled'
+      '--allow-file-access-from-files'
     ],
-    headless: 'new',
-    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome-stable',
+    headless: true,
+    executablePath: process.platform === 'win32' 
+      ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
+      : '/usr/bin/google-chrome-stable',
     timeout: 120000,
     defaultViewport: {
       width: 1280,
@@ -400,11 +466,15 @@ console.log('\n=== INICIANDO CLIENTE WHATSAPP ===');
 console.log('Data/Hora:', new Date().toLocaleString());
 console.log('Ambiente:', DEPLOY_ENV);
 console.log('Diretório de trabalho:', process.cwd());
-console.log('Chrome executable:', process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome-stable');
+console.log('Chrome executable:', process.platform === 'win32' 
+  ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
+  : '/usr/bin/google-chrome-stable');
 
 // Verificar se o executável do Chrome existe
 try {
-  const chromePath = process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/google-chrome-stable';
+  const chromePath = process.platform === 'win32' 
+    ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
+    : '/usr/bin/google-chrome-stable';
   fs.accessSync(chromePath, fs.constants.X_OK);
   console.log('Google Chrome encontrado em:', chromePath);
 } catch (error) {
@@ -422,162 +492,207 @@ client.on('ready', async () => {
   console.log('\n=== CLIENTE WHATSAPP CONECTADO ===');
   console.log('Data/Hora:', new Date().toLocaleString());
   console.log('Ambiente:', DEPLOY_ENV);
-  
-  // Lista todos os chats para debug com retry
-  for (let attempt = 1; attempt <= 3; attempt++) {
-    try {
-      console.log(`\nTentativa ${attempt} de listar chats...`);
-      const chats = await client.getChats();
-      console.log('\nGrupos disponíveis:');
-      let groupCount = 0;
-      
-      chats.forEach(chat => {
-        if (chat.isGroup) {
-          groupCount++;
-          console.log({
-            id: chat.id,
-            name: chat.name,
-            participants: chat.participants?.length || 0
-          });
-        }
-      });
-      
-      console.log(`Total de grupos encontrados: ${groupCount}`);
-      break; // Se chegou aqui, deu certo
-    } catch (error) {
-      console.error(`Erro na tentativa ${attempt} de listar chats:`, error);
-      if (attempt === 3) {
-        console.error('Falha em todas as tentativas de listar chats');
-      } else {
-        await new Promise(resolve => setTimeout(resolve, 5000)); // Espera 5 segundos antes da próxima tentativa
-      }
-    }
-  }
+  console.log('Bot pronto para monitorar grupos!');
 });
 
-// Melhorar o tratamento de eventos de grupo
+// Cache global para eventos processados
+const processedEvents = new Set();
+
+// Função para gerar chave de evento consistente
+function generateEventKey(notification, eventType) {
+  const chatId = notification.chatId;
+  const userId = notification.recipientIds?.[0];
+  const timestamp = notification.timestamp;
+  return `${chatId}_${userId}_${eventType}_${timestamp}`;
+}
+
+// Função para verificar evento no log
+async function checkEventInLog(eventType, userName, groupName, timestamp) {
+  try {
+    // Ler últimas 50 linhas do log para verificação
+    const logContent = await fs.promises.readFile(LOG_FILE, 'utf8');
+    const logLines = logContent.split('\n').slice(-50);
+    
+    // Formatar timestamp para comparação
+    const eventDate = new Date(timestamp * 1000);
+    const eventTimestamp = eventDate.toLocaleString('pt-BR', {
+      timeZone: 'America/Sao_Paulo'
+    });
+    
+    // Procurar por evento similar no log
+    return logLines.some(line => {
+      return line.includes(eventType) && 
+             line.includes(userName) && 
+             line.includes(groupName) &&
+             // Compara apenas data/hora sem segundos para maior flexibilidade
+             line.substring(0, 16) === eventTimestamp.substring(0, 16);
+    });
+  } catch (error) {
+    console.error('Erro ao verificar log:', error);
+    return false;
+  }
+}
+
+// Função para processar eventos de grupo
+async function processGroupEvent(notification, eventType) {
+  try {
+    console.log(`\nProcessando notificação:`, notification);
+    
+    // Validar dados da notificação
+    if (!notification || !notification.id || !notification.chatId) {
+      console.error('Notificação inválida:', notification);
+      return;
+    }
+
+    const userId = notification.recipientIds?.[0];
+    if (!userId) {
+      console.error('ID do usuário não encontrado na notificação:', notification);
+      return;
+    }
+
+    // Garantir e validar timestamp
+    let timestamp = notification.timestamp;
+    if (!timestamp || timestamp <= 0) {
+      timestamp = Math.floor(Date.now() / 1000);
+      console.log('Timestamp não encontrado ou inválido, usando timestamp atual:', timestamp);
+    }
+    
+    // Gerar chave de evento consistente
+    const eventKey = generateEventKey({ ...notification, timestamp }, eventType);
+
+    // Verificar cache com nova chave
+    if (processedEvents.has(eventKey)) {
+      console.log('Evento já processado (cache), ignorando duplicata...');
+      return;
+    }
+
+    console.log(`\n=== NOVO EVENTO DE ${eventType} NO GRUPO ===`);
+    console.log('Chat ID:', notification.chatId);
+    console.log('User ID:', userId);
+    console.log('Event Key:', eventKey);
+    console.log('Timestamp Unix:', timestamp);
+    console.log('Timestamp ISO:', new Date(timestamp * 1000).toISOString());
+
+    // Obter informações necessárias com retry
+    let groupName, userName;
+    try {
+      [groupName, userName] = await Promise.all([
+        getGroupName(client, notification.chatId),
+        getContactName(client, userId)
+      ]);
+    } catch (error) {
+      console.error('Erro ao obter informações do grupo/usuário:', error);
+      // Usar IDs como fallback
+      groupName = notification.chatId;
+      userName = userId;
+    }
+
+    // Criar timestamp no formato ISO8601 com timezone
+    const isoTimestamp = new Date(timestamp * 1000).toISOString();
+
+    // Log local primeiro
+    const brTimestamp = new Date(timestamp * 1000).toLocaleString('pt-BR', {
+      timeZone: 'America/Sao_Paulo'
+    });
+    const logEntry = `${brTimestamp} - ${eventType} - Usuário(s): ${userName} - Grupo: ${groupName}\n`;
+    await fs.promises.appendFile(LOG_FILE, logEntry);
+
+    // Registrar no Supabase
+    try {
+      const success = await recordEventSupabase(timestamp, eventType, userName, groupName);
+      if (success) {
+        // Adicionar ao cache somente após confirmação do registro
+        processedEvents.add(eventKey);
+        // Limpar do cache após 5 minutos
+        setTimeout(() => processedEvents.delete(eventKey), 300000);
+      }
+    } catch (error) {
+      console.error('Erro ao registrar no Supabase:', error);
+      throw error; // Propaga o erro para tratamento adequado
+    }
+
+  } catch (error) {
+    console.error(`Erro ao processar evento:`, error);
+    console.error('Detalhes completos do erro:', {
+      message: error.message,
+      stack: error.stack,
+      details: error?.details,
+      hint: error?.hint
+    });
+  }
+}
+
+// Event listeners com async/await
 client.on('group_join', async (notification) => {
   try {
-    console.log('\n=== NOVO EVENTO DE ENTRADA NO GRUPO ===');
-    console.log('Data/Hora:', new Date().toLocaleString());
-    console.log('Notification raw:', JSON.stringify(notification, null, 2));
+    console.log('\nNotificação de JOIN recebida:', notification);
     
-    // Obtém o nome do grupo com retry
-    let groupName;
-    for (let attempt = 1; attempt <= 3; attempt++) {
-      try {
-        console.log(`Tentativa ${attempt} de obter chat...`);
-        const chat = await client.getChatById(notification.chatId);
-        groupName = chat.name || 'Grupo não identificado';
-        console.log('Nome do grupo:', groupName);
-        break;
-      } catch (error) {
-        console.error(`Erro na tentativa ${attempt} de obter chat:`, error);
-        if (attempt === 3) {
-          groupName = 'Grupo não identificado';
-        } else {
-          await new Promise(resolve => setTimeout(resolve, 3000));
-        }
-      }
-    }
+    // Garantir timestamp para todos os tipos de evento
+    const timestamp = notification.timestamp || Math.floor(Date.now() / 1000);
     
-    // Obtém os nomes dos contatos com retry
-    const userNames = await Promise.all(
-      notification.recipientIds.map(async (userId) => {
-        for (let attempt = 1; attempt <= 3; attempt++) {
-          try {
-            return await getContactName(client, userId);
-          } catch (error) {
-            console.error(`Erro na tentativa ${attempt} de obter nome do contato:`, error);
-            if (attempt === 3) return userId;
-            await new Promise(resolve => setTimeout(resolve, 2000));
-          }
-        }
-      })
-    );
-    
-    const userIdentifiers = userNames.join(', ');
-    console.log('Usuários:', userIdentifiers);
-    
-    // Registra o evento com retry
-    for (let attempt = 1; attempt <= 3; attempt++) {
-      try {
-        console.log(`Tentativa ${attempt} de registrar evento...`);
-        await logEventToFile('JOIN', userIdentifiers, groupName);
-        console.log('Evento de entrada registrado com sucesso');
-        break;
-      } catch (error) {
-        console.error(`Erro na tentativa ${attempt} de registrar evento:`, error);
-        if (attempt === 3) {
-          console.error('Falha em todas as tentativas de registrar evento');
-        } else {
-          await new Promise(resolve => setTimeout(resolve, 3000));
-        }
-      }
+    // Criar uma cópia da notificação com o timestamp garantido
+    const processedNotification = {
+      ...notification,
+      timestamp: timestamp
+    };
+
+    // Processar o evento apenas se for um JOIN real ou se for um invite sem JOIN correspondente
+    const eventKey = generateEventKey(processedNotification, 'JOIN');
+    if (!processedEvents.has(eventKey)) {
+      await processGroupEvent(processedNotification, 'JOIN');
+    } else {
+      console.log('Evento JOIN já processado, ignorando...');
     }
   } catch (error) {
-    console.error('Erro ao processar entrada no grupo:', error);
+    console.error('Erro ao processar JOIN:', error);
   }
 });
 
 client.on('group_leave', async (notification) => {
   try {
-    console.log('\nNOVO EVENTO DE SAÍDA DO GRUPO');
-    console.log('Notification raw:', JSON.stringify(notification, null, 2));
+    console.log('\nNotificação de LEAVE recebida:', notification);
     
-    // Obtém o nome do grupo
-    let groupName;
-    try {
-      console.log('Tentando obter chat...');
-      const chat = await client.getChatById(notification.chatId);
-      console.log('Chat obtido:', {
-        id: chat.id,
-        name: chat.name,
-        isGroup: chat.isGroup
-      });
-      groupName = chat.name || 'Grupo não identificado';
-      console.log('Nome do grupo:', groupName);
-    } catch (chatError) {
-      console.error('Erro ao obter chat:', chatError);
-      groupName = 'Grupo não identificado';
+    // Garantir recipientIds
+    if (!notification.recipientIds || notification.recipientIds.length === 0) {
+      console.log('Tentando extrair recipientId do id...');
+      const match = notification.id._serialized.match(/\d+@c\.us/);
+      if (match) {
+        notification.recipientIds = [match[0]];
+      }
     }
+
+    // Garantir timestamp
+    const timestamp = notification.timestamp || Math.floor(Date.now() / 1000);
     
-    // Obtém os nomes dos contatos
-    console.log('Obtendo nomes dos contatos...');
-    const userNames = await Promise.all(
-      notification.recipientIds.map(async (userId) => {
-        try {
-          return await getContactName(client, userId);
-        } catch (error) {
-          console.error('Erro ao obter nome do contato:', error);
-          return userId;
-        }
-      })
-    );
-    
-    const userIdentifiers = userNames.join(', ');
-    console.log('Usuários:', userIdentifiers);
-    
-    // Registra o evento
-    console.log('Registrando evento...');
-    await logEventToFile('LEAVE', userIdentifiers, groupName);
-    
-    console.log('Evento de saída processado com sucesso');
+    // Criar uma cópia da notificação com dados garantidos
+    const processedNotification = {
+      ...notification,
+      timestamp: timestamp
+    };
+
+    await processGroupEvent(processedNotification, 'LEAVE');
   } catch (error) {
-    console.error('Erro ao processar saída do grupo:', error);
-    console.error('Stack:', error.stack);
+    console.error('Erro ao processar LEAVE:', error);
+  }
+});
+
+// Adicionar evento para remoções
+client.on('group_remove', async (notification) => {
+  try {
+    console.log('\nNotificação de REMOVE recebida:', notification);
     
-    // Tenta registrar mesmo com erro
-    try {
-      console.log('Tentando registro de fallback...');
-      await logEventToFile(
-        'LEAVE',
-        notification.recipientIds.join(', '),
-        notification.chatId
-      );
-    } catch (fallbackError) {
-      console.error('Erro ao tentar registro de fallback:', fallbackError);
-    }
+    // Garantir timestamp
+    const timestamp = notification.timestamp || Math.floor(Date.now() / 1000);
+    
+    // Criar uma cópia da notificação com timestamp garantido
+    const processedNotification = {
+      ...notification,
+      timestamp: timestamp
+    };
+
+    await processGroupEvent(processedNotification, 'LEAVE');
+  } catch (error) {
+    console.error('Erro ao processar REMOVE:', error);
   }
 });
 
