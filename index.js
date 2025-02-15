@@ -134,11 +134,8 @@ async function recordEventSupabase(timestamp, eventType, user, group) {
     
     console.log('Timestamp formatado:', formattedTimestamp);
 
-    // Criar tabela e índice em uma única transação
-    const setupTableQuery = `
-      BEGIN;
-      
-      -- Criar tabela se não existir
+    // Criar tabela se não existir
+    const createTableQuery = `
       CREATE TABLE IF NOT EXISTS "${tableName}" (
         id serial PRIMARY KEY,
         timestamp timestamptz NOT NULL,
@@ -146,31 +143,18 @@ async function recordEventSupabase(timestamp, eventType, user, group) {
         user_id varchar(255) NOT NULL,
         group_name text NOT NULL,
         created_at timestamptz NOT NULL DEFAULT now(),
-        event_key text NOT NULL DEFAULT 'legacy'
+        event_key text NOT NULL DEFAULT 'legacy',
+        CONSTRAINT ${tableName}_event_key_unique UNIQUE (event_key)
       );
-
-      -- Criar índice único
-      DO $$
-      BEGIN
-        IF NOT EXISTS (
-          SELECT 1 FROM pg_indexes 
-          WHERE tablename = '${tableName}' 
-          AND indexname = '${tableName}_event_key_idx'
-        ) THEN
-          CREATE UNIQUE INDEX ${tableName}_event_key_idx ON "${tableName}" (event_key);
-        END IF;
-      END $$;
-
-      COMMIT;
     `;
 
-    const { error: setupError } = await supabase.rpc('exec_sql', { 
-      query: setupTableQuery 
+    const { error: createError } = await supabase.rpc('exec_sql', { 
+      query: createTableQuery 
     });
 
-    if (setupError) {
-      console.error('Erro ao configurar tabela:', setupError);
-      throw setupError;
+    if (createError) {
+      console.error('Erro ao criar tabela:', createError);
+      throw createError;
     }
 
     // Gerar event_key único
@@ -191,7 +175,7 @@ async function recordEventSupabase(timestamp, eventType, user, group) {
         '${group.replace(/'/g, "''")}',
         '${eventKey}'
       )
-      ON CONFLICT ON CONSTRAINT ${tableName}_event_key_idx 
+      ON CONFLICT ON CONSTRAINT ${tableName}_event_key_unique 
       DO NOTHING
       RETURNING id, timestamp, event_type, user_id, group_name;
     `;
