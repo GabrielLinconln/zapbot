@@ -185,41 +185,49 @@ async function recordEventSupabase(timestamp, eventType, user, group) {
       event_key: eventKey
     };
 
-    // Query de inserção com validações
-    const insertQuery = `
-      INSERT INTO "${tableName}" (
-        timestamp,
-        event_type,
-        user_id,
-        group_name,
-        event_key
-      ) VALUES (
-        $1::timestamptz,
-        $2,
-        $3,
-        $4,
-        $5
-      )
-      ON CONFLICT ON CONSTRAINT ${tableName}_event_key_unique 
-      DO NOTHING
-      RETURNING id, timestamp, event_type, user_id, group_name;
-    `;
+    let result = null;
 
-    // Tentar inserção com prepared statement
-    const { data: insertResult, error: insertError } = await supabase.rpc('exec_sql', {
-      query: insertQuery,
-      params: [
-        insertData.timestamp,
-        insertData.event_type,
-        insertData.user_id,
-        insertData.group_name,
-        insertData.event_key
-      ]
-    });
+    try {
+      // Primeira tentativa: Inserção com prepared statement
+      const insertQuery = `
+        INSERT INTO "${tableName}" (
+          timestamp,
+          event_type,
+          user_id,
+          group_name,
+          event_key
+        ) VALUES (
+          $1::timestamptz,
+          $2,
+          $3,
+          $4,
+          $5
+        )
+        ON CONFLICT ON CONSTRAINT ${tableName}_event_key_unique 
+        DO NOTHING
+        RETURNING id, timestamp, event_type, user_id, group_name;
+      `;
 
-    if (insertError) {
+      const { data, error } = await supabase.rpc('exec_sql', {
+        query: insertQuery,
+        params: [
+          insertData.timestamp,
+          insertData.event_type,
+          insertData.user_id,
+          insertData.group_name,
+          insertData.event_key
+        ]
+      });
+
+      if (!error && data && data.length > 0) {
+        result = data;
+      } else if (error) {
+        throw error;
+      }
+    } catch (insertError) {
       console.log('Tentando inserção alternativa...');
-      // Fallback para inserção simples se prepared statement falhar
+      
+      // Segunda tentativa: Inserção simples
       const simpleInsertQuery = `
         INSERT INTO "${tableName}" (
           timestamp,
@@ -237,25 +245,24 @@ async function recordEventSupabase(timestamp, eventType, user, group) {
         RETURNING id, timestamp, event_type, user_id, group_name;
       `;
 
-      const { data: simpleResult, error: simpleError } = await supabase.rpc('exec_sql', {
+      const { data, error } = await supabase.rpc('exec_sql', {
         query: simpleInsertQuery
       });
 
-      if (simpleError) {
-        console.error('Erro na inserção alternativa:', simpleError);
-        throw simpleError;
+      if (error) {
+        throw error;
       }
 
-      insertResult = simpleResult;
+      result = data;
     }
 
-    if (!insertResult || insertResult.length === 0) {
+    if (!result || result.length === 0) {
       console.log('Evento já registrado ou ignorado');
       return false;
     }
 
     console.log('Registro inserido com sucesso!');
-    console.log('Dados:', insertResult[0]);
+    console.log('Dados:', result[0]);
     return true;
   } catch (error) {
     console.error('Erro ao registrar no Supabase:', error);
