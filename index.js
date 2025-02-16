@@ -145,27 +145,96 @@ async function recordEventSupabase(timestamp, eventType, user, group) {
     
     console.log('Timestamp formatado:', formattedTimestamp);
 
-    // Criar tabela se não existir
-    const createTableQuery = `
-      CREATE TABLE IF NOT EXISTS "${tableName}" (
-        id serial PRIMARY KEY,
-        timestamp timestamptz NOT NULL,
-        event_type varchar(10) NOT NULL CHECK (event_type IN ('JOIN', 'LEAVE')),
-        user_id varchar(255) NOT NULL,
-        group_name text NOT NULL,
-        created_at timestamptz NOT NULL DEFAULT now(),
-        event_key text NOT NULL DEFAULT 'legacy',
-        CONSTRAINT ${tableName}_event_key_unique UNIQUE (event_key)
-      );
+    // Verificar se a tabela existe e tem a coluna event_key
+    const checkTableQuery = `
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_name = '${tableName}'
+      ) as table_exists;
     `;
 
-    const { error: createError } = await supabase.rpc('exec_sql', { 
-      query: createTableQuery 
+    const { data: tableCheck, error: checkError } = await supabase.rpc('exec_sql', { 
+      query: checkTableQuery 
     });
 
-    if (createError) {
-      console.error('Erro ao criar tabela:', createError);
-      throw createError;
+    if (checkError) {
+      console.error('Erro ao verificar tabela:', checkError);
+      throw checkError;
+    }
+
+    const tableExists = tableCheck?.[0]?.table_exists;
+
+    if (!tableExists) {
+      // Criar nova tabela com todas as colunas
+      const createTableQuery = `
+        CREATE TABLE "${tableName}" (
+          id serial PRIMARY KEY,
+          timestamp timestamptz NOT NULL,
+          event_type varchar(10) NOT NULL CHECK (event_type IN ('JOIN', 'LEAVE')),
+          user_id varchar(255) NOT NULL,
+          group_name text NOT NULL,
+          created_at timestamptz NOT NULL DEFAULT now(),
+          event_key text NOT NULL DEFAULT 'legacy',
+          CONSTRAINT ${tableName}_event_key_unique UNIQUE (event_key)
+        );
+      `;
+
+      const { error: createError } = await supabase.rpc('exec_sql', { 
+        query: createTableQuery 
+      });
+
+      if (createError) {
+        console.error('Erro ao criar tabela:', createError);
+        throw createError;
+      }
+    } else {
+      // Verificar se a coluna event_key existe
+      const checkColumnQuery = `
+        SELECT EXISTS (
+          SELECT FROM information_schema.columns 
+          WHERE table_name = '${tableName}' 
+          AND column_name = 'event_key'
+        ) as column_exists;
+      `;
+
+      const { data: columnCheck, error: columnError } = await supabase.rpc('exec_sql', { 
+        query: checkColumnQuery 
+      });
+
+      if (columnError) {
+        console.error('Erro ao verificar coluna:', columnError);
+        throw columnError;
+      }
+
+      const columnExists = columnCheck?.[0]?.column_exists;
+
+      if (!columnExists) {
+        // Adicionar coluna event_key e constraint
+        const alterTableQuery = `
+          BEGIN;
+          ALTER TABLE "${tableName}" 
+          ADD COLUMN event_key text NOT NULL DEFAULT 'legacy';
+          
+          -- Atualizar registros existentes com event_key único
+          UPDATE "${tableName}" 
+          SET event_key = CONCAT('legacy_', id::text) 
+          WHERE event_key = 'legacy';
+          
+          -- Adicionar constraint único
+          ALTER TABLE "${tableName}" 
+          ADD CONSTRAINT ${tableName}_event_key_unique UNIQUE (event_key);
+          COMMIT;
+        `;
+
+        const { error: alterError } = await supabase.rpc('exec_sql', { 
+          query: alterTableQuery 
+        });
+
+        if (alterError) {
+          console.error('Erro ao alterar tabela:', alterError);
+          throw alterError;
+        }
+      }
     }
 
     // Sanitizar dados para o event_key
@@ -176,84 +245,33 @@ async function recordEventSupabase(timestamp, eventType, user, group) {
     const eventKey = `${tableName}_${sanitizedUser}_${eventType}_${sanitizedTimestamp}`;
     console.log('Event Key gerado:', eventKey);
 
-    // Preparar dados para inserção
-    const insertData = {
-      timestamp: formattedTimestamp,
-      event_type: eventType,
-      user_id: user.replace(/'/g, "''"),
-      group_name: group.replace(/'/g, "''"),
-      event_key: eventKey
-    };
+    // Inserir o registro
+    const insertQuery = `
+      INSERT INTO "${tableName}" (
+        timestamp,
+        event_type,
+        user_id,
+        group_name,
+        event_key
+      ) VALUES (
+        '${formattedTimestamp}'::timestamptz,
+        '${eventType}',
+        '${user.replace(/'/g, "''")}',
+        '${group.replace(/'/g, "''")}',
+        '${eventKey}'
+      )
+      ON CONFLICT ON CONSTRAINT ${tableName}_event_key_unique 
+      DO NOTHING
+      RETURNING id, timestamp, event_type, user_id, group_name;
+    `;
 
-    let result = null;
+    const { data: result, error: insertError } = await supabase.rpc('exec_sql', {
+      query: insertQuery
+    });
 
-    try {
-      // Primeira tentativa: Inserção com prepared statement
-      const insertQuery = `
-        INSERT INTO "${tableName}" (
-          timestamp,
-          event_type,
-          user_id,
-          group_name,
-          event_key
-        ) VALUES (
-          $1::timestamptz,
-          $2,
-          $3,
-          $4,
-          $5
-        )
-        ON CONFLICT ON CONSTRAINT ${tableName}_event_key_unique 
-        DO NOTHING
-        RETURNING id, timestamp, event_type, user_id, group_name;
-      `;
-
-      const { data, error } = await supabase.rpc('exec_sql', {
-        query: insertQuery,
-        params: [
-          insertData.timestamp,
-          insertData.event_type,
-          insertData.user_id,
-          insertData.group_name,
-          insertData.event_key
-        ]
-      });
-
-      if (!error && data && data.length > 0) {
-        result = data;
-      } else if (error) {
-        throw error;
-      }
-    } catch (insertError) {
-      console.log('Tentando inserção alternativa...');
-      
-      // Segunda tentativa: Inserção simples
-      const simpleInsertQuery = `
-        INSERT INTO "${tableName}" (
-          timestamp,
-          event_type,
-          user_id,
-          group_name,
-          event_key
-        ) VALUES (
-          '${insertData.timestamp}'::timestamptz,
-          '${insertData.event_type}',
-          '${insertData.user_id}',
-          '${insertData.group_name}',
-          '${insertData.event_key}'
-        )
-        RETURNING id, timestamp, event_type, user_id, group_name;
-      `;
-
-      const { data, error } = await supabase.rpc('exec_sql', {
-        query: simpleInsertQuery
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      result = data;
+    if (insertError) {
+      console.error('Erro na inserção:', insertError);
+      throw insertError;
     }
 
     if (!result || result.length === 0) {
