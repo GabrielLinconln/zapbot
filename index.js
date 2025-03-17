@@ -18,7 +18,7 @@ const PORT = process.env.PORT || 3000;
 
 // Definir timeout para DNS (ajuda com problemas de DNS em ambientes cloud)
 dns.setDefaultResultOrder('ipv4first');
-dns.setServers(['8.8.8.8', '1.1.1.1']);
+dns.setServers(['8.8.8.8', '1.1.1.1', '208.67.222.222']);
 
 // Adicionar configuração do Google Sheets
 const SPREADSHEET_ID = process.env.SPREADSHEET_ID || '1U7SzPTc2t8SIIcAubigz3oNMUEboDU8oxT5I0KkODq0';
@@ -110,6 +110,41 @@ server.listen(PORT, () => {
   }
 });
 
+// Mapear domínios conhecidos para IPs (solução para problemas de DNS)
+const knownHosts = {
+  'qlqvpfdskgnlndxokztf.supabase.co': '104.18.11.143' // IP do Supabase, pode precisar ser atualizado se mudar
+};
+
+// Função auxiliar para obter URL com IP direto
+function getDirectIpUrl(originalUrl) {
+  try {
+    if (!originalUrl) return null;
+    
+    const url = new URL(originalUrl);
+    const hostname = url.hostname;
+    
+    if (knownHosts[hostname]) {
+      // Substituir pelo IP conhecido
+      console.log(`Usando IP direto (${knownHosts[hostname]}) para ${hostname}`);
+      
+      // Construir nova URL com IP
+      const ipUrl = new URL(originalUrl);
+      ipUrl.hostname = knownHosts[hostname];
+      
+      // Adicionar header Host original para evitar problemas de certificado/routing
+      return {
+        url: ipUrl.toString(),
+        headers: { 'Host': hostname }
+      };
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Erro ao processar URL para IP direto:', error);
+    return null;
+  }
+}
+
 // Inicialização do cliente Supabase
 console.log('\n=== Verificando configuração do Supabase ===');
 const supabaseUrl = process.env.SUPABASE_URL?.trim();
@@ -118,10 +153,44 @@ const supabaseKey = process.env.SUPABASE_KEY?.trim();
 console.log('URL configurada:', supabaseUrl);
 console.log('Key configurada:', supabaseKey ? 'Presente (começa com: ' + supabaseKey.substring(0, 10) + '...)' : 'Ausente');
 
+// Tentar criar uma alternativa com IP direto
+let directIpConfig = null;
+if (supabaseUrl) {
+  directIpConfig = getDirectIpUrl(supabaseUrl);
+  if (directIpConfig) {
+    console.log('URL alternativa com IP direto:', directIpConfig.url);
+  }
+}
+
 if (!supabaseUrl || !supabaseKey) {
   console.error('Erro: Credenciais do Supabase não encontradas no .env');
   console.log('Continuando sem Supabase, usando fallback...');
 }
+
+// Personalizar fetch para usar IP direto quando necessário
+const customFetch = function(url, options) {
+  const originalUrl = url.toString();
+  
+  // Verificar se é uma URL para o Supabase
+  if (supabaseUrl && originalUrl.includes(new URL(supabaseUrl).hostname)) {
+    if (directIpConfig) {
+      const newUrl = originalUrl.replace(supabaseUrl, directIpConfig.url);
+      const newOptions = {
+        ...options,
+        headers: {
+          ...options?.headers,
+          ...directIpConfig.headers
+        }
+      };
+      
+      console.log(`Usando IP direto para request: ${newUrl}`);
+      return fetch(newUrl, newOptions);
+    }
+  }
+  
+  // Fallback para o fetch normal
+  return fetch(url, options);
+};
 
 const supabase = createClient(supabaseUrl || 'https://example.com', supabaseKey || 'fallback-key', {
   auth: {
@@ -133,7 +202,7 @@ const supabase = createClient(supabaseUrl || 'https://example.com', supabaseKey 
     headers: {
       'Authorization': `Bearer ${supabaseKey || 'fallback-key'}`
     },
-    fetch: fetch
+    fetch: customFetch
   }
 });
 
@@ -834,10 +903,63 @@ client.on('qr', async (qr) => {
   ];
   
   // Imprimir URLs
-  console.log('\nQR Code disponível nas seguintes URLs:');
+  console.log('\n### INSTRUÇÕES PARA AUTENTICAÇÃO ###');
+  console.log('1. Abra uma das URLs abaixo em seu navegador para ver o QR code:');
   qrUrls.forEach((url, index) => {
-    console.log(`[${index + 1}] ${url}`);
+    console.log(`   ${String.fromCharCode(97 + index)}) ${url}`);
   });
+  
+  console.log('\n2. OU acesse a URL do seu deploy no Railway (em Settings > Domains)');
+  console.log(`   Use o endereço http://SEU-DOMINIO-RAILWAY para ver o QR code na web`);
+  
+  console.log('\n3. OU abra qualquer gerador de QR code online e cole o código abaixo:');
+  console.log(`   ${qr}`);
+  
+  // Gerar base64 do QR code para inclusão em HTML
+  try {
+    const qrBase64 = await qrcode_lib.toDataURL(qr, {
+      scale: 8,
+      margin: 4,
+      color: {
+        dark: '#000000',
+        light: '#ffffff'
+      }
+    });
+    
+    console.log('\n4. OU use esta imagem base64 para criar seu próprio HTML:');
+    console.log(`   <img src="${qrBase64}" alt="QR Code" />`);
+    
+    // Criar um HTML simples para facilitar o uso
+    const htmlQR = `
+<!DOCTYPE html>
+<html>
+<head>
+  <title>QR Code WhatsApp</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+    img { max-width: 300px; border: 1px solid #ddd; margin: 20px auto; display: block; }
+    .container { max-width: 600px; margin: 0 auto; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>QR Code para WhatsApp Bot</h1>
+    <p>Escaneie o QR code abaixo com seu WhatsApp para autenticar o bot</p>
+    <img src="${qrBase64}" alt="QR Code">
+    <p>Gerado em: ${new Date().toLocaleString('pt-BR')}</p>
+  </div>
+</body>
+</html>`;
+    
+    // Salvar o HTML para uso offline
+    const htmlPath = path.join(__dirname, 'qr-code.html');
+    fs.writeFileSync(htmlPath, htmlQR);
+    console.log(`\nArquivo HTML com QR code salvo em: ${htmlPath}`);
+    
+  } catch (error) {
+    console.error('Erro ao gerar imagem base64 do QR code:', error);
+  }
 
   // Gerar imagem do QR code
   try {
@@ -857,15 +979,11 @@ client.on('qr', async (qr) => {
 
   // Gerar QR code no terminal
   try {
-    console.log('\nQR Code em ASCII:');
+    console.log('\nQR Code em ASCII (pode não funcionar em todos os terminais):');
     qrcode.generate(qr, { small: true });
   } catch (error) {
     console.error('Erro ao gerar QR code em ASCII:', error);
   }
-  
-  // Imprimir o QR code como texto
-  console.log('\nQR Code como texto (para backup):');
-  console.log(qr);
   
   // Salvar QR code em arquivo
   try {
@@ -875,10 +993,10 @@ client.on('qr', async (qr) => {
     console.error('Erro ao salvar QR code em arquivo:', error);
   }
   
-  console.log('\nAguardando leitura do QR Code...');
-  console.log('Você tem 60 segundos para escanear antes de um novo QR code ser gerado.');
-  console.log(`\nIMPORTANTE: Para ver o QR code em uma página web, acesse:`);
-  console.log(`http://localhost:${PORT} ou a URL do seu deploy no Railway`);
+  console.log('\n### IMPORTANTE ###');
+  console.log('- Você tem 60 segundos para escanear antes de um novo QR code ser gerado');
+  console.log('- Se estiver usando o Railway, verifique os logs para ver estas instruções');
+  console.log('- Use uma das opções acima para acessar o QR code');
 });
 
 // Adicionar eventos de autenticação
