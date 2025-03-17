@@ -6,14 +6,109 @@ const path = require('path');
 const { google } = require('googleapis');
 const { createClient } = require('@supabase/supabase-js');
 const fetch = require('node-fetch');
+const http = require('http');
+const qrcode_lib = require('qrcode');
+const dns = require('dns');
 
 const LOG_FILE = path.join(__dirname, 'log.txt');
-const QR_FILE = path.join(__dirname, 'qr-code.png');
+const QR_FILE = path.join(__dirname, 'qr-code.txt');
+const QR_IMG_FILE = path.join(__dirname, 'qr-code.png');
 const DEPLOY_ENV = process.env.DEPLOY_ENV || 'local';
+const PORT = process.env.PORT || 3000;
+
+// Definir timeout para DNS (ajuda com problemas de DNS em ambientes cloud)
+dns.setDefaultResultOrder('ipv4first');
+dns.setServers(['8.8.8.8', '1.1.1.1']);
 
 // Adicionar configuração do Google Sheets
 const SPREADSHEET_ID = process.env.SPREADSHEET_ID || '1U7SzPTc2t8SIIcAubigz3oNMUEboDU8oxT5I0KkODq0';
 const CREDENTIALS_PATH = path.join(__dirname, 'credentials.json');
+
+// Criar servidor HTTP simples para exibir QR code
+const server = http.createServer((req, res) => {
+  if (req.url === '/') {
+    if (fs.existsSync(QR_IMG_FILE)) {
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>WhatsApp Bot QR Code</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <style>
+            body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+            img { max-width: 300px; border: 1px solid #ddd; margin: 20px auto; display: block; }
+            .container { max-width: 600px; margin: 0 auto; }
+            .refresh { margin-top: 20px; color: #666; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <h1>WhatsApp Bot - QR Code</h1>
+            <p>Escaneie o QR code abaixo com seu WhatsApp para autenticar o bot</p>
+            <img src="/qrcode" alt="QR Code">
+            <p class="refresh">Esta página atualiza automaticamente a cada 30 segundos</p>
+            <p>Última atualização: ${new Date().toLocaleString('pt-BR')}</p>
+          </div>
+          <script>
+            setTimeout(() => { window.location.reload(); }, 30000);
+          </script>
+        </body>
+        </html>
+      `);
+    } else {
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>WhatsApp Bot QR Code</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <style>
+            body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+            .container { max-width: 600px; margin: 0 auto; }
+            .refresh { margin-top: 20px; color: #666; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <h1>WhatsApp Bot - QR Code</h1>
+            <p>Aguardando geração do QR code...</p>
+            <p>Esta página atualiza automaticamente a cada 10 segundos</p>
+            <p>Última atualização: ${new Date().toLocaleString('pt-BR')}</p>
+          </div>
+          <script>
+            setTimeout(() => { window.location.reload(); }, 10000);
+          </script>
+        </body>
+        </html>
+      `);
+    }
+  } else if (req.url === '/qrcode' && fs.existsSync(QR_IMG_FILE)) {
+    res.writeHead(200, { 'Content-Type': 'image/png' });
+    fs.createReadStream(QR_IMG_FILE).pipe(res);
+  } else if (req.url === '/health') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      environment: DEPLOY_ENV,
+      qrcode_available: fs.existsSync(QR_IMG_FILE)
+    }));
+  } else {
+    res.writeHead(404);
+    res.end('Not found');
+  }
+});
+
+// Iniciar servidor
+server.listen(PORT, () => {
+  console.log(`\n=== SERVIDOR QR CODE INICIADO ===`);
+  console.log(`Acesse http://localhost:${PORT} para visualizar o QR code`);
+  if (DEPLOY_ENV === 'railway' || DEPLOY_ENV === 'production') {
+    console.log(`No Railway, acesse a URL pública fornecida em "Settings > Domains"`);
+  }
+});
 
 // Inicialização do cliente Supabase
 console.log('\n=== Verificando configuração do Supabase ===');
@@ -25,10 +120,10 @@ console.log('Key configurada:', supabaseKey ? 'Presente (começa com: ' + supaba
 
 if (!supabaseUrl || !supabaseKey) {
   console.error('Erro: Credenciais do Supabase não encontradas no .env');
-  process.exit(1);
+  console.log('Continuando sem Supabase, usando fallback...');
 }
 
-const supabase = createClient(supabaseUrl, supabaseKey, {
+const supabase = createClient(supabaseUrl || 'https://example.com', supabaseKey || 'fallback-key', {
   auth: {
     autoRefreshToken: false,
     persistSession: false,
@@ -36,58 +131,100 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
   },
   global: {
     headers: {
-      'Authorization': `Bearer ${supabaseKey}`
+      'Authorization': `Bearer ${supabaseKey || 'fallback-key'}`
     },
     fetch: fetch
   }
 });
 
-// Teste de conexão inicial
-async function testSupabaseConnection() {
+// Função para resolver hostname (teste DNS)
+async function resolveHostname(hostname) {
   try {
-    console.log('Testando conexão com Supabase...');
-    
-    // Testar conexão direta com o Supabase
-    try {
-      const { data, error } = await supabase
-        .from('whatsapp_events')
-        .select('count(*)')
-        .limit(1)
-        .single();
-
-      if (error) {
-        console.log('Tabela whatsapp_events não encontrada, verificando permissões...');
-        
-        // Testar permissões gerais
-        const { data: versionData, error: versionError } = await supabase
-          .from('_postgrest_version')
-          .select('*')
-          .limit(1);
-          
-        if (versionError) {
-          console.log('Erro ao verificar versão:', versionError);
-          throw new Error('Erro de permissão ou conexão');
+    console.log(`Tentando resolver DNS para ${hostname}...`);
+    return new Promise((resolve, reject) => {
+      dns.lookup(hostname, (err, address) => {
+        if (err) {
+          console.error(`Erro ao resolver ${hostname}:`, err);
+          reject(err);
+        } else {
+          console.log(`${hostname} resolvido para ${address}`);
+          resolve(address);
         }
-        
-        console.log('Conexão estabelecida, mas tabela whatsapp_events precisa ser criada');
-        console.log('Recomendamos criar a tabela manualmente no SQL Editor do Supabase');
-      } else {
-        console.log('Conexão com Supabase estabelecida com sucesso!');
-        console.log('Tabela whatsapp_events encontrada e pronta para uso.');
-      }
-    } catch (innerError) {
-      console.log('Erro na conexão com Supabase:', innerError.message);
-      console.log('A tabela whatsapp_events pode não existir ou há um problema de conexão');
-      console.log('Continuando execução do bot...');
-    }
+      });
+    });
   } catch (error) {
-    console.error('Erro ao conectar com Supabase:');
-    console.error('Mensagem:', error.message);
-    if (error.response) {
-      console.error('Detalhes da resposta:', error.response);
+    console.error(`Falha ao resolver ${hostname}:`, error);
+    throw error;
+  }
+}
+
+// Teste de conexão inicial com retry
+async function testSupabaseConnection(retries = 5, initialDelay = 1000) {
+  let currentRetry = 0;
+  let delay = initialDelay;
+
+  while (currentRetry < retries) {
+    try {
+      console.log(`\nTestando conexão com Supabase (tentativa ${currentRetry + 1}/${retries})...`);
+      
+      // Primeiro, verificar se conseguimos resolver o hostname
+      if (supabaseUrl) {
+        try {
+          const hostname = new URL(supabaseUrl).hostname;
+          await resolveHostname(hostname);
+        } catch (dnsError) {
+          console.error('Erro de DNS ao resolver hostname do Supabase:', dnsError);
+          console.log('Tentando conexão mesmo assim...');
+        }
+      }
+      
+      // Testar conexão direta com o Supabase
+      try {
+        const { data, error } = await supabase
+          .from('whatsapp_events')
+          .select('count(*)')
+          .limit(1)
+          .single();
+
+        if (error) {
+          console.log('Tabela whatsapp_events não encontrada, verificando permissões...');
+          
+          // Testar permissões gerais
+          const { data: versionData, error: versionError } = await supabase
+            .from('_postgrest_version')
+            .select('*')
+            .limit(1);
+            
+          if (versionError) {
+            console.log('Erro ao verificar versão:', versionError);
+            throw new Error('Erro de permissão ou conexão');
+          }
+          
+          console.log('Conexão estabelecida, mas tabela whatsapp_events precisa ser criada');
+          console.log('Recomendamos criar a tabela manualmente no SQL Editor do Supabase');
+        } else {
+          console.log('Conexão com Supabase estabelecida com sucesso!');
+          console.log('Tabela whatsapp_events encontrada e pronta para uso.');
+        }
+        return; // Sucesso, sair da função
+      } catch (innerError) {
+        console.log('Erro na conexão com Supabase:', innerError.message);
+        console.log('A tabela whatsapp_events pode não existir ou há um problema de conexão');
+        throw innerError; // Propagar para o retry
+      }
+    } catch (error) {
+      currentRetry++;
+      if (currentRetry >= retries) {
+        console.error(`\nFalha em todas as ${retries} tentativas de conexão com Supabase.`);
+        console.error('Detalhes do último erro:', error);
+        console.log('Continuando execução do bot usando modo fallback...');
+        return;
+      }
+      
+      console.log(`\nTentativa ${currentRetry} falhou. Tentando novamente em ${delay/1000} segundos...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+      delay *= 2; // Exponential backoff
     }
-    console.log('Tentando continuar mesmo com erro de conexão...');
-    // Não interrompemos a execução, permitindo o bot funcionar com fallback
   }
 }
 
@@ -702,6 +839,22 @@ client.on('qr', async (qr) => {
     console.log(`[${index + 1}] ${url}`);
   });
 
+  // Gerar imagem do QR code
+  try {
+    await qrcode_lib.toFile(QR_IMG_FILE, qr, {
+      scale: 8,
+      margin: 4,
+      color: {
+        dark: '#000000',
+        light: '#ffffff'
+      }
+    });
+    console.log(`\nQR Code salvo como imagem em: ${QR_IMG_FILE}`);
+    console.log(`Acesse http://localhost:${PORT} para visualizar o QR code`);
+  } catch (error) {
+    console.error('Erro ao gerar imagem do QR code:', error);
+  }
+
   // Gerar QR code no terminal
   try {
     console.log('\nQR Code em ASCII:');
@@ -716,15 +869,16 @@ client.on('qr', async (qr) => {
   
   // Salvar QR code em arquivo
   try {
-    const qrLogPath = path.join(__dirname, 'qr-code.txt');
-    fs.writeFileSync(qrLogPath, qr);
-    console.log('\nQR Code salvo em:', qrLogPath);
+    fs.writeFileSync(QR_FILE, qr);
+    console.log('\nQR Code salvo em texto em:', QR_FILE);
   } catch (error) {
     console.error('Erro ao salvar QR code em arquivo:', error);
   }
   
   console.log('\nAguardando leitura do QR Code...');
   console.log('Você tem 60 segundos para escanear antes de um novo QR code ser gerado.');
+  console.log(`\nIMPORTANTE: Para ver o QR code em uma página web, acesse:`);
+  console.log(`http://localhost:${PORT} ou a URL do seu deploy no Railway`);
 });
 
 // Adicionar eventos de autenticação
