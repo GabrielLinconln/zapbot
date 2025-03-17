@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const { google } = require('googleapis');
 const { createClient } = require('@supabase/supabase-js');
+const fetch = require('node-fetch');
 
 const LOG_FILE = path.join(__dirname, 'log.txt');
 const QR_FILE = path.join(__dirname, 'qr-code.png');
@@ -36,7 +37,8 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
   global: {
     headers: {
       'Authorization': `Bearer ${supabaseKey}`
-    }
+    },
+    fetch: fetch
   }
 });
 
@@ -45,23 +47,47 @@ async function testSupabaseConnection() {
   try {
     console.log('Testando conexão com Supabase...');
     
-    // Testa a conexão com uma query simples
-    const { error } = await supabase.rpc('exec_sql', {
-      query: 'SELECT NOW();'
-    });
+    // Testar conexão direta com o Supabase
+    try {
+      const { data, error } = await supabase
+        .from('whatsapp_events')
+        .select('count(*)')
+        .limit(1)
+        .single();
 
-    if (error) {
-      throw new Error(`Erro ao testar conexão: ${error.message}`);
+      if (error) {
+        console.log('Tabela whatsapp_events não encontrada, verificando permissões...');
+        
+        // Testar permissões gerais
+        const { data: versionData, error: versionError } = await supabase
+          .from('_postgrest_version')
+          .select('*')
+          .limit(1);
+          
+        if (versionError) {
+          console.log('Erro ao verificar versão:', versionError);
+          throw new Error('Erro de permissão ou conexão');
+        }
+        
+        console.log('Conexão estabelecida, mas tabela whatsapp_events precisa ser criada');
+        console.log('Recomendamos criar a tabela manualmente no SQL Editor do Supabase');
+      } else {
+        console.log('Conexão com Supabase estabelecida com sucesso!');
+        console.log('Tabela whatsapp_events encontrada e pronta para uso.');
+      }
+    } catch (innerError) {
+      console.log('Erro na conexão com Supabase:', innerError.message);
+      console.log('A tabela whatsapp_events pode não existir ou há um problema de conexão');
+      console.log('Continuando execução do bot...');
     }
-
-    console.log('Conexão com Supabase estabelecida com sucesso!');
   } catch (error) {
     console.error('Erro ao conectar com Supabase:');
     console.error('Mensagem:', error.message);
     if (error.response) {
       console.error('Detalhes da resposta:', error.response);
     }
-    process.exit(1);
+    console.log('Tentando continuar mesmo com erro de conexão...');
+    // Não interrompemos a execução, permitindo o bot funcionar com fallback
   }
 }
 
@@ -117,7 +143,6 @@ function formatDateForSupabase(dateStr) {
 
 // Função para registrar eventos no Supabase
 async function recordEventSupabase(timestamp, eventType, user, group) {
-  const tableName = `group_${sanitizeTableName(group)}`;
   console.log('\n=== Iniciando registro no Supabase ===');
   console.log('Dados a registrar:', { timestamp, eventType, user, group });
   
@@ -145,142 +170,64 @@ async function recordEventSupabase(timestamp, eventType, user, group) {
     
     console.log('Timestamp formatado:', formattedTimestamp);
 
-    // Verificar se a tabela existe e tem a coluna event_key
-    const checkTableQuery = `
-      SELECT EXISTS (
-        SELECT FROM information_schema.tables 
-        WHERE table_name = '${tableName}'
-      ) as table_exists;
-    `;
+    // Nome da tabela única para todos os eventos
+    const tableName = 'whatsapp_events';
 
-    const { data: tableCheck, error: checkError } = await supabase.rpc('exec_sql', { 
-      query: checkTableQuery 
-    });
-
-    if (checkError) {
-      console.error('Erro ao verificar tabela:', checkError);
-      throw checkError;
-    }
-
-    const tableExists = tableCheck?.[0]?.table_exists;
-
-    if (!tableExists) {
-      // Criar nova tabela com todas as colunas
-      const createTableQuery = `
-        CREATE TABLE "${tableName}" (
-          id serial PRIMARY KEY,
-          timestamp timestamptz NOT NULL,
-          event_type varchar(10) NOT NULL CHECK (event_type IN ('JOIN', 'LEAVE')),
-          user_id varchar(255) NOT NULL,
-          group_name text NOT NULL,
-          created_at timestamptz NOT NULL DEFAULT now(),
-          event_key text NOT NULL DEFAULT 'legacy',
-          CONSTRAINT ${tableName}_event_key_unique UNIQUE (event_key)
-        );
-      `;
-
-      const { error: createError } = await supabase.rpc('exec_sql', { 
-        query: createTableQuery 
-      });
-
-      if (createError) {
-        console.error('Erro ao criar tabela:', createError);
-        throw createError;
-      }
-    } else {
-      // Verificar se a coluna event_key existe
-      const checkColumnQuery = `
-        SELECT EXISTS (
-          SELECT FROM information_schema.columns 
-          WHERE table_name = '${tableName}' 
-          AND column_name = 'event_key'
-        ) as column_exists;
-      `;
-
-      const { data: columnCheck, error: columnError } = await supabase.rpc('exec_sql', { 
-        query: checkColumnQuery 
-      });
-
-      if (columnError) {
-        console.error('Erro ao verificar coluna:', columnError);
-        throw columnError;
-      }
-
-      const columnExists = columnCheck?.[0]?.column_exists;
-
-      if (!columnExists) {
-        // Adicionar coluna event_key e constraint
-        const alterTableQuery = `
-          BEGIN;
-          ALTER TABLE "${tableName}" 
-          ADD COLUMN event_key text NOT NULL DEFAULT 'legacy';
-          
-          -- Atualizar registros existentes com event_key único
-          UPDATE "${tableName}" 
-          SET event_key = CONCAT('legacy_', id::text) 
-          WHERE event_key = 'legacy';
-          
-          -- Adicionar constraint único
-          ALTER TABLE "${tableName}" 
-          ADD CONSTRAINT ${tableName}_event_key_unique UNIQUE (event_key);
-          COMMIT;
-        `;
-
-        const { error: alterError } = await supabase.rpc('exec_sql', { 
-          query: alterTableQuery 
-        });
-
-        if (alterError) {
-          console.error('Erro ao alterar tabela:', alterError);
-          throw alterError;
-        }
-      }
-    }
-
+    // Extrair ID do grupo da string completa (se disponível)
+    const groupId = group.includes('@g.us') ? group : 'unknown';
+    
     // Sanitizar dados para o event_key
     const sanitizedUser = user.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 50);
     const sanitizedTimestamp = formattedTimestamp.replace(/[^0-9]/g, '');
     
     // Gerar event_key único e determinístico
-    const eventKey = `${tableName}_${sanitizedUser}_${eventType}_${sanitizedTimestamp}`;
+    const eventKey = `${sanitizedUser}_${eventType}_${groupId}_${sanitizedTimestamp}`;
     console.log('Event Key gerado:', eventKey);
 
-    // Inserir o registro
-    const insertQuery = `
-      INSERT INTO "${tableName}" (
-        timestamp,
-        event_type,
-        user_id,
-        group_name,
-        event_key
-      ) VALUES (
-        '${formattedTimestamp}'::timestamptz,
-        '${eventType}',
-        '${user.replace(/'/g, "''")}',
-        '${group.replace(/'/g, "''")}',
-        '${eventKey}'
-      )
-      ON CONFLICT ON CONSTRAINT ${tableName}_event_key_unique 
-      DO NOTHING
-      RETURNING id, timestamp, event_type, user_id, group_name;
-    `;
+    // Inserir o registro na tabela única usando a API nativa do Supabase
+    const { data, error } = await supabase
+      .from(tableName)
+      .insert({
+        timestamp: formattedTimestamp,
+        event_type: eventType,
+        user_id: user,
+        group_id: groupId,
+        group_name: group,
+        event_key: eventKey
+      })
+      .select()
+      .single();
 
-    const { data: result, error: insertError } = await supabase.rpc('exec_sql', {
-      query: insertQuery
-    });
-
-    if (insertError) {
-      console.error('Erro na inserção:', insertError);
-      throw insertError;
-    }
-
-    if (!result || result.length === 0) {
-      console.log('Evento já registrado ou ignorado');
-      return false;
+    if (error) {
+      // Verificar se é erro de chave duplicada (evento já registrado)
+      if (error.code === '23505') {
+        console.log('Evento já registrado (chave duplicada)');
+        return false;
+      }
+      
+      // Verificar se tabela não existe
+      if (error.code === '42P01') {
+        console.log('Tabela não existe, criando tabela...');
+        
+        // Tentamos criar a tabela diretamente via SQL Editor
+        console.error('A tabela whatsapp_events precisa ser criada manualmente.');
+        console.error('Acesse o Supabase SQL Editor e execute o arquivo create_table_simple.sql');
+        
+        // Vamos tentar ainda salvar o evento em um log local
+        const errorLog = `${new Date().toISOString()} - ERRO TABELA - Evento não registrado no Supabase - ${eventType} - ${user} - ${group}\n`;
+        fs.appendFileSync(LOG_FILE, errorLog, 'utf8');
+        
+        // Retornamos false, mas não travamos o fluxo para permitir que o bot continue funcionando
+        console.log('Continuando execução do bot mesmo sem tabela...');
+        return false;
+      }
+      
+      console.error('Erro na inserção:', error);
+      throw error;
     }
 
     console.log('Registro inserido com sucesso!');
-    console.log('Dados:', result[0]);
+    console.log('Dados:', data);
     return true;
   } catch (error) {
     console.error('Erro ao registrar no Supabase:', error);
