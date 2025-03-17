@@ -150,19 +150,40 @@ console.log('\n=== Verificando configuração do Supabase ===');
 const supabaseUrl = process.env.SUPABASE_URL?.trim();
 const supabaseKey = process.env.SUPABASE_KEY?.trim();
 
-console.log('URL configurada:', supabaseUrl);
-console.log('Key configurada:', supabaseKey ? 'Presente (começa com: ' + supabaseKey.substring(0, 10) + '...)' : 'Ausente');
+// Verificar e limpar possíveis problemas com as variáveis de ambiente
+let cleanSupabaseUrl = supabaseUrl;
+let cleanSupabaseKey = supabaseKey;
+
+// Verificar se a URL ou Key tem aspas ou espaços extras (problema comum no Railway)
+if (supabaseUrl && (supabaseUrl.startsWith('"') || supabaseUrl.startsWith("'"))) {
+  cleanSupabaseUrl = supabaseUrl.replace(/^['"]|['"]$/g, '').trim();
+  console.log('AVISO: Removidas aspas da URL Supabase. Verifique a configuração no Railway.');
+}
+
+if (supabaseKey && (supabaseKey.startsWith('"') || supabaseKey.startsWith("'"))) {
+  cleanSupabaseKey = supabaseKey.replace(/^['"]|['"]$/g, '').trim();
+  console.log('AVISO: Removidas aspas da Key Supabase. Verifique a configuração no Railway.');
+}
+
+// Se as variáveis foram limpas, mostrar os novos valores (primeiros caracteres)
+if (cleanSupabaseUrl !== supabaseUrl || cleanSupabaseKey !== supabaseKey) {
+  console.log('URL limpa:', cleanSupabaseUrl ? cleanSupabaseUrl.substring(0, 30) + '...' : 'Ausente');
+  console.log('Key limpa:', cleanSupabaseKey ? 'Presente (começa com: ' + cleanSupabaseKey.substring(0, 10) + '...)' : 'Ausente');
+} else {
+  console.log('URL configurada:', supabaseUrl);
+  console.log('Key configurada:', supabaseKey ? 'Presente (começa com: ' + supabaseKey.substring(0, 10) + '...)' : 'Ausente');
+}
 
 // Tentar criar uma alternativa com IP direto
 let directIpConfig = null;
-if (supabaseUrl) {
-  directIpConfig = getDirectIpUrl(supabaseUrl);
+if (cleanSupabaseUrl) {
+  directIpConfig = getDirectIpUrl(cleanSupabaseUrl);
   if (directIpConfig) {
     console.log('URL alternativa com IP direto:', directIpConfig.url);
   }
 }
 
-if (!supabaseUrl || !supabaseKey) {
+if (!cleanSupabaseUrl || !cleanSupabaseKey) {
   console.error('Erro: Credenciais do Supabase não encontradas no .env');
   console.log('Continuando sem Supabase, usando fallback...');
 }
@@ -172,9 +193,9 @@ const customFetch = function(url, options) {
   const originalUrl = url.toString();
   
   // Verificar se é uma URL para o Supabase
-  if (supabaseUrl && originalUrl.includes(new URL(supabaseUrl).hostname)) {
+  if (cleanSupabaseUrl && originalUrl.includes(new URL(cleanSupabaseUrl).hostname)) {
     if (directIpConfig) {
-      const newUrl = originalUrl.replace(supabaseUrl, directIpConfig.url);
+      const newUrl = originalUrl.replace(cleanSupabaseUrl, directIpConfig.url);
       const newOptions = {
         ...options,
         headers: {
@@ -192,7 +213,7 @@ const customFetch = function(url, options) {
   return fetch(url, options);
 };
 
-const supabase = createClient(supabaseUrl || 'https://example.com', supabaseKey || 'fallback-key', {
+const supabase = createClient(cleanSupabaseUrl || 'https://example.com', cleanSupabaseKey || 'fallback-key', {
   auth: {
     autoRefreshToken: false,
     persistSession: false,
@@ -200,7 +221,7 @@ const supabase = createClient(supabaseUrl || 'https://example.com', supabaseKey 
   },
   global: {
     headers: {
-      'Authorization': `Bearer ${supabaseKey || 'fallback-key'}`
+      'Authorization': `Bearer ${cleanSupabaseKey || 'fallback-key'}`
     },
     fetch: customFetch
   }
@@ -237,9 +258,9 @@ async function testSupabaseConnection(retries = 5, initialDelay = 1000) {
       console.log(`\nTestando conexão com Supabase (tentativa ${currentRetry + 1}/${retries})...`);
       
       // Primeiro, verificar se conseguimos resolver o hostname
-      if (supabaseUrl) {
+      if (cleanSupabaseUrl) {
         try {
-          const hostname = new URL(supabaseUrl).hostname;
+          const hostname = new URL(cleanSupabaseUrl).hostname;
           await resolveHostname(hostname);
         } catch (dnsError) {
           console.error('Erro de DNS ao resolver hostname do Supabase:', dnsError);
@@ -247,38 +268,72 @@ async function testSupabaseConnection(retries = 5, initialDelay = 1000) {
         }
       }
       
-      // Testar conexão direta com o Supabase
+      // Abordagem direta: verificar se a tabela whatsapp_events existe
       try {
-        const { data, error } = await supabase
-          .from('whatsapp_events')
-          .select('count(*)')
-          .limit(1)
-          .single();
-
+        // Usar RPC personalizado para teste simples
+        const { data, error } = await supabase.rpc('ping', {});
+          
         if (error) {
-          console.log('Tabela whatsapp_events não encontrada, verificando permissões...');
-          
-          // Testar permissões gerais
-          const { data: versionData, error: versionError } = await supabase
-            .from('_postgrest_version')
-            .select('*')
-            .limit(1);
+          // Se for erro de função não existente, criar uma função simples
+          if (error.code === '42883') { // função inexistente
+            console.log('Função de ping não existe. Tentando método alternativo...');
             
-          if (versionError) {
-            console.log('Erro ao verificar versão:', versionError);
-            throw new Error('Erro de permissão ou conexão');
+            // Tentar verificar diretamente a tabela whatsapp_events
+            const { error: tableError } = await supabase
+              .from('whatsapp_events')
+              .select('id')
+              .limit(1);
+              
+            if (tableError) {
+              // Se a tabela não existir, verificamos o tipo de erro
+              if (tableError.code === '42P01') {
+                console.log('Tabela whatsapp_events não existe. Verificando conexão geral...');
+                
+                // Verificar se podemos obter a hora do servidor (essa operação geralmente funciona independente das permissões)
+                const { data: timeData, error: timeError } = await supabase.rpc('get_current_timestamp');
+                
+                if (timeError) {
+                  // Se nem isso funcionar, então tentamos um fallback final
+                  if (timeError.code === '42883') {
+                    console.log('Tentando verificação final de conexão...');
+                    
+                    // Usar uma query simples que qualquer usuário com permissão mínima pode executar
+                    const { data: versionData, error: versionError } = await supabase.auth.getSession();
+                    
+                    if (versionError) {
+                      console.error('Erro na verificação final:', versionError);
+                      throw new Error('Falha na conexão com o Supabase');
+                    } else {
+                      console.log('Conexão com Supabase estabelecida (verificação básica)');
+                      console.log('IMPORTANTE: É necessário criar a tabela whatsapp_events no Supabase');
+                    }
+                  } else {
+                    console.error('Erro ao verificar timestamp:', timeError);
+                    throw new Error('Erro de conexão ou permissão');
+                  }
+                } else {
+                  console.log('Conexão com Supabase estabelecida com sucesso!');
+                  console.log('IMPORTANTE: É necessário criar a tabela whatsapp_events no Supabase');
+                }
+              } else {
+                console.error('Erro inesperado ao acessar a tabela:', tableError);
+                throw new Error('Erro de conexão ou permissão');
+              }
+            } else {
+              console.log('Conexão com Supabase estabelecida com sucesso!');
+              console.log('Tabela whatsapp_events encontrada e pronta para uso.');
+            }
+          } else {
+            console.error('Erro inesperado na função ping:', error);
+            throw new Error('Erro de conexão ou permissão');
           }
-          
-          console.log('Conexão estabelecida, mas tabela whatsapp_events precisa ser criada');
-          console.log('Recomendamos criar a tabela manualmente no SQL Editor do Supabase');
         } else {
-          console.log('Conexão com Supabase estabelecida com sucesso!');
-          console.log('Tabela whatsapp_events encontrada e pronta para uso.');
+          console.log('Conexão com Supabase estabelecida com sucesso (ping)!');
         }
+        
         return; // Sucesso, sair da função
       } catch (innerError) {
         console.log('Erro na conexão com Supabase:', innerError.message);
-        console.log('A tabela whatsapp_events pode não existir ou há um problema de conexão');
         throw innerError; // Propagar para o retry
       }
     } catch (error) {
@@ -286,7 +341,12 @@ async function testSupabaseConnection(retries = 5, initialDelay = 1000) {
       if (currentRetry >= retries) {
         console.error(`\nFalha em todas as ${retries} tentativas de conexão com Supabase.`);
         console.error('Detalhes do último erro:', error);
-        console.log('Continuando execução do bot usando modo fallback...');
+        console.log('\n### IMPORTANTE: CONFIGURAÇÃO SUPABASE ###');
+        console.log('1. Verifique se as variáveis de ambiente do Supabase estão configuradas corretamente no Railway');
+        console.log('2. Use a chave "service_role" do Supabase para maior permissão (não a anon/public key)');
+        console.log('3. Execute o script create_table_simple.sql no SQL Editor do Supabase para criar a tabela');
+        console.log('4. Sem isso, os eventos serão registrados apenas em logs locais ou Google Sheets');
+        console.log('\nContinuando execução do bot usando modo fallback...');
         return;
       }
       
@@ -346,6 +406,60 @@ function formatDateForSupabase(dateStr) {
     return new Date().toISOString();
   }
 }
+
+// Adicionar cache de eventos pendentes
+const pendingEvents = [];
+const MAX_PENDING_EVENTS = 100;
+
+// Salvar eventos pendentes periodicamente
+setInterval(async () => {
+  if (pendingEvents.length > 0) {
+    console.log(`\n=== Processando ${pendingEvents.length} eventos pendentes ===`);
+    
+    // Cópia dos eventos para processar
+    const eventsToProcess = [...pendingEvents];
+    
+    // Limpar a lista original para evitar duplicações
+    pendingEvents.length = 0;
+    
+    // Processar cada evento pendente
+    for (const event of eventsToProcess) {
+      try {
+        const success = await recordEventSupabase(
+          event.timestamp, 
+          event.eventType, 
+          event.user, 
+          event.group
+        );
+        
+        if (success) {
+          console.log(`Evento pendente processado com sucesso: ${event.eventType} - ${event.user}`);
+        } else {
+          // Se ainda falhar, tentar planilha ou voltar para a fila
+          try {
+            await appendToSheet(event.timestamp, event.eventType, event.user, event.group);
+            console.log(`Evento pendente salvo no Google Sheets: ${event.eventType} - ${event.user}`);
+          } catch (sheetError) {
+            console.log(`Não foi possível salvar evento nem no Supabase nem no Google Sheets`);
+            // Adicionamos de volta à fila se não exceder o limite
+            if (pendingEvents.length < MAX_PENDING_EVENTS) {
+              pendingEvents.push(event);
+            } else {
+              console.error(`Limite de eventos pendentes excedido, evento perdido: ${event.eventType} - ${event.user}`);
+            }
+          }
+        }
+      } catch (error) {
+        console.error(`Erro ao processar evento pendente:`, error);
+        // Adicionamos de volta à fila apenas se for um erro temporário
+        if (pendingEvents.length < MAX_PENDING_EVENTS && 
+            (error.message.includes('conexão') || error.message.includes('connection'))) {
+          pendingEvents.push(event);
+        }
+      }
+    }
+  }
+}, 60000); // Verificar a cada 1 minuto
 
 // Função para registrar eventos no Supabase
 async function recordEventSupabase(timestamp, eventType, user, group) {
@@ -584,9 +698,23 @@ async function logEventToFile(eventType, user, group, providedTimestamp = null) 
       await recordEventSupabase(timestamp, eventType, user, group);
       console.log('Evento registrado com sucesso!');
     } catch (error) {
-      console.error('Erro ao registrar no Supabase, tentando Google Sheets:', error);
-      await appendToSheet(timestamp, eventType, user, group);
-      console.log('Evento registrado com sucesso via fallback!');
+      console.error('Erro ao registrar no Supabase:', error);
+      
+      // Adicionar à fila de eventos pendentes para tentar novamente depois
+      if (pendingEvents.length < MAX_PENDING_EVENTS) {
+        pendingEvents.push({ timestamp, eventType, user, group });
+        console.log('Evento adicionado à fila para processamento posterior');
+      }
+      
+      // Tentar também no Google Sheets imediatamente
+      try {
+        console.log('Tentando Google Sheets como fallback...');
+        await appendToSheet(timestamp, eventType, user, group);
+        console.log('Evento registrado com sucesso via fallback!');
+      } catch (sheetError) {
+        console.error('Erro ao registrar no Google Sheets:', sheetError);
+        console.log('Evento ficará apenas no log local e na fila de pendentes');
+      }
     }
   } catch (error) {
     console.error('Erro crítico ao registrar evento:', error);
