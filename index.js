@@ -388,9 +388,11 @@ function sanitizeTableName(name) {
 // Função para formatar data para o Supabase
 function formatDateForSupabase(dateStr) {
   try {
-    // Se já for um objeto Date, usa direto
+    // Se já for um objeto Date, converte para formato Brasília
     if (dateStr instanceof Date) {
-      return dateStr.toISOString();
+      return new Date(dateStr.toLocaleString('en-US', {
+        timeZone: 'America/Sao_Paulo'
+      })).toISOString();
     }
 
     // Converte string de data BR para formato ISO
@@ -398,12 +400,40 @@ function formatDateForSupabase(dateStr) {
     const [day, month, year] = datePart.split('/');
     const [hour, minute, second] = timePart ? timePart.split(':') : ['00', '00', '00'];
     
-    const date = new Date(year, month - 1, day, hour, minute, second);
-    return date.toISOString();
+    // Criar data especificando o fuso horário de Brasília
+    const dateOptions = { 
+      year: parseInt(year), 
+      month: parseInt(month) - 1, 
+      day: parseInt(day), 
+      hour: parseInt(hour), 
+      minute: parseInt(minute), 
+      second: parseInt(second),
+      timeZone: 'America/Sao_Paulo'
+    };
+    
+    // Criar data no fuso de Brasília
+    const brasiliaDate = new Date(Date.UTC(
+      dateOptions.year,
+      dateOptions.month,
+      dateOptions.day,
+      dateOptions.hour,
+      dateOptions.minute,
+      dateOptions.second
+    ));
+    
+    // Ajustar o offset do timezone para Brasília (GMT-3)
+    const brasiliaOffset = -3 * 60 * 60 * 1000; // -3 horas em milissegundos
+    const utcTime = brasiliaDate.getTime();
+    const localTime = utcTime - brasiliaOffset;
+    
+    // Retornar a data ISO com timezone embutido
+    return new Date(localTime).toISOString();
   } catch (error) {
     console.error('Erro ao formatar data:', error);
-    // Em caso de erro, retorna a data atual
-    return new Date().toISOString();
+    // Em caso de erro, retorna a data atual no horário de Brasília
+    return new Date(new Date().toLocaleString('en-US', {
+      timeZone: 'America/Sao_Paulo'
+    })).toISOString();
   }
 }
 
@@ -472,23 +502,45 @@ async function recordEventSupabase(timestamp, eventType, user, group) {
       throw new Error('Dados incompletos para registro');
     }
 
-    // Garantir que o timestamp seja válido
-    let formattedTimestamp;
+    // Garantir que o timestamp seja válido e convertido para horário de Brasília
+    let date;
     if (timestamp instanceof Date) {
-      formattedTimestamp = timestamp.toISOString();
+      date = timestamp;
     } else if (typeof timestamp === 'number') {
-      formattedTimestamp = new Date(timestamp * 1000).toISOString();
+      date = new Date(timestamp * 1000);
     } else {
-      formattedTimestamp = formatDateForSupabase(timestamp);
+      try {
+        // Tenta converter string para data
+        const parsedDate = new Date(timestamp);
+        if (isNaN(parsedDate.getTime())) {
+          // Se falhar, tenta usar o formatDateForSupabase
+          date = new Date(formatDateForSupabase(timestamp));
+        } else {
+          date = parsedDate;
+        }
+      } catch (error) {
+        console.error('Erro ao converter timestamp:', error);
+        date = new Date(); // Usa data atual como fallback
+      }
     }
+    
+    // Converter para string ISO no formato de Brasília
+    const brasiliaTimestamp = new Date(date.toLocaleString('en-US', {
+      timeZone: 'America/Sao_Paulo'
+    })).toISOString();
+    
+    let formattedTimestamp = brasiliaTimestamp;
     
     // Validar timestamp formatado
     if (!Date.parse(formattedTimestamp)) {
       console.error('Timestamp inválido:', formattedTimestamp);
-      formattedTimestamp = new Date().toISOString();
+      // Fallback para horário atual em Brasília
+      formattedTimestamp = new Date(new Date().toLocaleString('en-US', {
+        timeZone: 'America/Sao_Paulo'
+      })).toISOString();
     }
     
-    console.log('Timestamp formatado:', formattedTimestamp);
+    console.log('Timestamp formatado (Brasília):', formattedTimestamp);
 
     // Nome da tabela única para todos os eventos
     const tableName = 'whatsapp_events';
@@ -912,16 +964,24 @@ async function processGroupEvent(notification, eventType) {
     // Criar timestamp no formato ISO8601 com timezone
     const isoTimestamp = new Date(timestamp * 1000).toISOString();
 
-    // Log local primeiro
+    // Criar timestamp no formato brasileiro (usado nos logs e no Supabase)
     const brTimestamp = new Date(timestamp * 1000).toLocaleString('pt-BR', {
       timeZone: 'America/Sao_Paulo'
     });
+
+    // Para Supabase: criar uma data específica no fuso de Brasília
+    const brasiliaDate = new Date(new Date(timestamp * 1000).toLocaleString('en-US', {
+      timeZone: 'America/Sao_Paulo'
+    }));
+    
+    // Log local primeiro
     const logEntry = `${brTimestamp} - ${eventType} - Usuário(s): ${userName} - Grupo: ${groupName}\n`;
     await fs.promises.appendFile(LOG_FILE, logEntry);
 
-    // Registrar no Supabase
+    // Registrar no Supabase (usando o timestamp de Brasília)
     try {
-      const success = await recordEventSupabase(timestamp, eventType, userName, groupName);
+      // Passar o objeto Date no fuso de Brasília para garantir o horário correto
+      const success = await recordEventSupabase(brasiliaDate, eventType, userName, groupName);
       if (success) {
         // Adicionar ao cache somente após confirmação do registro
         processedEvents.add(eventKey);

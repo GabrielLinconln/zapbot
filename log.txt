@@ -712,3 +712,113 @@
 15/02/2025, 01:05:54 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: vai funcionar
 15/02/2025, 01:06:41 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: teste final
 15/02/2025, 01:07:15 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: teste final
+17/03/2025, 12:16:38 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: tststs
+17/03/2025, 12:18:11 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: tststs
+17/03/2025, 12:19:50 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: tststs
+17/03/2025, 12:21:44 - JOIN - Usuário(s): 22998066475 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+17/03/2025, 12:22:20 - JOIN - Usuário(s): 4796260709 - Grupo: 🔥 VIP Chef Edi Dagrê
+17/03/2025, 12:29:19 - JOIN - Usuário(s): 11964472277 - Grupo: Super Promoções Ferlin 9
+17/03/2025, 12:31:30 - JOIN - Usuário(s): 6291563403 - Grupo: Rifas Alma Campeira 🔪🔥
+17/03/2025, 12:34:41 - JOIN - Usuário(s): Paulo Alexandre - Grupo: 📲 | News (novidades/descobertas)
+17/03/2025, 12:34:48 - JOIN - Usuário(s): Paulo Alexandre - Grupo: 💰| Business & Networking (vendas/oportunidades)
+17/03/2025, 12:34:58 - JOIN - Usuário(s): 18997746037 - Grupo: Super Promoções Ferlin 9
+17/03/2025, 12:39:28 - JOIN - Usuário(s): 4999378165 - Grupo: Ellegance Facas Rifas
+17/03/2025, 12:43:06 - JOIN - Usuário(s): 6896002778 - Grupo: ⚔️ Amigo das Facas ⚔️
+17/03/2025, 12:44:13 - JOIN - Usuário(s): 83 19005-5629 - Grupo: N8N Labz - Networking 2
+17/03/2025, 12:44:13 - LEAVE - Usuário(s): 83 19005-5629 - Grupo: N8N Labz - Networking 2
+17/03/2025, 12:46:32 - JOIN - Usuário(s): 85 16785-2692 - Grupo: N8N Labz - Networking 2
+17/03/2025, 12:46:33 - LEAVE - Usuário(s): 85 16785-2692 - Grupo: N8N Labz - Networking 2
+17/03/2025, 12:47:24 - JOIN - Usuário(s): 83 16262-6152 - Grupo: N8N Labz - Networking 2
+17/03/2025, 12:47:25 - LEAVE - Usuário(s): 83 16262-6152 - Grupo: N8N Labz - Networking 2
+17/03/2025, 12:56:42 - JOIN - Usuário(s): 5491031149 - Grupo: Ação Colecionadores | Facas Padre Elvis #1000
+17/03/2025, 13:09:31 - JOIN - Usuário(s): 4399937301 - Grupo: Leilões • Facas Centenárias G2
+17/03/2025, 13:20:43 - JOIN - Usuário(s): 83 82794-2173 - Grupo: N8N Labz - Networking 2
+17/03/2025, 13:20:44 - LEAVE - Usuário(s): 83 82794-2173 - Grupo: N8N Labz - Networking 2
+17/03/2025, 13:22:12 - JOIN - Usuário(s): 81 32937-8523 - Grupo: N8N Labz - Networking 2
+17/03/2025, 13:22:13 - LEAVE - Usuário(s): 81 32937-8523 - Grupo: N8N Labz - Networking 2
+17/03/2025, 13:22:44 - JOIN - Usuário(s): 83 13024-6496 - Grupo: N8N Labz - Networking 2
+17/03/2025, 13:22:45 - LEAVE - Usuário(s): 83 13024-6496 - Grupo: N8N Labz - Networking 2
+17/03/2025, 13:23:19 - JOIN - Usuário(s): 6599999606 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+17/03/2025, 13:26:21 - JOIN - Usuário(s): 24981567554 - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+17/03/2025, 13:31:31 - JOIN - Usuário(s): 3288990948 - Grupo: N8N Labz - Networking 2
+17/03/2025, 13:33:08 - LEAVE - Usuário(s): Protetora De Animais APAT - Grupo: #01 NETWORKING - Ecommerce Visionário 🏆📦
+17/03/2025, 13:33:13 - JOIN - Usuário(s): 11991900957 - Grupo: #01 NETWORKING - Ecommerce Visionário 🏆📦
+17/03/2025, 13:40:16 - JOIN - Usuário(s): 11953703319 - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+17/03/2025, 13:40:20 - JOIN - Usuário(s): 14991834284 - Grupo: N8N Labz - Networking 2
+17/03/2025, 13:42:44 - JOIN - Usuário(s): 27998351355 - Grupo: PROMO 75🧜🏼‍♀️💘🛍️
+17/03/2025, 13:42:47 - JOIN - Usuário(s): 11998240606 - Grupo: PROMO 75🧜🏼‍♀️💘🛍️
+17/03/2025, 13:43:31 - JOIN - Usuário(s): 11964429044 - Grupo: N8N Labz - Networking 2
+17/03/2025, 13:44:40 - JOIN - Usuário(s): 27988262974 - Grupo: PROMO 75🧜🏼‍♀️💘🛍️
+17/03/2025, 13:51:44 - JOIN - Usuário(s): 11969564177 - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+17/03/2025, 13:53:33 - JOIN - Usuário(s): 6281369451 - Grupo: ⚔️ Amigo das Facas ⚔️
+17/03/2025, 13:55:43 - JOIN - Usuário(s): 11979553760 - Grupo: ⚔️ Amigo das Facas ⚔️
+17/03/2025, 14:00:16 - JOIN - Usuário(s): Gabriel Salles🔥 - Grupo: 💰| Business & Networking (vendas/oportunidades)
+17/03/2025, 14:00:25 - JOIN - Usuário(s): Gabriel Salles🔥 - Grupo: 📲 | News (novidades/descobertas)
+17/03/2025, 14:00:31 - JOIN - Usuário(s): Gabriel Salles🔥 - Grupo: 🚀 | Suporte automações (n8n/make)
+17/03/2025, 14:00:39 - JOIN - Usuário(s): Gabriel Salles🔥 - Grupo: 🥂 | Resultados (fechamentos/vendas/contratos)
+17/03/2025, 14:03:06 - JOIN - Usuário(s): 11966584685 - Grupo: PROMO 75🧜🏼‍♀️💘🛍️
+17/03/2025, 14:10:56 - JOIN - Usuário(s): 8587962597 - Grupo: N8N Labz - Networking 2
+17/03/2025, 14:12:48 - JOIN - Usuário(s): 8387033975 - Grupo: Ellegance Facas Rifas
+17/03/2025, 14:20:12 - JOIN - Usuário(s): Gabriel Leiloeiro - Grupo: tststs
+17/03/2025, 14:20:35 - LEAVE - Usuário(s): Gabriel Leiloeiro - Grupo: tststs
+20/04/2025, 15:24:35 - LEAVE - Usuário(s): varleidejesus54 - Grupo: Facas Centenárias • Rifas G1
+20/04/2025, 15:27:12 - JOIN - Usuário(s): 3182324029 - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+20/04/2025, 15:28:14 - JOIN - Usuário(s): 9591548197 - Grupo: Abençoados do Padre Facas Custon
+20/04/2025, 15:30:08 - LEAVE - Usuário(s): Joaquim A da Silva - Grupo: Facas Centenárias • Rifas G1
+20/04/2025, 15:31:12 - JOIN - Usuário(s): 9381298981 - Grupo: Facas Centenárias • Rifas G1
+20/04/2025, 15:35:04 - JOIN - Usuário(s): 6181788799 - Grupo: Leilões • Facas Centenárias G1
+20/04/2025, 15:46:32 - JOIN - Usuário(s): 4188912724 - Grupo: Grupo de Rifas Zé Véio
+20/04/2025, 15:46:34 - JOIN - Usuário(s): 8399229871 - Grupo: Grupo de Rifas Zé Véio
+20/04/2025, 15:46:35 - JOIN - Usuário(s): 4891529656 - Grupo: Grupo de Rifas Zé Véio
+20/04/2025, 15:53:06 - JOIN - Usuário(s): 4792298622 - Grupo: Abençoados do Padre Facas Custon
+20/04/2025, 16:03:21 - JOIN - Usuário(s): 3497117814 - Grupo: Abençoados do Padre Facas Custon
+20/04/2025, 16:05:58 - JOIN - Usuário(s): 4188811676 - Grupo: Leilões • Facas Centenárias G2
+20/04/2025, 16:20:10 - JOIN - Usuário(s): 4188811676 - Grupo: ⚔️ Amigo das Facas ⚔️
+20/04/2025, 16:20:18 - JOIN - Usuário(s): 8799411097 - Grupo: ⚔️ Amigo das Facas ⚔️
+20/04/2025, 16:22:35 - JOIN - Usuário(s): 11973173044 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+20/04/2025, 16:24:44 - JOIN - Usuário(s): 85 60746-55086 - Grupo: N8N Labz - Networking 2
+20/04/2025, 16:24:45 - LEAVE - Usuário(s): 85 60746-55086 - Grupo: N8N Labz - Networking 2
+20/04/2025, 16:27:48 - JOIN - Usuário(s): 6798083906 - Grupo: ⚔️⚔️🍀💎Mk Facas, Cutelos & Importados Rifas💎🍀 ⚔️⚔️
+20/04/2025, 16:34:27 - LEAVE - Usuário(s): Valdiney - Grupo: Facas Centenárias • Rifas G1
+20/04/2025, 16:41:30 - JOIN - Usuário(s): 19992993234 - Grupo: Abençoados do Padre Facas Custon
+20/04/2025, 16:49:16 - JOIN - Usuário(s): 11965773517 - Grupo: Super Promoções Ferlin 9
+20/04/2025, 16:54:25 - JOIN - Usuário(s): 9188199477 - Grupo: Abençoados do Padre Facas Custon
+20/04/2025, 16:56:50 - JOIN - Usuário(s): 21982208927 - Grupo: Abençoados do Padre Facas Custon
+20/04/2025, 16:57:21 - JOIN - Usuário(s): 6992546217 - Grupo: Leilões • Facas Centenárias G1
+20/04/2025, 16:58:52 - JOIN - Usuário(s): 11969596914 - Grupo: Grupo de Rifas Zé Véio
+20/04/2025, 16:58:53 - JOIN - Usuário(s): 6392407023 - Grupo: Grupo de Rifas Zé Véio
+20/04/2025, 16:59:37 - LEAVE - Usuário(s): Marcos - Grupo: Facas Centenárias • Rifas G1
+20/04/2025, 17:01:07 - JOIN - Usuário(s): 7391795853 - Grupo: N8N Labz - Networking 2
+20/04/2025, 17:03:02 - JOIN - Usuário(s): 85 60746-35500 - Grupo: N8N Labz - Networking 2
+20/04/2025, 17:03:03 - LEAVE - Usuário(s): 85 60746-35500 - Grupo: N8N Labz - Networking 2
+20/04/2025, 17:06:39 - JOIN - Usuário(s): 21975450426 - Grupo: Abençoados do Padre Facas Custon
+20/04/2025, 17:06:39 - LEAVE - Usuário(s): Otávio - Grupo: Facas Centenárias • Rifas G1
+20/04/2025, 17:15:21 - JOIN - Usuário(s): 5499626740 - Grupo: Abençoados do Padre Facas Custon
+20/04/2025, 17:21:37 - JOIN - Usuário(s): 8596014347 - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+20/04/2025, 17:23:45 - JOIN - Usuário(s): 6192497653 - Grupo: ⚔️ Amigo das Facas ⚔️
+20/04/2025, 17:27:32 - JOIN - Usuário(s): 12996598359 - Grupo: ⚔️ Amigo das Facas ⚔️
+20/04/2025, 17:30:25 - JOIN - Usuário(s): 4898203997 - Grupo: Leilões • Facas Centenárias G1
+20/04/2025, 17:30:33 - JOIN - Usuário(s): 27998556181 - Grupo: ⚔️ Amigo das Facas ⚔️
+20/04/2025, 17:35:32 - JOIN - Usuário(s): 21993048631 - Grupo: ⚔️ Amigo das Facas ⚔️
+20/04/2025, 17:41:02 - JOIN - Usuário(s): 7581185692 - Grupo: Grupo de Rifas Zé Véio
+20/04/2025, 17:41:03 - JOIN - Usuário(s): 6581472404 - Grupo: Grupo de Rifas Zé Véio
+20/04/2025, 17:44:12 - JOIN - Usuário(s): 85 70281-61992 - Grupo: N8N Labz - Networking 2
+20/04/2025, 17:44:12 - LEAVE - Usuário(s): 85 70281-61992 - Grupo: N8N Labz - Networking 2
+20/04/2025, 17:47:21 - JOIN - Usuário(s): 8293724072 - Grupo: Abençoados do Padre Facas Custon
+20/04/2025, 17:48:47 - JOIN - Usuário(s): 4191177200 - Grupo: Super Promoções Ferlin 9
+20/04/2025, 17:55:57 - JOIN - Usuário(s): 27992758389 - Grupo: Abençoados do Padre Facas Custon
+20/04/2025, 17:58:40 - JOIN - Usuário(s): 11980422315 - Grupo: Facas Centenárias Ofertas 1
+20/04/2025, 18:18:53 - JOIN - Usuário(s): 6782165961 - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+20/04/2025, 18:19:23 - JOIN - Usuário(s): 19981072044 - Grupo: Abençoados do Padre Facas Custon
+20/04/2025, 18:21:42 - JOIN - Usuário(s): 17996808481 - Grupo: ⚔️ Amigo das Facas ⚔️
+20/04/2025, 18:32:24 - JOIN - Usuário(s): Marcelo 19/04 - Grupo: ⚔️ Amigo das Facas ⚔️
+20/04/2025, 18:43:56 - JOIN - Usuário(s): Matheus Binotti - Grupo: Rateio Chat GPT - PRO
+20/04/2025, 18:50:41 - JOIN - Usuário(s): 7791226273 - Grupo: Super Promoções Ferlin 9
+20/04/2025, 18:57:09 - JOIN - Usuário(s): 3899301372 - Grupo: Abençoados do Padre Facas Custon
+20/04/2025, 18:58:08 - JOIN - Usuário(s): 19994483585 - Grupo: Vinícius Lopes | Flow Flux
+20/04/2025, 18:59:26 - JOIN - Usuário(s): lumarim - Grupo: 🍀 💎 Rifas Oficial Cutelaria Hato 💎🍀
+20/04/2025, 19:04:32 - JOIN - Usuário(s): 5197417157 - Grupo: #2 Geral - 🧠 Mente Conectada | Leonardo Candiani
+20/04/2025, 19:07:55 - JOIN - Usuário(s): 11969608859 - Grupo: Leilões • Facas Centenárias G2
+20/04/2025, 19:09:11 - JOIN - Usuário(s): 6492271004 - Grupo: ⚔️ Amigo das Facas ⚔️
+20/04/2025, 19:09:42 - JOIN - Usuário(s): 6796534642 - Grupo: Grupo de Rifas Zé Véio
+20/04/2025, 19:09:44 - JOIN - Usuário(s): 4498310650 - Grupo: Grupo de Rifas Zé Véio
