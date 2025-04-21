@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { Client } = require('whatsapp-web.js');
+const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const fs = require('fs');
 const path = require('path');
@@ -13,6 +13,7 @@ const dns = require('dns');
 const LOG_FILE = path.join(__dirname, 'log.txt');
 const QR_FILE = path.join(__dirname, 'qr-code.txt');
 const QR_IMG_FILE = path.join(__dirname, 'qr-code.png');
+const SESSION_PATH = path.join(__dirname, '.wwebjs_auth/session');
 const DEPLOY_ENV = process.env.DEPLOY_ENV || 'local';
 const PORT = process.env.PORT || 3000;
 
@@ -793,9 +794,11 @@ const client = new Client({
       '--disable-software-rasterizer',
       '--ignore-certificate-errors',
       '--allow-running-insecure-content',
-      '--window-size=1280,720',
+      '--window-size=800,600',
       '--disable-web-security',
-      '--allow-file-access-from-files'
+      '--allow-file-access-from-files',
+      '--no-zygote',
+      '--js-flags="--max-old-space-size=256"'
     ],
     headless: true,
     executablePath: process.platform === 'win32' 
@@ -803,17 +806,21 @@ const client = new Client({
       : '/usr/bin/google-chrome-stable',
     timeout: 120000,
     defaultViewport: {
-      width: 1280,
-      height: 720
+      width: 800,
+      height: 600
     },
     ignoreHTTPSErrors: true,
     protocolTimeout: 120000
   },
+  authStrategy: new LocalAuth({
+    clientId: "whatsapp-bot",
+    dataPath: SESSION_PATH
+  }),
   qrMaxRetries: 10,
   authTimeoutMs: 120000,
   restartOnAuthFail: true,
   takeoverOnConflict: true,
-  takeoverTimeoutMs: 120000,
+  takeoverTimeoutMs: 300000, // Aumentado para 5 minutos
   userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
 });
 
@@ -869,8 +876,107 @@ client.on('ready', async () => {
   console.log('Bot pronto para monitorar grupos!');
 });
 
+// Adicionar um watchdog para reconexão automática
+let reconnectAttempts = 0;
+const MAX_RECONNECT_ATTEMPTS = 20;
+const RECONNECT_INTERVAL = 5 * 60 * 1000; // 5 minutos
+
+const reconnectWatchdog = setInterval(async () => {
+  try {
+    // Verificar se o cliente está conectado checando a propriedade info
+    if (!client.info) {
+      console.log('\n=== WATCHDOG: CLIENTE DESCONECTADO ===');
+      reconnectAttempts++;
+      
+      if (reconnectAttempts <= MAX_RECONNECT_ATTEMPTS) {
+        console.log(`Tentativa de reconexão ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS}`);
+        try {
+          await client.initialize();
+        } catch (error) {
+          console.error('Erro na reconexão:', error);
+        }
+      } else {
+        console.error('Número máximo de tentativas atingido. Reinicializando processo...');
+        process.exit(1); // O container reiniciará automaticamente
+      }
+    } else {
+      // Reset contador se estiver conectado
+      if (reconnectAttempts > 0) {
+        console.log('Conexão estável detectada, resetando contador de reconexões');
+      }
+      reconnectAttempts = 0;
+    }
+  } catch (error) {
+    console.error('Erro no watchdog:', error);
+  }
+}, RECONNECT_INTERVAL);
+
+// Adicionar um limpador de cache periódico (a cada 6 horas)
+const CACHE_CLEANUP_INTERVAL = 6 * 60 * 60 * 1000; // 6 horas
+
+setInterval(async () => {
+  try {
+    console.log('\n=== INICIANDO LIMPEZA DE CACHE ===');
+    const page = client.pupPage;
+    if (page) {
+      // Limpar cookies e cache
+      const cdpSession = await page.target().createCDPSession();
+      await cdpSession.send('Network.clearBrowserCookies');
+      await cdpSession.send('Network.clearBrowserCache');
+      console.log('Cache do navegador limpo com sucesso');
+    }
+  } catch (error) {
+    console.error('Erro ao limpar cache:', error);
+  }
+}, CACHE_CLEANUP_INTERVAL);
+
+// Limpar intervalos se a aplicação for encerrada
+process.on('SIGTERM', () => {
+  console.log('Recebido sinal SIGTERM, encerrando graciosamente...');
+  clearInterval(reconnectWatchdog);
+  client.destroy();
+  process.exit(0);
+});
+
+process.on('SIGINT', () => {
+  console.log('Recebido sinal SIGINT, encerrando graciosamente...');
+  clearInterval(reconnectWatchdog);
+  client.destroy();
+  process.exit(0);
+});
+
 // Cache global para eventos processados
 const processedEvents = new Set();
+
+// Adicionar sistema de limitação de processamento para controlar picos de CPU
+const MAX_CONCURRENT_PROCESSING = 2;
+let currentProcessing = 0;
+const processingQueue = [];
+
+// Função para processar eventos com limitação
+async function processWithLimit(fn, ...args) {
+  if (currentProcessing >= MAX_CONCURRENT_PROCESSING) {
+    console.log(`Limite de processamento atingido (${currentProcessing}/${MAX_CONCURRENT_PROCESSING}), adicionando à fila...`);
+    // Adiciona à fila para processamento posterior
+    return new Promise(resolve => {
+      processingQueue.push(() => {
+        fn(...args).then(resolve);
+      });
+    });
+  }
+  
+  currentProcessing++;
+  try {
+    return await fn(...args);
+  } finally {
+    currentProcessing--;
+    if (processingQueue.length > 0 && currentProcessing < MAX_CONCURRENT_PROCESSING) {
+      console.log(`Processando próximo evento da fila (${processingQueue.length} restantes)`);
+      const nextProcess = processingQueue.shift();
+      nextProcess();
+    }
+  }
+}
 
 // Função para gerar chave de evento consistente
 function generateEventKey(notification, eventType) {
@@ -1021,7 +1127,7 @@ client.on('group_join', async (notification) => {
     // Processar o evento apenas se for um JOIN real ou se for um invite sem JOIN correspondente
     const eventKey = generateEventKey(processedNotification, 'JOIN');
     if (!processedEvents.has(eventKey)) {
-      await processGroupEvent(processedNotification, 'JOIN');
+      await processWithLimit(processGroupEvent, processedNotification, 'JOIN');
     } else {
       console.log('Evento JOIN já processado, ignorando...');
     }
@@ -1052,7 +1158,7 @@ client.on('group_leave', async (notification) => {
       timestamp: timestamp
     };
 
-    await processGroupEvent(processedNotification, 'LEAVE');
+    await processWithLimit(processGroupEvent, processedNotification, 'LEAVE');
   } catch (error) {
     console.error('Erro ao processar LEAVE:', error);
   }
@@ -1072,7 +1178,7 @@ client.on('group_remove', async (notification) => {
       timestamp: timestamp
     };
 
-    await processGroupEvent(processedNotification, 'LEAVE');
+    await processWithLimit(processGroupEvent, processedNotification, 'LEAVE');
   } catch (error) {
     console.error('Erro ao processar REMOVE:', error);
   }
