@@ -700,6 +700,11 @@ async function logEventToFile(eventType, user, group, providedTimestamp = null) 
   }
 }
 
+// Variáveis de controle da sessão
+let isClientReady = false;
+let qrCodeGenerated = false;
+let authInProgress = false;
+
 const client = new Client({
   puppeteer: {
     args: [
@@ -717,7 +722,11 @@ const client = new Client({
       '--disable-web-security',
       '--allow-file-access-from-files',
       '--no-zygote',
-      '--js-flags="--max-old-space-size=256"'
+      '--js-flags="--max-old-space-size=256"',
+      '--single-process',
+      '--disable-background-timer-throttling',
+      '--disable-backgrounding-occluded-windows',
+      '--disable-renderer-backgrounding'
     ],
     headless: true,
     executablePath: process.platform === 'win32' 
@@ -725,23 +734,23 @@ const client = new Client({
       : process.platform === 'darwin'
       ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
       : '/usr/bin/google-chrome-stable',
-    timeout: 120000,
+    timeout: 180000, // Aumentado para 3 minutos
     defaultViewport: {
       width: 800,
       height: 600
     },
     ignoreHTTPSErrors: true,
-    protocolTimeout: 120000
+    protocolTimeout: 180000 // Aumentado para 3 minutos
   },
   authStrategy: new LocalAuth({
-    clientId: "whatsapp-bot",
+    clientId: "whatsapp-bot-stable",
     dataPath: SESSION_PATH
   }),
-  qrMaxRetries: 10,
-  authTimeoutMs: 120000,
-  restartOnAuthFail: true,
+  qrMaxRetries: 3, // Reduzido para evitar múltiplos QR codes
+  authTimeoutMs: 180000, // Aumentado para 3 minutos
+  restartOnAuthFail: false, // Desabilitado restart automático
   takeoverOnConflict: true,
-  takeoverTimeoutMs: 300000, // Aumentado para 5 minutos
+  takeoverTimeoutMs: 180000, // Reduzido para 3 minutos
   userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
 });
 
@@ -791,50 +800,72 @@ try {
 client.on('disconnected', (reason) => {
   console.log('\n=== CLIENTE DESCONECTADO ===');
   console.log('Motivo:', reason);
-  handleConnectionError(new Error('Cliente desconectado: ' + reason));
+  isClientReady = false;
+  qrCodeGenerated = false;
+  authInProgress = false;
+  
+  // Não tentar reconectar automaticamente para evitar loops
+  console.log('Cliente desconectado. Aguardando reconexão manual se necessário...');
 });
 
 client.on('ready', async () => {
-  console.log('\n=== CLIENTE WHATSAPP CONECTADO ===');
+  console.log('\n=== CLIENTE WHATSAPP CONECTADO COM SUCESSO ===');
   console.log('Data/Hora:', new Date().toLocaleString());
   console.log('Ambiente:', DEPLOY_ENV);
-  console.log('Bot pronto para monitorar grupos!');
-});
-
-// Adicionar um watchdog para reconexão automática
-let reconnectAttempts = 0;
-const MAX_RECONNECT_ATTEMPTS = 20;
-const RECONNECT_INTERVAL = 5 * 60 * 1000; // 5 minutos
-
-const reconnectWatchdog = setInterval(async () => {
+  
+  isClientReady = true;
+  qrCodeGenerated = false;
+  authInProgress = false;
+  
+  // Limpar arquivos de QR code após conexão bem-sucedida
   try {
-    // Verificar se o cliente está conectado checando a propriedade info
-    if (!client.info) {
-      console.log('\n=== WATCHDOG: CLIENTE DESCONECTADO ===');
-      reconnectAttempts++;
-      
-      if (reconnectAttempts <= MAX_RECONNECT_ATTEMPTS) {
-        console.log(`Tentativa de reconexão ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS}`);
-        try {
-          await client.initialize();
-        } catch (error) {
-          console.error('Erro na reconexão:', error);
-        }
-      } else {
-        console.error('Número máximo de tentativas atingido. Reinicializando processo...');
-        process.exit(1); // O container reiniciará automaticamente
-      }
-    } else {
-      // Reset contador se estiver conectado
-      if (reconnectAttempts > 0) {
-        console.log('Conexão estável detectada, resetando contador de reconexões');
-      }
-      reconnectAttempts = 0;
+    if (fs.existsSync(QR_IMG_FILE)) {
+      fs.unlinkSync(QR_IMG_FILE);
+      console.log('QR Code image removido após conexão.');
+    }
+    if (fs.existsSync(QR_FILE)) {
+      fs.unlinkSync(QR_FILE);
+      console.log('QR Code texto removido após conexão.');
     }
   } catch (error) {
-    console.error('Erro no watchdog:', error);
+    console.error('Erro ao remover arquivos de QR Code:', error);
   }
-}, RECONNECT_INTERVAL);
+  
+  console.log('🎉 Bot pronto para monitorar grupos!');
+  console.log('✅ Sessão autenticada e estável');
+});
+
+client.on('authenticated', () => {
+  console.log('\n=== AUTENTICAÇÃO BEM-SUCEDIDA ===');
+  console.log('Data/Hora:', new Date().toLocaleString());
+  authInProgress = false;
+  console.log('✅ WhatsApp autenticado com sucesso!');
+});
+
+client.on('auth_failure', (msg) => {
+  console.error('\n=== FALHA NA AUTENTICAÇÃO ===');
+  console.error('Data/Hora:', new Date().toLocaleString());
+  console.error('Mensagem:', msg);
+  
+  isClientReady = false;
+  qrCodeGenerated = false;
+  authInProgress = false;
+  
+  console.log('❌ Autenticação falhou. QR Code será gerado novamente se necessário.');
+});
+
+// Monitor de status do cliente (sem reconexão automática)
+setInterval(() => {
+  try {
+    if (isClientReady && client.info) {
+      console.log('✅ Status: Cliente WhatsApp ativo e estável');
+    } else if (!isClientReady) {
+      console.log('⏳ Status: Aguardando autenticação do WhatsApp');
+    }
+  } catch (error) {
+    console.error('Erro ao verificar status:', error);
+  }
+}, 10 * 60 * 1000); // Verificar a cada 10 minutos
 
 // Adicionar um limpador de cache periódico (a cada 6 horas)
 const CACHE_CLEANUP_INTERVAL = 6 * 60 * 60 * 1000; // 6 horas
@@ -855,18 +886,26 @@ setInterval(async () => {
   }
 }, CACHE_CLEANUP_INTERVAL);
 
-// Limpar intervalos se a aplicação for encerrada
+// Limpar recursos se a aplicação for encerrada
 process.on('SIGTERM', () => {
   console.log('Recebido sinal SIGTERM, encerrando graciosamente...');
-  clearInterval(reconnectWatchdog);
-  client.destroy();
+  isClientReady = false;
+  try {
+    client.destroy();
+  } catch (error) {
+    console.error('Erro ao destruir cliente:', error);
+  }
   process.exit(0);
 });
 
 process.on('SIGINT', () => {
   console.log('Recebido sinal SIGINT, encerrando graciosamente...');
-  clearInterval(reconnectWatchdog);
-  client.destroy();
+  isClientReady = false;
+  try {
+    client.destroy();
+  } catch (error) {
+    console.error('Erro ao destruir cliente:', error);
+  }
   process.exit(0);
 });
 
@@ -1109,11 +1148,25 @@ client.on('group_remove', async (notification) => {
   }
 });
 
-// Adicionar evento do QR code
+// Adicionar evento do QR code com controle de duplicatas
 client.on('qr', async (qr) => {
+  // Verificar se já estamos autenticados ou se um QR já foi gerado recentemente
+  if (isClientReady) {
+    console.log('⚠️ QR Code ignorado - cliente já está pronto e conectado');
+    return;
+  }
+  
+  if (qrCodeGenerated && !authInProgress) {
+    console.log('⚠️ QR Code ignorado - aguardando autenticação do QR anterior');
+    return;
+  }
+  
   console.log('\n=== NOVO QR CODE GERADO ===');
   console.log('Data/Hora:', new Date().toLocaleString());
   console.log('Ambiente:', DEPLOY_ENV);
+  
+  qrCodeGenerated = true;
+  authInProgress = true;
   
   // Gerar URLs do QR code
   const qrUrls = [
