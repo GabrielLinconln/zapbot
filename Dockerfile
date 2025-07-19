@@ -64,8 +64,8 @@ USER zapbot
 # Expor porta
 EXPOSE 3000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+# Health check mais tolerante
+HEALTHCHECK --interval=60s --timeout=30s --start-period=180s --retries=5 \
     CMD curl -f http://localhost:3000/health || exit 1
 
 # Comando de inicialização

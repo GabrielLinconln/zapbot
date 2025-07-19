@@ -86,10 +86,14 @@ const server = http.createServer((req, res) => {
   } else if (req.url === '/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({
-      status: 'ok',
+      status: 'healthy',
       timestamp: new Date().toISOString(),
       environment: DEPLOY_ENV,
-      qrcode_available: fs.existsSync(QR_IMG_FILE)
+      whatsapp_ready: isClientReady,
+      qrcode_available: fs.existsSync(QR_IMG_FILE),
+      auth_in_progress: authInProgress,
+      error_count: errorCount || 0,
+      uptime: process.uptime()
     }));
   } else {
     res.writeHead(404);
@@ -99,11 +103,12 @@ const server = http.createServer((req, res) => {
 
 // Iniciar servidor
 server.listen(PORT, () => {
-  console.log(`\n=== SERVIDOR QR CODE INICIADO ===`);
-  console.log(`Acesse http://localhost:${PORT} para visualizar o QR code`);
-  if (DEPLOY_ENV === 'railway' || DEPLOY_ENV === 'production') {
-    console.log(`No Railway, acesse a URL pública fornecida em "Settings > Domains"`);
-  }
+  console.log(`\n=== SERVIDOR HTTP INICIADO ===`);
+  console.log(`🌐 Porta: ${PORT}`);
+  console.log(`🔧 Ambiente: ${DEPLOY_ENV}`);
+  console.log(`📱 Acesse a URL do EasyPanel para ver o QR code`);
+  console.log(`❤️ Health check disponível em /health`);
+  console.log(`⏰ Processo iniciado em: ${new Date().toLocaleString('pt-BR')}`);
 });
 
 // Mapear domínios conhecidos para IPs (solução para problemas de DNS)
@@ -953,27 +958,54 @@ setInterval(async () => {
   }
 }, CACHE_CLEANUP_INTERVAL);
 
-// Limpar recursos se a aplicação for encerrada
-process.on('SIGTERM', () => {
-  console.log('Recebido sinal SIGTERM, encerrando graciosamente...');
+// Gerenciamento gracioso de sinais do sistema
+let isShuttingDown = false;
+
+process.on('SIGTERM', async () => {
+  if (isShuttingDown) return;
+  isShuttingDown = true;
+  
+  console.log('\n⚠️ SIGTERM recebido - EasyPanel está reiniciando o container');
+  console.log('Tentando manter sessão ativa...');
+  
+  // NÃO destruir o cliente para manter a sessão
   isClientReady = false;
+  
+  // Dar tempo para o WhatsApp salvar a sessão
+  setTimeout(() => {
+    console.log('Encerrando processo após preservar sessão...');
+    process.exit(0);
+  }, 5000);
+});
+
+process.on('SIGINT', async () => {
+  if (isShuttingDown) return;
+  isShuttingDown = true;
+  
+  console.log('\n🛑 SIGINT recebido - Encerramento manual');
+  isClientReady = false;
+  
   try {
-    client.destroy();
+    console.log('Destruindo cliente WhatsApp...');
+    await client.destroy();
   } catch (error) {
     console.error('Erro ao destruir cliente:', error);
   }
+  
   process.exit(0);
 });
 
-process.on('SIGINT', () => {
-  console.log('Recebido sinal SIGINT, encerrando graciosamente...');
-  isClientReady = false;
-  try {
-    client.destroy();
-  } catch (error) {
-    console.error('Erro ao destruir cliente:', error);
-  }
-  process.exit(0);
+// Ignorar outros sinais que podem causar restart
+process.on('SIGHUP', () => {
+  console.log('📡 SIGHUP ignorado - mantendo sessão ativa');
+});
+
+process.on('SIGUSR1', () => {
+  console.log('📡 SIGUSR1 ignorado - mantendo sessão ativa');
+});
+
+process.on('SIGUSR2', () => {
+  console.log('📡 SIGUSR2 ignorado - mantendo sessão ativa');
 });
 
 // Cache global para eventos processados
