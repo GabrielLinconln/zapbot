@@ -34,8 +34,12 @@ ENV CHROME_PATH=/usr/bin/google-chrome-stable
 ENV DEPLOY_ENV=production
 ENV PORT=3000
 
-# Criar usuário não-root
-RUN groupadd -r zapbot && useradd -r -g zapbot -G audio,video zapbot
+# Criar usuário não-root e diretórios necessários
+RUN groupadd -r zapbot && useradd -r -g zapbot -G audio,video zapbot \
+    && mkdir -p /home/zapbot/.local/share/applications \
+    && mkdir -p /home/zapbot/.config \
+    && mkdir -p /home/zapbot/.cache \
+    && chown -R zapbot:zapbot /home/zapbot
 
 # Criar diretório de trabalho
 WORKDIR /app
@@ -43,7 +47,7 @@ WORKDIR /app
 # Copiar arquivos de dependências
 COPY package*.json ./
 
-# Instalar dependências de produção (corrigido)
+# Instalar dependências de produção
 RUN npm install --production && npm cache clean --force
 
 # Copiar código da aplicação
