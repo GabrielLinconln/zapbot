@@ -1,60 +1,68 @@
-FROM node:16-buster-slim
+# Usar Node.js 18 LTS para melhor compatibilidade
+FROM node:18-slim
 
-# Instalar dependências do sistema e Chromium
+# Instalar dependências do sistema e Chrome
 RUN apt-get update \
-    && apt-get install -y wget gnupg \
+    && apt-get install -y wget gnupg ca-certificates curl \
     && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
     && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
     && apt-get update \
     && apt-get install -y \
     google-chrome-stable \
-    fonts-ipafont-gothic \
-    fonts-wqy-zenhei \
-    fonts-thai-tlwg \
-    fonts-kacst \
-    fonts-freefont-ttf \
+    fonts-liberation \
+    fonts-noto-color-emoji \
+    fonts-noto-cjk \
     libxss1 \
     libxtst6 \
     libgconf-2-4 \
     libnss3 \
     libatk1.0-0 \
     libatk-bridge2.0-0 \
+    libdrm2 \
     libgtk-3-0 \
     libgbm1 \
+    libasound2 \
     --no-install-recommends \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
 
-# Configurar variáveis de ambiente
+# Configurar variáveis de ambiente para produção
+ENV NODE_ENV=production
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
-ENV NODE_ENV=production
 ENV CHROME_PATH=/usr/bin/google-chrome-stable
 ENV DEPLOY_ENV=production
+ENV PORT=3000
+
+# Criar usuário não-root
+RUN groupadd -r zapbot && useradd -r -g zapbot -G audio,video zapbot
 
 # Criar diretório de trabalho
 WORKDIR /app
 
-# Criar diretórios necessários com permissões corretas
-RUN mkdir -p /app/.wwebjs_auth /app/.wwebjs_cache /app/logs && \
-    chmod -R 777 /app && \
-    chown -R node:node /app
-
-# Copiar package.json e package-lock.json
+# Copiar arquivos de dependências
 COPY package*.json ./
 
-# Instalar dependências
-RUN npm install
+# Instalar dependências de produção (corrigido)
+RUN npm install --production && npm cache clean --force
 
-# Copiar o resto dos arquivos
+# Copiar código da aplicação
 COPY . .
 
-# Garantir permissões de escrita para todos os arquivos
-RUN chmod -R 777 /app && \
-    chown -R node:node /app && \
-    chmod -R 777 /usr/bin/google-chrome-stable
+# Criar diretórios necessários e configurar permissões
+RUN mkdir -p /app/.wwebjs_auth /app/.wwebjs_cache /app/logs \
+    && chown -R zapbot:zapbot /app \
+    && chmod -R 755 /app
 
 # Mudar para usuário não-root
-USER node
+USER zapbot
 
-# Iniciar a aplicação com mais logs
-CMD ["sh", "-c", "node index.js 2>&1 | tee -a /app/logs/app.log"] 
+# Expor porta
+EXPOSE 3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:3000/health || exit 1
+
+# Comando de inicialização
+CMD ["node", "index.js"] 

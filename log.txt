@@ -822,3 +822,5 @@
 20/04/2025, 19:09:11 - JOIN - Usuário(s): 6492271004 - Grupo: ⚔️ Amigo das Facas ⚔️
 20/04/2025, 19:09:42 - JOIN - Usuário(s): 6796534642 - Grupo: Grupo de Rifas Zé Véio
 20/04/2025, 19:09:44 - JOIN - Usuário(s): 4498310650 - Grupo: Grupo de Rifas Zé Véio
+13/07/2025, 01:59:48 - LEAVE - Usuário(s): Gabriel Antigo Mel Atendimento - Grupo: teste
+13/07/2025, 02:00:40 - JOIN - Usuário(s): Gabriel Antigo Mel Atendimento - Grupo: teste

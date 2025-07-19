@@ -3,7 +3,6 @@ const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const fs = require('fs');
 const path = require('path');
-const { google } = require('googleapis');
 const { createClient } = require('@supabase/supabase-js');
 const fetch = require('node-fetch');
 const http = require('http');
@@ -20,10 +19,6 @@ const PORT = process.env.PORT || 3000;
 // Definir timeout para DNS (ajuda com problemas de DNS em ambientes cloud)
 dns.setDefaultResultOrder('ipv4first');
 dns.setServers(['8.8.8.8', '1.1.1.1', '208.67.222.222']);
-
-// Adicionar configuração do Google Sheets
-const SPREADSHEET_ID = process.env.SPREADSHEET_ID || '1U7SzPTc2t8SIIcAubigz3oNMUEboDU8oxT5I0KkODq0';
-const CREDENTIALS_PATH = path.join(__dirname, 'credentials.json');
 
 // Criar servidor HTTP simples para exibir QR code
 const server = http.createServer((req, res) => {
@@ -346,8 +341,8 @@ async function testSupabaseConnection(retries = 5, initialDelay = 1000) {
         console.log('1. Verifique se as variáveis de ambiente do Supabase estão configuradas corretamente no Railway');
         console.log('2. Use a chave "service_role" do Supabase para maior permissão (não a anon/public key)');
         console.log('3. Execute o script create_table_simple.sql no SQL Editor do Supabase para criar a tabela');
-        console.log('4. Sem isso, os eventos serão registrados apenas em logs locais ou Google Sheets');
-        console.log('\nContinuando execução do bot usando modo fallback...');
+        console.log('4. Sem isso, os eventos serão registrados apenas em logs locais');
+        console.log('\nContinuando execução do bot com logs locais...');
         return;
       }
       
@@ -466,18 +461,12 @@ setInterval(async () => {
         if (success) {
           console.log(`Evento pendente processado com sucesso: ${event.eventType} - ${event.user}`);
         } else {
-          // Se ainda falhar, tentar planilha ou voltar para a fila
-          try {
-            await appendToSheet(event.timestamp, event.eventType, event.user, event.group);
-            console.log(`Evento pendente salvo no Google Sheets: ${event.eventType} - ${event.user}`);
-          } catch (sheetError) {
-            console.log(`Não foi possível salvar evento nem no Supabase nem no Google Sheets`);
-            // Adicionamos de volta à fila se não exceder o limite
-            if (pendingEvents.length < MAX_PENDING_EVENTS) {
-              pendingEvents.push(event);
-            } else {
-              console.error(`Limite de eventos pendentes excedido, evento perdido: ${event.eventType} - ${event.user}`);
-            }
+          // Se ainda falhar, adicionar de volta à fila se não exceder o limite
+          if (pendingEvents.length < MAX_PENDING_EVENTS) {
+            pendingEvents.push(event);
+            console.log(`Evento adicionado novamente à fila para nova tentativa: ${event.eventType} - ${event.user}`);
+          } else {
+            console.error(`Limite de eventos pendentes excedido, evento perdido: ${event.eventType} - ${event.user}`);
           }
         }
       } catch (error) {
@@ -610,69 +599,7 @@ async function recordEventSupabase(timestamp, eventType, user, group) {
   }
 }
 
-async function appendToSheet(timestamp, eventType, user, group) {
-  try {
-    console.log('\nIniciando registro na planilha...');
-    console.log('Dados a registrar:', { timestamp, eventType, user, group });
-    
-    // Validação dos dados
-    if (!timestamp || !eventType || !user || !group) {
-      throw new Error('Dados incompletos para registro na planilha');
-    }
-    
-    // Lê as credenciais do arquivo
-    let credentials;
-    try {
-      credentials = JSON.parse(fs.readFileSync(CREDENTIALS_PATH, 'utf8'));
-    } catch (error) {
-      throw new Error(`Erro ao ler credenciais: ${error.message}`);
-    }
-    
-    const auth = new google.auth.GoogleAuth({
-      credentials: credentials,
-      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-    });
 
-    const sheets = google.sheets({ version: 'v4', auth });
-    
-    const values = [
-      [timestamp, user, group, eventType === 'JOIN' ? 'X' : '', eventType === 'LEAVE' ? 'X' : '']
-    ];
-
-    console.log('Tentando registrar valores:', values);
-
-    const result = await sheets.spreadsheets.values.append({
-      spreadsheetId: SPREADSHEET_ID,
-      range: 'Registros!A:E',
-      valueInputOption: 'USER_ENTERED',
-      requestBody: {
-        values: values
-      }
-    });
-
-    console.log('Registro na planilha concluído:', {
-      status: result.status,
-      updatedRange: result.data?.updates?.updatedRange,
-      updatedRows: result.data?.updates?.updatedRows
-    });
-
-    return true;
-  } catch (error) {
-    console.error('\nERRO AO REGISTRAR NA PLANILHA');
-    console.error('Tipo do erro:', error.name);
-    console.error('Mensagem:', error.message);
-    console.error('Stack:', error.stack);
-    
-    if (error.response) {
-      console.error('Resposta da API:', {
-        status: error.response.status,
-        data: error.response.data
-      });
-    }
-    
-    throw error; // Propaga o erro para tratamento adequado
-  }
-}
 
 async function getContactName(client, userId) {
   try {
@@ -747,9 +674,9 @@ async function logEventToFile(eventType, user, group, providedTimestamp = null) 
     fs.appendFileSync(LOG_FILE, logEntry, 'utf8');
     
     try {
-      // Tentar registrar no Supabase primeiro
+      // Tentar registrar no Supabase
       await recordEventSupabase(timestamp, eventType, user, group);
-      console.log('Evento registrado com sucesso!');
+      console.log('Evento registrado com sucesso no Supabase!');
     } catch (error) {
       console.error('Erro ao registrar no Supabase:', error);
       
@@ -757,16 +684,8 @@ async function logEventToFile(eventType, user, group, providedTimestamp = null) 
       if (pendingEvents.length < MAX_PENDING_EVENTS) {
         pendingEvents.push({ timestamp, eventType, user, group });
         console.log('Evento adicionado à fila para processamento posterior');
-      }
-      
-      // Tentar também no Google Sheets imediatamente
-      try {
-        console.log('Tentando Google Sheets como fallback...');
-        await appendToSheet(timestamp, eventType, user, group);
-        console.log('Evento registrado com sucesso via fallback!');
-      } catch (sheetError) {
-        console.error('Erro ao registrar no Google Sheets:', sheetError);
-        console.log('Evento ficará apenas no log local e na fila de pendentes');
+      } else {
+        console.error(`Limite de eventos pendentes excedido, evento perdido: ${eventType} - ${user}`);
       }
     }
   } catch (error) {
@@ -803,6 +722,8 @@ const client = new Client({
     headless: true,
     executablePath: process.platform === 'win32' 
       ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
+      : process.platform === 'darwin'
+      ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
       : '/usr/bin/google-chrome-stable',
     timeout: 120000,
     defaultViewport: {
@@ -849,12 +770,16 @@ console.log('Ambiente:', DEPLOY_ENV);
 console.log('Diretório de trabalho:', process.cwd());
 console.log('Chrome executable:', process.platform === 'win32' 
   ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
+  : process.platform === 'darwin'
+  ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
   : '/usr/bin/google-chrome-stable');
 
 // Verificar se o executável do Chrome existe
 try {
   const chromePath = process.platform === 'win32' 
     ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
+    : process.platform === 'darwin'
+    ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
     : '/usr/bin/google-chrome-stable';
   fs.accessSync(chromePath, fs.constants.X_OK);
   console.log('Google Chrome encontrado em:', chromePath);

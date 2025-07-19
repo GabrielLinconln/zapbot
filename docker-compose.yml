@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  zapbot:
+    build: .
+    container_name: zapbot
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DEPLOY_ENV=production
+      - PORT=3000
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
+    volumes:
+      - zapbot_data:/app/.wwebjs_auth
+      - zapbot_cache:/app/.wwebjs_cache
+      - zapbot_logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - zapbot_network
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - SYS_ADMIN
+    shm_size: 2gb
+
+volumes:
+  zapbot_data:
+    driver: local
+  zapbot_cache:
+    driver: local
+  zapbot_logs:
+    driver: local
+
+networks:
+  zapbot_network:
+    driver: bridge 

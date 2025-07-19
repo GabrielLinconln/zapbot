@@ -1,12 +1,13 @@
 # Dependências
 node_modules/
-package-lock.json
 
 # Logs
 log.txt
+logs/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+*.log
 
 # Arquivos de ambiente
 .env
@@ -22,11 +23,17 @@ credentials.json
 # Arquivos temporários
 qr-code.txt
 qr-code.png
+qr-code.html
 temp/
 tmp/
 
 # Arquivos do sistema operacional
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
 desktop.ini
 
@@ -38,15 +45,25 @@ desktop.ini
 *.njsproj
 *.sln
 *.sw?
+*.swp
+*.swo
+*~
 
 # WhatsApp session
 .wwebjs_auth/
 .wwebjs_cache/
 
-# Logs and temp files
-*.log
-logs/
+# Docker
+.dockerignore
 
-# IDE
-*.swp
-*.swo
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory
+coverage/
+
+# nyc test coverage
+.nyc_output
