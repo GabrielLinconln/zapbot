@@ -718,15 +718,24 @@ const client = new Client({
       '--disable-software-rasterizer',
       '--ignore-certificate-errors',
       '--allow-running-insecure-content',
-      '--window-size=800,600',
+      '--window-size=1280,720',
       '--disable-web-security',
       '--allow-file-access-from-files',
       '--no-zygote',
-      '--js-flags="--max-old-space-size=256"',
-      '--single-process',
+      '--js-flags="--max-old-space-size=512"',
       '--disable-background-timer-throttling',
       '--disable-backgrounding-occluded-windows',
-      '--disable-renderer-backgrounding'
+      '--disable-renderer-backgrounding',
+      '--disable-features=TranslateUI',
+      '--disable-ipc-flooding-protection',
+      '--disable-hang-monitor',
+      '--disable-client-side-phishing-detection',
+      '--disable-component-update',
+      '--no-default-browser-check',
+      '--no-pings',
+      '--media-cache-size=0',
+      '--disk-cache-size=0',
+      '--aggressive-cache-discard'
     ],
     headless: true,
     executablePath: process.platform === 'win32' 
@@ -734,42 +743,72 @@ const client = new Client({
       : process.platform === 'darwin'
       ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
       : '/usr/bin/google-chrome-stable',
-    timeout: 180000, // Aumentado para 3 minutos
+    timeout: 300000, // 5 minutos para permitir carregamento lento
     defaultViewport: {
-      width: 800,
-      height: 600
+      width: 1280,
+      height: 720
     },
     ignoreHTTPSErrors: true,
-    protocolTimeout: 180000 // Aumentado para 3 minutos
+    protocolTimeout: 300000, // 5 minutos
+    handleSIGINT: false,
+    handleSIGTERM: false,
+    handleSIGHUP: false
   },
   authStrategy: new LocalAuth({
-    clientId: "whatsapp-bot-stable",
+    clientId: "whatsapp-bot-production",
     dataPath: SESSION_PATH
   }),
-  qrMaxRetries: 3, // Reduzido para evitar múltiplos QR codes
-  authTimeoutMs: 180000, // Aumentado para 3 minutos
-  restartOnAuthFail: false, // Desabilitado restart automático
+  qrMaxRetries: 5, // Aumentado para dar mais chances
+  authTimeoutMs: 300000, // 5 minutos
+  restartOnAuthFail: false,
   takeoverOnConflict: true,
-  takeoverTimeoutMs: 180000, // Reduzido para 3 minutos
-  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+  takeoverTimeoutMs: 300000,
+  userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 });
 
-// Função para tentar reconectar em caso de erro
+// Sistema de recuperação inteligente
+let lastError = null;
+let errorCount = 0;
+const MAX_ERRORS = 3;
+
 async function handleConnectionError(error) {
-  console.error('\n=== ERRO DE CONEXÃO ===');
+  console.error('\n=== ERRO DE CONEXÃO DETECTADO ===');
   console.error('Tipo:', error.name);
   console.error('Mensagem:', error.message);
-  console.error('Stack:', error.stack);
   
-  try {
-    console.log('\nTentando reconectar...');
-    await client.destroy();
-    await client.initialize();
-  } catch (reconnectError) {
-    console.error('Erro ao tentar reconectar:', reconnectError);
-    // Aguarda 1 minuto antes de tentar novamente
-    setTimeout(() => handleConnectionError(reconnectError), 60000);
+  errorCount++;
+  lastError = error;
+  
+  // Reset das flags de estado
+  isClientReady = false;
+  qrCodeGenerated = false;
+  authInProgress = false;
+  
+  if (errorCount >= MAX_ERRORS) {
+    console.error(`\n❌ Muitos erros consecutivos (${errorCount}). Reiniciando processo...`);
+    console.error('O container será reiniciado automaticamente pelo EasyPanel.');
+    process.exit(1);
   }
+  
+  console.log(`\n🔄 Tentativa de recuperação ${errorCount}/${MAX_ERRORS} em 30 segundos...`);
+  
+  setTimeout(async () => {
+    try {
+      console.log('Destruindo cliente atual...');
+      await client.destroy();
+      
+      console.log('Aguardando limpeza...');
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      
+      console.log('Reinicializando cliente...');
+      await client.initialize();
+      
+      console.log('✅ Cliente reinicializado com sucesso!');
+    } catch (reconnectError) {
+      console.error('❌ Falha na reinicialização:', reconnectError);
+      handleConnectionError(reconnectError);
+    }
+  }, 30000);
 }
 
 // Adicionar logs para debug de inicialização
@@ -804,8 +843,32 @@ client.on('disconnected', (reason) => {
   qrCodeGenerated = false;
   authInProgress = false;
   
-  // Não tentar reconectar automaticamente para evitar loops
-  console.log('Cliente desconectado. Aguardando reconexão manual se necessário...');
+  // Verificar se foi uma desconexão inesperada
+  if (reason !== 'LOGOUT' && reason !== 'NAVIGATION') {
+    console.log('🔄 Desconexão inesperada detectada. Tentando recuperar...');
+    handleConnectionError(new Error(`Cliente desconectado: ${reason}`));
+  } else {
+    console.log('ℹ️ Desconexão normal. Aguardando...');
+  }
+});
+
+// Adicionar handler para erros do Puppeteer/Chrome
+client.on('change_state', state => {
+  console.log('📱 Estado do WhatsApp:', state);
+});
+
+// Capturar erros não tratados do cliente
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('🚨 Erro não tratado detectado:', reason);
+  
+  // Se for um erro relacionado ao protocol/session
+  if (reason && reason.message && 
+      (reason.message.includes('Protocol error') || 
+       reason.message.includes('Session closed') ||
+       reason.message.includes('Target closed'))) {
+    console.error('🔧 Erro de protocolo detectado. Tentando recuperar...');
+    handleConnectionError(reason);
+  }
 });
 
 client.on('ready', async () => {
@@ -813,9 +876,12 @@ client.on('ready', async () => {
   console.log('Data/Hora:', new Date().toLocaleString());
   console.log('Ambiente:', DEPLOY_ENV);
   
+  // Reset completo do estado
   isClientReady = true;
   qrCodeGenerated = false;
   authInProgress = false;
+  errorCount = 0; // Reset contador de erros
+  lastError = null;
   
   // Limpar arquivos de QR code após conexão bem-sucedida
   try {
@@ -833,6 +899,7 @@ client.on('ready', async () => {
   
   console.log('🎉 Bot pronto para monitorar grupos!');
   console.log('✅ Sessão autenticada e estável');
+  console.log('✅ Contador de erros resetado');
 });
 
 client.on('authenticated', () => {
