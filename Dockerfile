@@ -69,4 +69,4 @@ HEALTHCHECK --interval=60s --timeout=30s --start-period=180s --retries=5 \
     CMD curl -f http://localhost:3000/health || exit 1
 
 # Comando de inicialização ultra-otimizado para baixo consumo
-CMD ["node", "--max-old-space-size=256", "--optimize-for-size", "--gc-interval=100", "--expose-gc", "--always-compact", "index.js"] 
+CMD ["node", "--max-old-space-size=256", "--optimize-for-size", "--gc-interval=100", "--expose-gc", "index.js"] 
