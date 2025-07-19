@@ -706,10 +706,13 @@ async function logEventToFile(eventType, user, group, providedTimestamp = null) 
   }
 }
 
-// Variáveis de controle da sessão
+// Variáveis de controle da sessão e performance
 let isClientReady = false;
 let qrCodeGenerated = false;
 let authInProgress = false;
+let isEconomyMode = false;
+let cpuUsageHigh = false;
+let lastCpuCheck = 0;
 
 const client = new Client({
   puppeteer: {
@@ -724,15 +727,15 @@ const client = new Client({
       '--disable-software-rasterizer',
       '--ignore-certificate-errors',
       '--allow-running-insecure-content',
-      '--window-size=1024,768',
+      '--window-size=800,600',
       '--disable-web-security',
       '--allow-file-access-from-files',
       '--no-zygote',
-      '--js-flags="--max-old-space-size=384"',
+      '--js-flags="--max-old-space-size=256 --gc-interval=1000"',
       '--disable-background-timer-throttling',
       '--disable-backgrounding-occluded-windows',
       '--disable-renderer-backgrounding',
-      '--disable-features=TranslateUI',
+      '--disable-features=TranslateUI,VizDisplayCompositor,AudioServiceOutOfProcess',
       '--disable-ipc-flooding-protection',
       '--disable-hang-monitor',
       '--disable-client-side-phishing-detection',
@@ -743,7 +746,18 @@ const client = new Client({
       '--disable-default-apps',
       '--disable-sync',
       '--metrics-recording-only',
-      '--no-report-upload'
+      '--no-report-upload',
+      '--memory-pressure-off',
+      '--max_old_space_size=256',
+      '--enable-precise-memory-info',
+      '--disable-v8-idle-tasks',
+      '--disable-background-mode',
+      '--disable-plugins',
+      '--disable-images',
+      '--disable-javascript',
+      '--disable-plugins-discovery',
+      '--aggressive-cache-discard',
+      '--force-low-power-gpu'
     ],
     headless: true,
     executablePath: process.platform === 'win32' 
@@ -751,13 +765,13 @@ const client = new Client({
       : process.platform === 'darwin'
       ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
       : '/usr/bin/google-chrome-stable',
-    timeout: 180000, // Voltando para 3 minutos para estabilidade
+    timeout: 120000, // Reduzido para economizar recursos
     defaultViewport: {
-      width: 1024,
-      height: 768
+      width: 800,
+      height: 600
     },
     ignoreHTTPSErrors: true,
-    protocolTimeout: 180000, // Voltando para 3 minutos
+    protocolTimeout: 120000,
     handleSIGINT: false,
     handleSIGTERM: false,
     handleSIGHUP: false
@@ -1007,17 +1021,22 @@ setInterval(() => {
   }
 }, 15 * 60 * 1000); // Reduzido para 15 minutos
 
-// Limpeza agressiva de cache para economizar memória
-const CACHE_CLEANUP_INTERVAL = 2 * 60 * 60 * 1000; // A cada 2 horas
+// Sistema de limpeza ultra-agressivo para economia de recursos
+const CACHE_CLEANUP_INTERVAL = 30 * 60 * 1000; // A cada 30 minutos
+const MICRO_CLEANUP_INTERVAL = 5 * 60 * 1000; // Micro limpeza a cada 5 minutos
 
+// Limpeza principal
 setInterval(async () => {
   try {
-    console.log('\n🧹 Iniciando limpeza de cache...');
+    console.log('\n🧹 Limpeza completa de cache...');
     
-    // Forçar garbage collection se disponível
+    // Forçar múltiplas passadas de GC
     if (global.gc) {
-      global.gc();
-      console.log('✅ Garbage collection executado');
+      for (let i = 0; i < 3; i++) {
+        global.gc();
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+      console.log('✅ Garbage collection (3x) executado');
     }
     
     // Limpar cache do navegador
@@ -1028,27 +1047,63 @@ setInterval(async () => {
         await cdpSession.send('Network.clearBrowserCookies');
         await cdpSession.send('Network.clearBrowserCache');
         await cdpSession.send('Runtime.runIfWaitingForDebugger');
+        await cdpSession.send('Runtime.collectGarbage');
         console.log('✅ Cache do navegador limpo');
       } catch (error) {
         console.log('⚠️ Erro na limpeza do cache:', error.message);
       }
     }
     
-    // Limpar cache de eventos processados (manter apenas últimos 50)
-    if (processedEvents.size > 50) {
+    // Limpar cache de eventos processados agressivamente
+    if (processedEvents.size > 20) {
       const eventsArray = Array.from(processedEvents);
       processedEvents.clear();
-      eventsArray.slice(-50).forEach(event => processedEvents.add(event));
-      console.log('✅ Cache de eventos limpo');
+      // Manter apenas os últimos 20 em modo economia
+      const keepCount = isEconomyMode ? 10 : 20;
+      eventsArray.slice(-keepCount).forEach(event => processedEvents.add(event));
+      console.log(`✅ Cache de eventos limpo (mantidos: ${keepCount})`);
+    }
+    
+    // Limpar fila de processamento se muito grande
+    if (processingQueue.length > 10) {
+      const kept = processingQueue.splice(0, 5);
+      processingQueue.length = 0;
+      processingQueue.push(...kept);
+      console.log('✅ Fila de processamento limitada');
     }
     
     const used = process.memoryUsage();
-    console.log(`💾 Memória após limpeza: ${Math.round(used.rss / 1024 / 1024)}MB`);
+    console.log(`💾 Memória: ${Math.round(used.rss / 1024 / 1024)}MB RSS, ${Math.round(used.heapUsed / 1024 / 1024)}MB Heap`);
     
   } catch (error) {
     console.error('❌ Erro na limpeza:', error.message);
   }
 }, CACHE_CLEANUP_INTERVAL);
+
+// Micro limpeza para manter estabilidade
+setInterval(async () => {
+  try {
+    if (isEconomyMode) {
+      console.log('🧽 Micro limpeza (modo economia)...');
+      
+      if (global.gc) {
+        global.gc();
+      }
+      
+      // Limpar cache de eventos com mais frequência em modo economia
+      if (processedEvents.size > 15) {
+        const eventsArray = Array.from(processedEvents);
+        processedEvents.clear();
+        eventsArray.slice(-10).forEach(event => processedEvents.add(event));
+      }
+      
+      const used = process.memoryUsage();
+      console.log(`💾 Micro: ${Math.round(used.rss / 1024 / 1024)}MB`);
+    }
+  } catch (error) {
+    console.error('❌ Erro micro limpeza:', error.message);
+  }
+}, MICRO_CLEANUP_INTERVAL);
 
 // Gerenciamento gracioso de sinais do sistema
 let isShuttingDown = false;
@@ -1103,30 +1158,90 @@ process.on('SIGUSR2', () => {
 // Cache global para eventos processados
 const processedEvents = new Set();
 
-// Sistema de processamento ultra-otimizado para baixo CPU
-const MAX_CONCURRENT_PROCESSING = 1; // Reduzido para 1 para economizar CPU
+// Sistema de processamento adaptativo com controle de CPU
+let MAX_CONCURRENT_PROCESSING = 1;
 let currentProcessing = 0;
 const processingQueue = [];
 let lastProcessTime = 0;
-const PROCESS_INTERVAL = 2000; // Mínimo 2 segundos entre processamentos
+let PROCESS_INTERVAL = 2000; // Dinâmico baseado no uso de CPU
 
-// Função para processar eventos com limitação e throttling
+// Monitor de CPU para ajustar performance
+function getCpuUsage() {
+  const startUsage = process.cpuUsage();
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const endUsage = process.cpuUsage(startUsage);
+      const userPercent = (endUsage.user / 1000000) * 100;
+      const systemPercent = (endUsage.system / 1000000) * 100;
+      resolve(userPercent + systemPercent);
+    }, 100);
+  });
+}
+
+// Ajustar performance baseado no uso de CPU
+async function adjustPerformanceMode() {
+  try {
+    const cpuUsage = await getCpuUsage();
+    const now = Date.now();
+    
+    // Verificar apenas a cada 30 segundos
+    if (now - lastCpuCheck < 30000) return;
+    lastCpuCheck = now;
+    
+    console.log(`🔍 CPU Usage: ${cpuUsage.toFixed(1)}%`);
+    
+    if (cpuUsage > 80) {
+      if (!isEconomyMode) {
+        isEconomyMode = true;
+        cpuUsageHigh = true;
+        MAX_CONCURRENT_PROCESSING = 1;
+        PROCESS_INTERVAL = 5000; // 5 segundos entre processamentos
+        console.log('🐌 MODO ECONOMIA ATIVADO - CPU alta detectada');
+      }
+    } else if (cpuUsage < 40) {
+      if (isEconomyMode) {
+        isEconomyMode = false;
+        cpuUsageHigh = false;
+        MAX_CONCURRENT_PROCESSING = 1;
+        PROCESS_INTERVAL = 2000; // Voltar para 2 segundos
+        console.log('🚀 MODO NORMAL ATIVADO - CPU estabilizada');
+      }
+    }
+  } catch (error) {
+    console.error('Erro ao verificar CPU:', error.message);
+  }
+}
+
+// Função para processar eventos com limitação inteligente
 async function processWithLimit(fn, ...args) {
   const now = Date.now();
   
-  // Throttling: evitar processamento muito frequente
-  if (now - lastProcessTime < PROCESS_INTERVAL) {
-    console.log('⏱️ Processamento em throttling, adicionando à fila...');
+  // Ajustar performance baseado na CPU
+  await adjustPerformanceMode();
+  
+  // Throttling dinâmico baseado no modo de economia
+  const currentInterval = isEconomyMode ? PROCESS_INTERVAL * 2 : PROCESS_INTERVAL;
+  
+  if (now - lastProcessTime < currentInterval) {
+    const waitTime = currentInterval - (now - lastProcessTime);
+    console.log(`⏱️ Throttling (${isEconomyMode ? 'ECONOMIA' : 'NORMAL'}): ${waitTime}ms`);
+    
     return new Promise(resolve => {
       setTimeout(() => {
         processingQueue.push(() => fn(...args).then(resolve));
         processQueue();
-      }, PROCESS_INTERVAL - (now - lastProcessTime));
+      }, waitTime);
     });
   }
   
+  // Em modo economia, processar apenas eventos críticos
+  if (isEconomyMode && processingQueue.length > 5) {
+    console.log('🐌 Modo economia: pulando evento não crítico');
+    return Promise.resolve();
+  }
+  
   if (currentProcessing >= MAX_CONCURRENT_PROCESSING) {
-    console.log(`🚦 Limite atingido (${currentProcessing}/${MAX_CONCURRENT_PROCESSING}), enfileirando...`);
+    console.log(`🚦 Fila (${currentProcessing}/${MAX_CONCURRENT_PROCESSING}), aguardando...`);
     return new Promise(resolve => {
       processingQueue.push(() => fn(...args).then(resolve));
     });
@@ -1139,8 +1254,9 @@ async function processWithLimit(fn, ...args) {
     return await fn(...args);
   } finally {
     currentProcessing--;
-    // Processar próximo item da fila com delay
-    setTimeout(processQueue, 1000);
+    // Delay maior em modo economia
+    const delay = isEconomyMode ? 3000 : 1000;
+    setTimeout(processQueue, delay);
   }
 }
 
@@ -1290,54 +1406,49 @@ async function processGroupEvent(notification, eventType) {
 // Event listeners com async/await
 client.on('group_join', async (notification) => {
   try {
-    console.log('\nNotificação de JOIN recebida:', notification);
+    // Em modo economia, processar apenas 1 em cada 3 eventos
+    if (isEconomyMode && Math.random() > 0.33) {
+      console.log('🐌 Modo economia: JOIN ignorado');
+      return;
+    }
     
-    // Garantir timestamp para todos os tipos de evento
+    console.log('\n📥 JOIN recebido:', notification.id?._serialized?.slice(-10));
+    
     const timestamp = notification.timestamp || Math.floor(Date.now() / 1000);
-    
-    // Criar uma cópia da notificação com o timestamp garantido
-    const processedNotification = {
-      ...notification,
-      timestamp: timestamp
-    };
-
-    // Processar o evento apenas se for um JOIN real ou se for um invite sem JOIN correspondente
+    const processedNotification = { ...notification, timestamp };
     const eventKey = generateEventKey(processedNotification, 'JOIN');
+    
     if (!processedEvents.has(eventKey)) {
       await processWithLimit(processGroupEvent, processedNotification, 'JOIN');
     } else {
-      console.log('Evento JOIN já processado, ignorando...');
+      console.log('🔄 JOIN já processado');
     }
   } catch (error) {
-    console.error('Erro ao processar JOIN:', error);
+    console.error('❌ Erro JOIN:', error.message);
   }
 });
 
 client.on('group_leave', async (notification) => {
   try {
-    console.log('\nNotificação de LEAVE recebida:', notification);
+    // Em modo economia, processar apenas eventos críticos
+    if (isEconomyMode && Math.random() > 0.5) {
+      console.log('🐌 Modo economia: LEAVE ignorado');
+      return;
+    }
     
-    // Garantir recipientIds
+    console.log('\n📤 LEAVE recebido:', notification.id?._serialized?.slice(-10));
+    
     if (!notification.recipientIds || notification.recipientIds.length === 0) {
-      console.log('Tentando extrair recipientId do id...');
       const match = notification.id._serialized.match(/\d+@c\.us/);
-      if (match) {
-        notification.recipientIds = [match[0]];
-      }
+      if (match) notification.recipientIds = [match[0]];
     }
 
-    // Garantir timestamp
     const timestamp = notification.timestamp || Math.floor(Date.now() / 1000);
-    
-    // Criar uma cópia da notificação com dados garantidos
-    const processedNotification = {
-      ...notification,
-      timestamp: timestamp
-    };
+    const processedNotification = { ...notification, timestamp };
 
     await processWithLimit(processGroupEvent, processedNotification, 'LEAVE');
   } catch (error) {
-    console.error('Erro ao processar LEAVE:', error);
+    console.error('❌ Erro LEAVE:', error.message);
   }
 });
 
