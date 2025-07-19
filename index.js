@@ -724,34 +724,26 @@ const client = new Client({
       '--disable-software-rasterizer',
       '--ignore-certificate-errors',
       '--allow-running-insecure-content',
-      '--window-size=800,600',
+      '--window-size=1024,768',
       '--disable-web-security',
       '--allow-file-access-from-files',
       '--no-zygote',
-      '--js-flags="--max-old-space-size=256"',
+      '--js-flags="--max-old-space-size=384"',
       '--disable-background-timer-throttling',
       '--disable-backgrounding-occluded-windows',
       '--disable-renderer-backgrounding',
-      '--disable-features=TranslateUI,VizDisplayCompositor',
+      '--disable-features=TranslateUI',
       '--disable-ipc-flooding-protection',
       '--disable-hang-monitor',
       '--disable-client-side-phishing-detection',
       '--disable-component-update',
       '--no-default-browser-check',
       '--no-pings',
-      '--media-cache-size=0',
-      '--disk-cache-size=0',
-      '--aggressive-cache-discard',
-      '--memory-pressure-off',
-      '--max_old_space_size=256',
-      '--optimize-for-size',
-      '--enable-precise-memory-info',
       '--disable-background-networking',
       '--disable-default-apps',
       '--disable-sync',
       '--metrics-recording-only',
-      '--no-report-upload',
-      '--single-process'
+      '--no-report-upload'
     ],
     headless: true,
     executablePath: process.platform === 'win32' 
@@ -759,13 +751,13 @@ const client = new Client({
       : process.platform === 'darwin'
       ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
       : '/usr/bin/google-chrome-stable',
-    timeout: 120000, // Reduzido para 2 minutos
+    timeout: 180000, // Voltando para 3 minutos para estabilidade
     defaultViewport: {
-      width: 800,
-      height: 600
+      width: 1024,
+      height: 768
     },
     ignoreHTTPSErrors: true,
-    protocolTimeout: 120000, // Reduzido para 2 minutos
+    protocolTimeout: 180000, // Voltando para 3 minutos
     handleSIGINT: false,
     handleSIGTERM: false,
     handleSIGHUP: false
@@ -782,18 +774,29 @@ const client = new Client({
   userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 });
 
-// Sistema de recuperação inteligente
+// Sistema de recuperação super resiliente
 let lastError = null;
 let errorCount = 0;
-const MAX_ERRORS = 3;
+let lastRecoveryTime = 0;
+const MAX_ERRORS = 5; // Aumentado para 5 tentativas
+const RECOVERY_COOLDOWN = 60000; // 1 minuto entre tentativas
 
 async function handleConnectionError(error) {
-  console.error('\n=== ERRO DE CONEXÃO DETECTADO ===');
-  console.error('Tipo:', error.name);
-  console.error('Mensagem:', error.message);
+  console.error('\n🚨 ERRO DE CONEXÃO DETECTADO');
+  console.error('Tipo:', error.name || 'Desconhecido');
+  console.error('Mensagem:', error.message || 'Sem detalhes');
+  
+  const now = Date.now();
+  
+  // Verificar se estamos em cooldown
+  if (now - lastRecoveryTime < RECOVERY_COOLDOWN) {
+    console.log('⏰ Em cooldown, aguardando antes de tentar recuperar...');
+    return;
+  }
   
   errorCount++;
   lastError = error;
+  lastRecoveryTime = now;
   
   // Reset das flags de estado
   isClientReady = false;
@@ -801,30 +804,57 @@ async function handleConnectionError(error) {
   authInProgress = false;
   
   if (errorCount >= MAX_ERRORS) {
-    console.error(`\n❌ Muitos erros consecutivos (${errorCount}). Reiniciando processo...`);
-    console.error('O container será reiniciado automaticamente pelo EasyPanel.');
+    console.error(`\n💀 Muitos erros consecutivos (${errorCount}). Reiniciando processo...`);
+    console.error('O EasyPanel reiniciará o container automaticamente.');
     process.exit(1);
   }
   
-  console.log(`\n🔄 Tentativa de recuperação ${errorCount}/${MAX_ERRORS} em 30 segundos...`);
+  console.log(`\n🔄 Tentativa ${errorCount}/${MAX_ERRORS} em 45 segundos...`);
   
   setTimeout(async () => {
     try {
-      console.log('Destruindo cliente atual...');
-      await client.destroy();
+      console.log('🧹 Limpando cliente atual...');
       
-      console.log('Aguardando limpeza...');
-      await new Promise(resolve => setTimeout(resolve, 5000));
+      // Tentar destruir cliente de forma mais segura
+      try {
+        if (client && typeof client.destroy === 'function') {
+          await Promise.race([
+            client.destroy(),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 10000))
+          ]);
+        }
+      } catch (destroyError) {
+        console.log('⚠️ Erro ao destruir cliente (ignorando):', destroyError.message);
+      }
       
-      console.log('Reinicializando cliente...');
+      console.log('⏳ Aguardando limpeza completa...');
+      await new Promise(resolve => setTimeout(resolve, 10000));
+      
+      // Forçar garbage collection se disponível
+      if (global.gc) {
+        global.gc();
+        console.log('🗑️ Garbage collection forçado');
+      }
+      
+      console.log('🚀 Reinicializando cliente...');
       await client.initialize();
       
       console.log('✅ Cliente reinicializado com sucesso!');
+      
+      // Reset contador apenas após sucesso
+      setTimeout(() => {
+        if (isClientReady) {
+          errorCount = Math.max(0, errorCount - 1);
+          console.log('📉 Contador de erros decrementado para:', errorCount);
+        }
+      }, 60000); // 1 minuto após sucesso
+      
     } catch (reconnectError) {
-      console.error('❌ Falha na reinicialização:', reconnectError);
-      handleConnectionError(reconnectError);
+      console.error('❌ Falha na reinicialização:', reconnectError.message);
+      // Aguardar mais tempo antes da próxima tentativa
+      setTimeout(() => handleConnectionError(reconnectError), 30000);
     }
-  }, 30000);
+  }, 45000);
 }
 
 // Adicionar logs para debug de inicialização
@@ -873,18 +903,41 @@ client.on('change_state', state => {
   console.log('📱 Estado do WhatsApp:', state);
 });
 
-// Capturar erros não tratados do cliente
+// Sistema robusto de captura de erros
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('🚨 Erro não tratado detectado:', reason);
+  console.error('🚨 Erro não tratado detectado:', reason?.message || reason);
   
-  // Se for um erro relacionado ao protocol/session
-  if (reason && reason.message && 
-      (reason.message.includes('Protocol error') || 
-       reason.message.includes('Session closed') ||
-       reason.message.includes('Target closed'))) {
-    console.error('🔧 Erro de protocolo detectado. Tentando recuperar...');
+  // Verificar se é um erro crítico do Chrome/Puppeteer
+  const errorMessage = reason?.message || String(reason);
+  const isCriticalError = errorMessage.includes('Protocol error') || 
+                         errorMessage.includes('Session closed') ||
+                         errorMessage.includes('Target closed') ||
+                         errorMessage.includes('Cannot read properties of null') ||
+                         errorMessage.includes('Connection closed') ||
+                         errorMessage.includes('Page crashed');
+  
+  if (isCriticalError) {
+    console.error('🔧 Erro crítico detectado. Tentando recuperar...');
     handleConnectionError(reason);
+  } else {
+    console.log('ℹ️ Erro não crítico, continuando execução...');
   }
+});
+
+process.on('uncaughtException', (error) => {
+  console.error('💀 Exceção não capturada:', error.message);
+  console.error('Stack:', error.stack);
+  
+  // Para exceções não capturadas, vamos tentar recuperar
+  if (!isShuttingDown) {
+    console.error('🔄 Tentando recuperar de exceção não capturada...');
+    handleConnectionError(error);
+  }
+});
+
+// Adicionar timeout global para evitar travamentos
+process.on('beforeExit', (code) => {
+  console.log('⚠️ Processo prestes a sair com código:', code);
 });
 
 client.on('ready', async () => {
