@@ -442,20 +442,23 @@ function formatDateForSupabase(dateStr) {
 const pendingEvents = [];
 const MAX_PENDING_EVENTS = 100;
 
-// Salvar eventos pendentes periodicamente
+// Processar eventos pendentes com menor frequência para economizar CPU
 setInterval(async () => {
   if (pendingEvents.length > 0) {
-    console.log(`\n=== Processando ${pendingEvents.length} eventos pendentes ===`);
+    console.log(`\n📋 Processando ${pendingEvents.length} eventos pendentes...`);
     
-    // Cópia dos eventos para processar
-    const eventsToProcess = [...pendingEvents];
+    // Processar apenas alguns eventos por vez para não sobrecarregar
+    const batchSize = Math.min(3, pendingEvents.length);
+    const eventsToProcess = pendingEvents.splice(0, batchSize);
     
-    // Limpar a lista original para evitar duplicações
-    pendingEvents.length = 0;
-    
-    // Processar cada evento pendente
-    for (const event of eventsToProcess) {
+    // Processar com delay entre cada um
+    for (let i = 0; i < eventsToProcess.length; i++) {
+      const event = eventsToProcess[i];
+      
       try {
+        // Delay entre processamentos
+        if (i > 0) await new Promise(resolve => setTimeout(resolve, 1000));
+        
         const success = await recordEventSupabase(
           event.timestamp, 
           event.eventType, 
@@ -464,19 +467,17 @@ setInterval(async () => {
         );
         
         if (success) {
-          console.log(`Evento pendente processado com sucesso: ${event.eventType} - ${event.user}`);
+          console.log(`✅ Evento processado: ${event.eventType}`);
         } else {
-          // Se ainda falhar, adicionar de volta à fila se não exceder o limite
+          // Readicionar apenas se não exceder limite
           if (pendingEvents.length < MAX_PENDING_EVENTS) {
             pendingEvents.push(event);
-            console.log(`Evento adicionado novamente à fila para nova tentativa: ${event.eventType} - ${event.user}`);
-          } else {
-            console.error(`Limite de eventos pendentes excedido, evento perdido: ${event.eventType} - ${event.user}`);
           }
         }
       } catch (error) {
-        console.error(`Erro ao processar evento pendente:`, error);
-        // Adicionamos de volta à fila apenas se for um erro temporário
+        console.error(`❌ Erro evento pendente:`, error.message);
+        
+        // Readicionar apenas para erros temporários
         if (pendingEvents.length < MAX_PENDING_EVENTS && 
             (error.message.includes('conexão') || error.message.includes('connection'))) {
           pendingEvents.push(event);
@@ -484,7 +485,7 @@ setInterval(async () => {
       }
     }
   }
-}, 60000); // Verificar a cada 1 minuto
+}, 120000); // Aumentado para 2 minutos
 
 // Função para registrar eventos no Supabase
 async function recordEventSupabase(timestamp, eventType, user, group) {
@@ -723,15 +724,15 @@ const client = new Client({
       '--disable-software-rasterizer',
       '--ignore-certificate-errors',
       '--allow-running-insecure-content',
-      '--window-size=1280,720',
+      '--window-size=800,600',
       '--disable-web-security',
       '--allow-file-access-from-files',
       '--no-zygote',
-      '--js-flags="--max-old-space-size=512"',
+      '--js-flags="--max-old-space-size=256"',
       '--disable-background-timer-throttling',
       '--disable-backgrounding-occluded-windows',
       '--disable-renderer-backgrounding',
-      '--disable-features=TranslateUI',
+      '--disable-features=TranslateUI,VizDisplayCompositor',
       '--disable-ipc-flooding-protection',
       '--disable-hang-monitor',
       '--disable-client-side-phishing-detection',
@@ -740,7 +741,17 @@ const client = new Client({
       '--no-pings',
       '--media-cache-size=0',
       '--disk-cache-size=0',
-      '--aggressive-cache-discard'
+      '--aggressive-cache-discard',
+      '--memory-pressure-off',
+      '--max_old_space_size=256',
+      '--optimize-for-size',
+      '--enable-precise-memory-info',
+      '--disable-background-networking',
+      '--disable-default-apps',
+      '--disable-sync',
+      '--metrics-recording-only',
+      '--no-report-upload',
+      '--single-process'
     ],
     headless: true,
     executablePath: process.platform === 'win32' 
@@ -748,13 +759,13 @@ const client = new Client({
       : process.platform === 'darwin'
       ? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
       : '/usr/bin/google-chrome-stable',
-    timeout: 300000, // 5 minutos para permitir carregamento lento
+    timeout: 120000, // Reduzido para 2 minutos
     defaultViewport: {
-      width: 1280,
-      height: 720
+      width: 800,
+      height: 600
     },
     ignoreHTTPSErrors: true,
-    protocolTimeout: 300000, // 5 minutos
+    protocolTimeout: 120000, // Reduzido para 2 minutos
     handleSIGINT: false,
     handleSIGTERM: false,
     handleSIGHUP: false
@@ -926,35 +937,63 @@ client.on('auth_failure', (msg) => {
   console.log('❌ Autenticação falhou. QR Code será gerado novamente se necessário.');
 });
 
-// Monitor de status do cliente (sem reconexão automática)
+// Monitor de status otimizado (menos verificações)
 setInterval(() => {
   try {
     if (isClientReady && client.info) {
-      console.log('✅ Status: Cliente WhatsApp ativo e estável');
+      console.log('✅ WhatsApp: Ativo');
     } else if (!isClientReady) {
-      console.log('⏳ Status: Aguardando autenticação do WhatsApp');
+      console.log('⏳ WhatsApp: Aguardando auth');
     }
+    
+    // Log de uso de memória para monitoramento
+    const used = process.memoryUsage();
+    console.log(`💾 Mem: ${Math.round(used.rss / 1024 / 1024)}MB RSS, ${Math.round(used.heapUsed / 1024 / 1024)}MB Heap`);
   } catch (error) {
-    console.error('Erro ao verificar status:', error);
+    console.error('Erro status:', error.message);
   }
-}, 10 * 60 * 1000); // Verificar a cada 10 minutos
+}, 15 * 60 * 1000); // Reduzido para 15 minutos
 
-// Adicionar um limpador de cache periódico (a cada 6 horas)
-const CACHE_CLEANUP_INTERVAL = 6 * 60 * 60 * 1000; // 6 horas
+// Limpeza agressiva de cache para economizar memória
+const CACHE_CLEANUP_INTERVAL = 2 * 60 * 60 * 1000; // A cada 2 horas
 
 setInterval(async () => {
   try {
-    console.log('\n=== INICIANDO LIMPEZA DE CACHE ===');
-    const page = client.pupPage;
-    if (page) {
-      // Limpar cookies e cache
-      const cdpSession = await page.target().createCDPSession();
-      await cdpSession.send('Network.clearBrowserCookies');
-      await cdpSession.send('Network.clearBrowserCache');
-      console.log('Cache do navegador limpo com sucesso');
+    console.log('\n🧹 Iniciando limpeza de cache...');
+    
+    // Forçar garbage collection se disponível
+    if (global.gc) {
+      global.gc();
+      console.log('✅ Garbage collection executado');
     }
+    
+    // Limpar cache do navegador
+    const page = client.pupPage;
+    if (page && !page.isClosed()) {
+      try {
+        const cdpSession = await page.target().createCDPSession();
+        await cdpSession.send('Network.clearBrowserCookies');
+        await cdpSession.send('Network.clearBrowserCache');
+        await cdpSession.send('Runtime.runIfWaitingForDebugger');
+        console.log('✅ Cache do navegador limpo');
+      } catch (error) {
+        console.log('⚠️ Erro na limpeza do cache:', error.message);
+      }
+    }
+    
+    // Limpar cache de eventos processados (manter apenas últimos 50)
+    if (processedEvents.size > 50) {
+      const eventsArray = Array.from(processedEvents);
+      processedEvents.clear();
+      eventsArray.slice(-50).forEach(event => processedEvents.add(event));
+      console.log('✅ Cache de eventos limpo');
+    }
+    
+    const used = process.memoryUsage();
+    console.log(`💾 Memória após limpeza: ${Math.round(used.rss / 1024 / 1024)}MB`);
+    
   } catch (error) {
-    console.error('Erro ao limpar cache:', error);
+    console.error('❌ Erro na limpeza:', error.message);
   }
 }, CACHE_CLEANUP_INTERVAL);
 
@@ -1011,31 +1050,53 @@ process.on('SIGUSR2', () => {
 // Cache global para eventos processados
 const processedEvents = new Set();
 
-// Adicionar sistema de limitação de processamento para controlar picos de CPU
-const MAX_CONCURRENT_PROCESSING = 2;
+// Sistema de processamento ultra-otimizado para baixo CPU
+const MAX_CONCURRENT_PROCESSING = 1; // Reduzido para 1 para economizar CPU
 let currentProcessing = 0;
 const processingQueue = [];
+let lastProcessTime = 0;
+const PROCESS_INTERVAL = 2000; // Mínimo 2 segundos entre processamentos
 
-// Função para processar eventos com limitação
+// Função para processar eventos com limitação e throttling
 async function processWithLimit(fn, ...args) {
-  if (currentProcessing >= MAX_CONCURRENT_PROCESSING) {
-    console.log(`Limite de processamento atingido (${currentProcessing}/${MAX_CONCURRENT_PROCESSING}), adicionando à fila...`);
-    // Adiciona à fila para processamento posterior
+  const now = Date.now();
+  
+  // Throttling: evitar processamento muito frequente
+  if (now - lastProcessTime < PROCESS_INTERVAL) {
+    console.log('⏱️ Processamento em throttling, adicionando à fila...');
     return new Promise(resolve => {
-      processingQueue.push(() => {
-        fn(...args).then(resolve);
-      });
+      setTimeout(() => {
+        processingQueue.push(() => fn(...args).then(resolve));
+        processQueue();
+      }, PROCESS_INTERVAL - (now - lastProcessTime));
+    });
+  }
+  
+  if (currentProcessing >= MAX_CONCURRENT_PROCESSING) {
+    console.log(`🚦 Limite atingido (${currentProcessing}/${MAX_CONCURRENT_PROCESSING}), enfileirando...`);
+    return new Promise(resolve => {
+      processingQueue.push(() => fn(...args).then(resolve));
     });
   }
   
   currentProcessing++;
+  lastProcessTime = now;
+  
   try {
     return await fn(...args);
   } finally {
     currentProcessing--;
-    if (processingQueue.length > 0 && currentProcessing < MAX_CONCURRENT_PROCESSING) {
-      console.log(`Processando próximo evento da fila (${processingQueue.length} restantes)`);
-      const nextProcess = processingQueue.shift();
+    // Processar próximo item da fila com delay
+    setTimeout(processQueue, 1000);
+  }
+}
+
+// Função para processar fila com controle de CPU
+function processQueue() {
+  if (processingQueue.length > 0 && currentProcessing < MAX_CONCURRENT_PROCESSING) {
+    const nextProcess = processingQueue.shift();
+    if (nextProcess) {
+      console.log(`📋 Processando da fila (${processingQueue.length} restantes)`);
       nextProcess();
     }
   }
